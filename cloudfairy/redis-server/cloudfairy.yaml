@@ -1,0 +1,34 @@
+cloudfairy_module:
+  type: "component"
+  name: "redis-server"
+  vendor: "cloudfairy"
+  connectable: "*"
+  allow_connections: false
+  displayName: "Redis Server"
+  supports: 
+    - "gcp"
+  dependencies: 
+    - "cloud_provider"
+  runtime: "terraform"
+  entry: "main.tf"
+  properties:
+    - name: "cacheType"
+      displayName: "Caching"
+      type: "options"
+      defaultValue: "memory"
+      options:
+        - label: "Memory"
+          value: "memory"
+        - label: "Disk"
+          value: "disk"
+  out_vars:
+    - name: "URL"
+      description: "Public URL"
+      output: "url"
+    - name: "STORAGE_URI"
+      description: "Bucket storage access"
+      output: "self_link"
+  outputs:
+    - "url"
+    - "self_link"
+    - "instructions"

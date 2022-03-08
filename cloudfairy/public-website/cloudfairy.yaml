@@ -1,0 +1,36 @@
+cloudfairy_module:
+  type: "component"
+  subtype: "storage"
+  name: "public-website"
+  vendor: "cloudfairy"
+  displayName: "Public Website"
+  supports: 
+    - "gcp"
+  dependencies: 
+    - "cloud_provider"
+  runtime: "terraform"
+  entry: "main.tf"
+  properties:
+    - name: "bucketName"
+      displayName: "Storage name"
+      defaultValue: "my-website"
+      type: "string"
+    - name: "indexPage"
+      type: "string"
+      displayName: "Index Page"
+      defaultValue: "/index.html"
+    - name: "errorPage"
+      displayName: "Error (404) Page"
+      defaultValue: "/error.html"
+      type: "string"
+  out_vars:
+    - name: "URL"
+      description: "Public URL"
+      output: "url"
+    - name: "STORAGE_URI"
+      description: "Bucket storage access"
+      output: "self_link"
+  outputs:
+    - "url"
+    - "self_link"
+    - "instructions"

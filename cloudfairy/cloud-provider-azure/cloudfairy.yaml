@@ -1,0 +1,29 @@
+cloudfairy_module:
+  interace: "cloud_provider"
+  type: "cloud-provider"
+  vendor: "cloudfairy"
+  name: "cloud-provider"
+  displayName: "Microsoft Azure"
+  outputs:
+   - "type"
+   - "projectId"
+   - "region"
+  runtime: "terraform"
+  entry: "az-provider.tf"
+  properties:
+   - name: "projectId"
+     type: "string"
+     displayName: "Azure Tennant ID"
+     defaultValue: ""
+   - name: "subscriptionId"
+     type: "string"
+     displayName: "Azure Subscription Id (for multiple subscriptions user)"
+     defaultValue: ""
+   - name: "region"
+     type: "options"
+     options:
+      - label: "West Europe"
+        value: "West Europe"
+  instructions: 
+      - 'az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID;'
+      - 

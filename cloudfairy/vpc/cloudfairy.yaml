@@ -1,0 +1,19 @@
+cloudfairy_module:
+  type: "component"
+  interface: "vpc"
+  internal: true
+  vendor: "cloudfairy"
+  name: "vpc"
+  runtime: "terraform"
+  entry: "main.tf"
+  displayName: "VPC"
+  dependencies:
+    - "cloud_provider"
+  outputs:
+    - "self_link"
+    - "vpcId"
+  properties:
+    - name: "vpcName"
+      type: "string"
+      displayName: "VPC Name"
+      defaultValue: cloudfairy-default-vpc

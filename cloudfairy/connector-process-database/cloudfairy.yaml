@@ -1,0 +1,17 @@
+cloudfairy_module:
+  type: "connector"
+  vendor: "cloudfairy"
+  name: "connector-extract-database-env-vars"
+  builder_runtime: "terraform"
+  entry: "connector-process-database.tf"
+  from:
+    - "database"
+    - "cloudfairy/sql"
+  to:
+    - "env_vars"
+    - "process"
+  properties:
+    - name: "privateEndpoint"
+      type: "string"
+      defaultValue: "DB_ENDPOINT"
+      displayName: "Internal network dns name"

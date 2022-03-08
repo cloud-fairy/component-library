@@ -1,0 +1,21 @@
+cloudfairy_module:
+  type: connector
+  vendor: cloudfairy
+  name: "connector-extract-process-ip-as-env-vars"
+  builder_runtime: "terraform"
+  entry: "connector-extract-process-ip-as-env-vars.tf"
+  from:
+    - "process"
+    - "env_vars"
+  to:
+    - "process"
+    - "env_vars"
+  properties:
+   - name: "privateEndpoint"
+     type: "string"
+     defaultValue: "ENDPOINT_URL"
+     displayName: "Private endpoint"
+   - name: "publicEndpoint"
+     type: "string"
+     defaultValue: "PUBLIC_URL"
+     displayName: "Public endpoint"
