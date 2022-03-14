@@ -16,4 +16,4 @@ cloudfairy_module:
     - name: "vpcName"
       type: "string"
       displayName: "VPC Name"
-      defaultValue: cloudfairy-default-vpc
+      defaultValue: cloudfairy-auto-vpc

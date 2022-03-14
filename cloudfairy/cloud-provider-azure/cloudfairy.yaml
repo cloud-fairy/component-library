@@ -2,7 +2,7 @@ cloudfairy_module:
   interace: "cloud_provider"
   type: "cloud-provider"
   vendor: "cloudfairy"
-  name: "cloud-provider"
+  name: "cloud-provider-azure"
   displayName: "Microsoft Azure"
   outputs:
    - "type"

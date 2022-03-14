@@ -45,12 +45,16 @@ resource "google_sql_database_instance" "db_instance" {
   region           = var.dependency.cloud_provider.region
   deletion_protection = false
 
+  
+
   settings {
     tier = var.config.tier
     disk_autoresize = true
-
     ip_configuration {
       ipv4_enabled = false
+      authorized_networks {
+        value = "0.0.0.0/0"
+      }
       private_network = var.dependency.vpc.vpcId
       require_ssl = true
     }

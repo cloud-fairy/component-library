@@ -3,7 +3,7 @@ cloudfairy_module:
   subtype: "compute"
   vendor: "cloudfairy"
   name: "docker-container"
-  displayName: "Web Service"
+  displayName: "Managed Service"
   builder_runtime: "terraform"
   entry: "web-service.tf"
   interface:

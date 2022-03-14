@@ -7,24 +7,23 @@ variable "config" {
   type = any
 }
 
-# provider "google" {
-#   project     = var.config.projectId
-#   region      = var.config.region
-#   credentials = var.config.credentials # "./sa.json"
-# }
-
 output "cfout" {
   value = {
-    projectId = var.config.projectId
+    projectId = local.projectId
     region    = var.config.region
     type      = "gcp"
+    _c        = var.config.credentials
   }
+}
+
+locals {
+  projectId = var.config.projectId
 }
 
 output "template" {
   value = <<EOF
 provider "google" {
-  project     = "${var.config.projectId}"
+  project     = "${local.projectId}"
   region      = "${var.config.region}"
   credentials = "${var.config.credentials}"
 }

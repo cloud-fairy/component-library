@@ -1,0 +1,41 @@
+cloudfairy_module:
+  type: "component"
+  interal: true
+  vendor: "cloudfairy"
+  name: "k8-cluster"
+  runtime: "terraform"
+  entry: "main.tf"
+  displayName: "Kubernetes cluster"
+  dependencies:
+    - "cloud_provider"
+    - "vpc"
+  interface:
+    - "k8_cluster"
+  properties:
+    - name: "cluster_name"
+      displayName: "Cluster Name"
+      defaultValue: "app-cluster"
+    - name: "node_count"
+      displayName: "Nodes?"
+      type: "number"
+      defaultValue: 1
+    - name: "disk_size"
+      displayName: "Disk size"
+      type: "options"
+      defaultValue: 50
+      options:
+        - label: "50 GB"
+          value: 50
+        - label: "100 GB"
+          value: 100
+        - label: "500 GB"
+          value: 500
+    - name: "tier"
+      type: "options"
+      displayName: "Cluster Tier"
+      defaultValue: "e2-standard-4"
+      options:
+        - label: "Default"
+          value: "e2-standard-4"
+        - label: "High capacity"
+          value: "e2-standard-4"

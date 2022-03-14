@@ -17,12 +17,7 @@ variable "config" {
 
 locals {
   db_envs = try(var.dependency.cloudfairy_connector_extract_database_env_vars, [])
-}
-
-output "cfout" {
-  value = {
-    public_url = google_cloud_run_service.web_service.url
-  }
+  projectId = var.dependency.cloud_provider.projectId
 }
 
 resource "google_cloud_run_service" "web_service" {
@@ -47,7 +42,7 @@ resource "google_cloud_run_service" "web_service" {
   template {
     spec {
       containers {
-        image = "us-docker.pkg.dev/cloudrun/container/hello"
+        image = "gcr.io/${local.projectId}/${var.config.serviceName}:latest"
 
         dynamic "env" {
           for_each = local.db_envs
@@ -76,16 +71,17 @@ resource "google_cloud_run_service" "web_service" {
   }
 }
 
-resource "google_project_service" "vpcaccess-api" {
+resource "google_project_service" "vpcaccess_api" {
   project = var.dependency.cloud_provider.projectId
   service = "vpcaccess.googleapis.com"
 }
 
 # VPC access connector
 resource "google_vpc_access_connector" "connector" {
-  name          = "vpcconn-${var.config.serviceName}"
+  name          = "${var.config.serviceName}"
   region        = var.dependency.cloud_provider.region
   network       = var.dependency.vpc.vpcName
+  ip_cidr_range = "10.8.0.0/28"
   depends_on    = [google_project_service.vpcaccess_api]
 }
 
@@ -93,10 +89,10 @@ resource "google_cloud_run_service_iam_member" "public_access" {
   depends_on = [
     google_cloud_run_service.web_service
   ]
-  count = var.public ? 1 : 0
-  service = google_cloud_run_service.default.name
-  location = google_cloud_run_service.default.location
-  project = google_cloud_run_service.default.project
+  count = var.config.public ? 1 : 0
+  service = google_cloud_run_service.web_service.name
+  location = google_cloud_run_service.web_service.location
+  project = local.projectId
   role = "roles/run.invoker"
   member = "allUsers"
 }
@@ -122,4 +118,12 @@ resource "google_cloud_run_service_iam_policy" "noauth" {
   service     = google_cloud_run_service.web_service.name
 
   policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+
+output "cfout" {
+  value = {
+    service_name = var.config.serviceName
+    public_url = google_cloud_run_service.web_service.status[0].url
+  }
 }
