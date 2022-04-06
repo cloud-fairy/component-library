@@ -1,0 +1,20 @@
+cloudfairy_module:
+  interface: "cloud_provider"
+  type: "cloud-provider"
+  vendor: "cloudfairy"
+  name: "cloud-provider-aws"
+  displayName: "Amazon Web Services"
+  annotations:
+    - "cloudfairy.dev/cloud-provider-type": "aws"
+  runtime: "terraform"
+  entry: "aws-provider.tf"
+  properties:
+    - name: "awsSecretKey"
+      type: string
+      defaultValue: ""
+    - name: "awsAccessKey"
+      type: string
+      defaultValue: ""
+    - name: "region"
+      type: "string"
+      defaultValue: "eu-central-1"

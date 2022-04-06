@@ -4,7 +4,9 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "k8-cluster"
   runtime: "terraform"
-  entry: "main.tf"
+  entry: 
+    gcp: "gcp-gke.tf"
+    aws: ""
   displayName: "Kubernetes cluster"
   dependencies:
     - "cloud_provider"
@@ -33,9 +35,9 @@ cloudfairy_module:
     - name: "tier"
       type: "options"
       displayName: "Cluster Tier"
-      defaultValue: "e2-standard-4"
+      defaultValue: "e2-standard-2"
       options:
         - label: "Default"
-          value: "e2-standard-4"
+          value: "e2-standard-2"
         - label: "High capacity"
           value: "e2-standard-4"

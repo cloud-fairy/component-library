@@ -31,9 +31,14 @@ variable "dependency" {
 
 locals {
   db_envs = try(var.dependency.cloudfairy_connector_extract_database_env_vars.env, [])
-  initContainer = try(var.dependency.cloudfairy_connector_extract_database_env_vars.init_container, [])
   projectId = var.dependency.cloud_provider.projectId
-  sqlSidecar = try(var.dependency.cloudfairy_connector_extract_database_env_vars.sql_proxy_container, [])
+  volumes = try(var.dependency.cloudfairy_connector_extract_database_env_vars.kubernetes.volumes, [])
+  sidecars = try(var.dependency.cloudfairy_connector_extract_database_env_vars.kubernetes.sidecars, [])
+  sql_secrets = try(var.dependency.cloudfairy_connector_extract_database_env_vars.kubernetes.secrets, [])
+}
+
+data "kubernetes_secret" "sa_token" {
+  type = "kubernetes.io/service-account-token"
 }
 
 resource "kubernetes_secret" "example" {
@@ -48,6 +53,15 @@ resource "kubernetes_secret" "example" {
   }
 
   type = "gcr-json-key"
+}
+
+resource kubernetes_secret "sql_connector_secrets" {
+  for_each = { for secret in local.sql_secrets : secret.metadata.name => secret }
+  metadata {
+    name = each.key
+  }
+  data = each.value.data
+  type = each.value.type
 }
 
 resource "kubernetes_service" "default" {
@@ -107,20 +121,43 @@ resource "kubernetes_deployment" "default" {
         }
       }
       spec {
-        dynamic "init_container" {
-          for_each = local.initContainer
+        dynamic "container" {
+          for_each = local.sidecars
           content {
-            image = init_container.value["image"]
-            name = init_container.value["name"]
-            command = init_container.value["command"]
+            image = container.value.image
+            name = container.value.name
+            command = container.value.command
+            dynamic "volume_mount" {
+              for_each = try(container.value.volume_mounts, [])
+              content {
+                name = volume_mount.value.name
+                mount_path = volume_mount.value.mount_path
+                read_only = try(volume_mount.value.read_only, false)
+              }
+            }
           }
         }
-        dynamic "container" {
-          for_each = local.sqlSidecar
+        volume {
+          name = "kube-certificate"
+          mount_path = "/etc/ssl/certs/kube-ca.crt"
+          sub_path = "ca.crt"
+        }
+        dynamic "volume" {
+          for_each = local.volumes
           content {
-            image = container.value["image"]
-            name = container.value["name"]
-            command = container.value["command"]
+            name = volume.value.name
+            dynamic secret {
+              for_each = {for key, value in volume.value : key => value if can(value.secret)}
+              content {
+                secret_name = volume.value.secret.secret_name
+              }
+            }
+            dynamic host_path {
+              for_each = {for key, value in volume.value : key => value if can(value.host_path)}
+              content {
+                path = volume.value.host_path.path
+              }
+            }
           }
         }
         container {

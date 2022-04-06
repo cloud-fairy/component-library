@@ -4,6 +4,8 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "cloud-provider-gcp"
   displayName: "Google Cloud Platform"
+  annotations:
+    - "cloudfairy.dev/cloud-provider-type": "gcp"
   outputs:
     - "type"
     - "projectId"

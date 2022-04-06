@@ -5,7 +5,9 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "vpc"
   runtime: "terraform"
-  entry: "main.tf"
+  entry:
+    gcp: "google_compute_network.tf"
+    aws: "aws_vpc.tf"
   displayName: "VPC"
   dependencies:
     - "cloud_provider"

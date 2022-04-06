@@ -4,6 +4,8 @@ cloudfairy_module:
   name: "connector-extract-database-env-vars"
   builder_runtime: "terraform"
   entry: "connector-process-database.tf"
+  dependencies:
+    - "cloud_provider"
   from:
     - "database"
     - "cloudfairy/sql"

@@ -1,8 +1,3 @@
-# Public website cloudfairy module
-
-# dependencies:
-# - cloudfairy/cloud-provider
-
 variable "config" {
   type = any
 }

@@ -8,30 +8,55 @@ variable "config" {
 }
 
 variable "dependency" {
-  type = object({
-    from_module = any
-  })
+  type = any
 }
 
 output "cfout" {
   value = {
-    sql_proxy_container = [{
-      image = "gcr.io/cloudsql-docker/gce-proxy:1.19.1"
-      name = "cloud-sql-proxy"
-      command = [
-        "/cloud_sql_proxy",
-        "-instances=${var.dependency.from_module.connectionName}=tcp:0.0.0.5432"
+    kubernetes = {
+      secrets = [{
+        type = "generic"
+        metadata = {
+          name = "cloudsql-access"
+        }
+        data = {
+          "cloudsql-access" = file(var.dependency.cloud_provider._c)
+        }
+      }]
+      sidecars = [{
+        image = "gcr.io/cloudsql-docker/gce-proxy:1.28.0"
+        name = "cloud-sql-proxy"
+        command = [
+          "/cloud_sql_proxy",
+          "-instances=${var.dependency.from_module.connectionName}=tcp:0.0.0.5432"
+        ]
+        volume_mounts = [
+          {
+            name = "cloudsql-oauth-credentials"
+            mount_path = "/secrets/cloudsql"
+            read_only = true
+          },
+          {
+            name = "ssl-certs"
+            mount_path = "/etc/ssl/certs"
+          }
+        ]
+      }]
+      volumes = [
+        {
+          name = "cloudsql-oauth-credentials"
+          secret = {
+            secret_name = "cloudsql_oauth_credentials"
+          }
+        },
+        {
+          name = "ssl-certs"
+          host_path = {
+            path = "/etc/ssl/certs"
+          }
+        }
       ]
-    }]
-    init_container = [{
-      image = "gcr.io/google.com/cloudsdktool/cloud-sdk:326.0.0-alpine"
-      name = "workload-identity-initcontainer"
-      command = [
-        "/bin/bash",
-        "-c",
-        "curl -s -H 'Metadata-Flavor: Google' 'http://metadata.google.internal/computeMetadata/v1/instance/service-accounts/default/token' --retry 30 --retry-connrefused --retry-max-time 30 || exit 1"
-      ]
-    }]
+    }
     env = [
       {
         name = var.config.privateEndpoint

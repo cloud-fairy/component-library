@@ -12,14 +12,20 @@ resource "google_container_cluster" "cluster" {
   name = var.config.cluster_name
   location = var.dependency.cloud_provider.region
   network = var.dependency.vpc.vpcId
+  subnetwork = var.dependency.vpc.subnetwork.name
 
   remove_default_node_pool = true
   initial_node_count       = 1
 
   master_auth {
     client_certificate_config {
-      issue_client_certificate = false
+      issue_client_certificate = true
     }
+  }
+
+  ip_allocation_policy {
+    cluster_secondary_range_name = var.dependency.vpc.subnetwork.ip_range_pods
+    services_secondary_range_name = var.dependency.vpc.subnetwork.ip_range_services
   }
 
   workload_identity_config {
