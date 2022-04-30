@@ -1,5 +1,7 @@
 cloudfairy_module:
-  interace: "cloud_provider"
+  interface: "cloud_provider"
+  annotations:
+    "cloudfairy.dev/cloud-provider-type": "az"
   type: "cloud-provider"
   vendor: "cloudfairy"
   name: "cloud-provider-azure"
@@ -20,6 +22,7 @@ cloudfairy_module:
      displayName: "Azure Subscription Id (for multiple subscriptions user)"
      defaultValue: ""
    - name: "region"
+     displayName: "Region"
      type: "options"
      options:
       - label: "West Europe"

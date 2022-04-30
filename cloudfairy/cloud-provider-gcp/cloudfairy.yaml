@@ -5,7 +5,7 @@ cloudfairy_module:
   name: "cloud-provider-gcp"
   displayName: "Google Cloud Platform"
   annotations:
-    - "cloudfairy.dev/cloud-provider-type": "gcp"
+    "cloudfairy.dev/cloud-provider-type": "gcp"
   outputs:
     - "type"
     - "projectId"
@@ -14,12 +14,15 @@ cloudfairy_module:
   entry: "gcp-provider.tf"
   properties:
     - name: "projectId"
+      displayName: "GCP Project ID"
       type: "string"
       defaultValue: ""
     - name: "credentials"
+      displayName: "Service Account credentials"
       type: "file"
       description: "GCP Credentials JSON file"
     - name: "region"
+      displayName: "Region"
       type: "options"
       options:
         - label: "US Central 1"

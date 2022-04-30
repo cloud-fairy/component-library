@@ -1,10 +1,12 @@
 cloudfairy_module:
   type: "component"
   name: "k8-service"
-  displayName: "Web Service"
+  displayName: "Web Service on Kubernetes"
   vendor: "cloudfairy"
   runtime: "terraform"
-  entry: "main.tf"
+  entry: 
+    gcp: "k8-service.gcp.tf"
+    aws: "k8-service.aws.tf"
   dependencies:
    - "k8_cluster"
    - "cloud_provider"

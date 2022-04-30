@@ -5,16 +5,23 @@ cloudfairy_module:
   name: "cloud-provider-aws"
   displayName: "Amazon Web Services"
   annotations:
-    - "cloudfairy.dev/cloud-provider-type": "aws"
+    "cloudfairy.dev/cloud-provider-type": "aws"
   runtime: "terraform"
   entry: "aws-provider.tf"
   properties:
-    - name: "awsSecretKey"
+    - name: "account_id"
+      displayName: "Account ID"
       type: string
       defaultValue: ""
     - name: "awsAccessKey"
+      displayName: "AWS ACCESS KEY"
+      type: string
+      defaultValue: ""
+    - name: "awsSecretKey"
+      displayName: "AWS ACCESS SECRET KEY"
       type: string
       defaultValue: ""
     - name: "region"
+      displayName: "Region"
       type: "string"
       defaultValue: "eu-central-1"

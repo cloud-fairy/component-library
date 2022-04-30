@@ -7,6 +7,7 @@ output "cfout" {
     projectId = local.projectId
     region    = var.config.region
     type      = "aws"
+    account_id= var.config.account_id
   }
 }
 

@@ -1,12 +1,12 @@
 cloudfairy_module:
   type: "component"
-  interal: true
+  internal: true
   vendor: "cloudfairy"
   name: "k8-cluster"
   runtime: "terraform"
   entry: 
     gcp: "gcp-gke.tf"
-    aws: ""
+    aws: "aws-eks.tf"
   displayName: "Kubernetes cluster"
   dependencies:
     - "cloud_provider"
