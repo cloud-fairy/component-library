@@ -1,0 +1,40 @@
+cloudfairy_module:
+  type: component
+  name: "k8-docker-public"
+  displayName: "Docker Service"
+  vendor: "cloudfairy"
+  runtime: "terraform"
+  entry:
+    aws: "k8-docker.aws.tf"
+  dependencies:
+    - k8_cluster
+  interface:
+    - env_vars
+  properties:
+    - name: docker_image
+      displayName: Docker Image Name
+      defaultValue: "redis"
+      highlighted: true
+      type: string
+    - name: service_name
+      displayName: "DNS Service Name"
+      defaultValue: "my-service"
+      highlighted: true
+      type: string
+    - name: port_from
+      displayName: "Port"
+      defaultValue: "6379"
+      highlighted: true
+      type: number
+    - name: port_to
+      displayName: "Mapped to port"
+      defaultValue: "6379"
+      type: number
+    - name: pod_count
+      displayName: "Instance count"
+      defaultValue: 1
+      type: number
+    - name: user_env_vars
+      displayName: "Environment Variables"
+      type: keyvalue
+      defaultValue: {}

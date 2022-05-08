@@ -8,7 +8,6 @@ cloudfairy_module:
     - aws: "k8-sql.aws.tf"
   interface:
     - "database"
-    - "env_vars"
   dependencies:
     - cloud_provider
     - k8_cluster
@@ -19,6 +18,7 @@ cloudfairy_module:
       defaultValue: "sql-service"
     - name: "db_image"
       displayName: "SQL Engine"
+      defaultValue: "postgres:13"
       type: "options"
       options:
         - label: "Postgres"
@@ -27,6 +27,7 @@ cloudfairy_module:
           value: "mysql:5.6"
     - name: "disk_size"
       displayName: "Disk Size"
+      defaultValue: 250
       type: "options"
       options:
         - label: "50GB"

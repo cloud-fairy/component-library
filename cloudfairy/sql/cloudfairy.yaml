@@ -7,7 +7,7 @@ cloudfairy_module:
   entry: "main.tf"
   interface:
     - "database"
-  displayName: "SQL Server"
+  displayName: "Managed SQL Database"
   dependencies:
     - "cloud_provider"
     - "vpc"
@@ -16,6 +16,7 @@ cloudfairy_module:
       displayName: "Database name"
       defaultValue: "SQL Database"
       type: "string"
+      highlighted: true
     - name: "sqlType"
       displayName: "Database Type"
       defaultValue: "POSTGRES_13"

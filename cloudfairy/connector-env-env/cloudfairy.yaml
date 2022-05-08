@@ -15,7 +15,3 @@ cloudfairy_module:
      type: "string"
      defaultValue: "ENDPOINT_URL"
      displayName: "Private endpoint"
-   - name: "publicEndpoint"
-     type: "string"
-     defaultValue: "PUBLIC_URL"
-     displayName: "Public endpoint"
