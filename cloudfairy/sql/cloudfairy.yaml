@@ -4,7 +4,8 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "sql"
   runtime: "terraform"
-  entry: "main.tf"
+  entry:
+    gcp: "main.tf"
   interface:
     - "database"
   displayName: "Managed SQL Database"

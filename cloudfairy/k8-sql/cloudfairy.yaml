@@ -5,7 +5,7 @@ cloudfairy_module:
   name: "k8-sql"
   runtime: "terraform"
   entry:
-    - aws: "k8-sql.aws.tf"
+    aws: "k8-sql.aws.tf"
   interface:
     - "database"
   dependencies:

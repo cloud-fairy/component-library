@@ -5,7 +5,9 @@ cloudfairy_module:
   name: "docker-container"
   displayName: "Managed Service"
   builder_runtime: "terraform"
-  entry: "web-service.tf"
+  entry:
+    gcp: "web-service.tf"
+    aws: "web-service.tf"
   interface:
     - "process"
     - "env_vars"

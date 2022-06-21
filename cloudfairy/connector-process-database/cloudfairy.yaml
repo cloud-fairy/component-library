@@ -3,7 +3,10 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "connector-extract-database-env-vars"
   builder_runtime: "terraform"
-  entry: "connector-process-database.tf"
+  entry:
+    gcp: "connector-process-database.tf"
+    aws: "connector-process-database.tf"
+    az: "connector-process-database.tf"
   dependencies:
     - "cloud_provider"
   from:

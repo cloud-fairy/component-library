@@ -4,7 +4,7 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "k8-cluster"
   runtime: "terraform"
-  entry: 
+  entry:
     gcp: "gcp-gke.tf"
     aws: "aws-eks.tf"
   displayName: "Kubernetes cluster"

@@ -3,7 +3,8 @@ cloudfairy_module:
   subtype: "machine"
   vendor: "cloudfairy"
   name: "machine-instance"
-  entry: 'main.tf'
+  entry:
+    gcp: "main.tf"
   displayName: "Machine Instance"
   dependencies:
     - "cloud_provider"

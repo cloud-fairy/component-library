@@ -3,17 +3,19 @@ cloudfairy_module:
   subtype: "storage"
   name: "public-website"
   vendor: "cloudfairy"
-  displayName: "Public Website"
-  supports: 
+  displayName: "Static Website"
+  supports:
     - "gcp"
-  dependencies: 
+  dependencies:
     - "cloud_provider"
   runtime: "terraform"
-  entry: "main.tf"
+  entry:
+    gcp: "main.tf"
   properties:
     - name: "bucketName"
       displayName: "Storage name"
       defaultValue: "my-website"
+      highlighted: true
       type: "string"
     - name: "indexPage"
       type: "string"
