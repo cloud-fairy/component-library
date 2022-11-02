@@ -25,3 +25,8 @@ cloudfairy_module:
       displayName: "Region"
       type: "string"
       defaultValue: "eu-central-1"
+    - name: "remote_bucket"
+      type: "string"
+      defaultValue: ""
+      displayName: "Remote S3 Bucket name for state (leave blank for local state)"
+      global: true
