@@ -171,6 +171,6 @@ If your docker is not logged in to your AWS container registry, type aws ecr get
 
 Read more here: https://aws.amazon.com/blogs/compute/authenticating-amazon-ecr-repositories-for-docker-cli-with-credential-helper/
 EOF
-    "deployment"   = "docker push ${aws_ecr_repository.default.repository_url}:latest"
+    "deployment"   = "docker push ${aws_ecr_repository.default.repository_url}:latest && kubectl ..."
   }
 }
