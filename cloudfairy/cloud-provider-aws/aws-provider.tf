@@ -22,5 +22,6 @@ provider "aws" {
   access_key = "${var.config.awsAccessKey}"
   secret_key = "${var.config.awsSecretKey}"
 }
+
 EOF
 }

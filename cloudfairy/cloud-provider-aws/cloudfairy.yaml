@@ -15,16 +15,19 @@ cloudfairy_module:
       defaultValue: ""
     - name: "awsAccessKey"
       displayName: "AWS ACCESS KEY"
-      type: string
+      type: password
       defaultValue: ""
     - name: "awsSecretKey"
       displayName: "AWS ACCESS SECRET KEY"
-      type: string
+      type: password
       defaultValue: ""
     - name: "region"
       displayName: "Region"
-      type: "string"
-      defaultValue: "eu-central-1"
+      type: "options"
+      options:
+        - label: "eu-west-1"
+          value: "eu-west-1"
+      defaultValue: "eu-west-1"
     - name: "remote_bucket"
       type: "string"
       defaultValue: ""
