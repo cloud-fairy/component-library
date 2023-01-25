@@ -1,0 +1,13 @@
+cloufairy_module:
+  type: component
+  name: env-base
+  internal: true
+  vendor: cloudfairy
+  displayName: "Environment Base Module"
+  runtime: terraform
+  entry:
+    aws: base.aws.tf
+    az: base.az.tf
+  interface:
+    - base
+  properties: []
