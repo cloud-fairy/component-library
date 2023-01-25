@@ -1,12 +1,22 @@
 cloudfairy_module:
-  internal: true
-  type: component
-  name: network
+  name: vpc
   displayName: "Virtual Network"
-  vendor: "cloudfairy"
+  type: component
+  interface:
+    - vpc
+  internal: true
   runtime: terraform
   entry:
+  vendor: cloudfairy
     aws: vpc.aws.tf
-  interface:
-    - network
-  properties: []
+  dependencies:
+    - cloud_provider
+  properties:
+    - name: name
+      type: string
+      displayName: VPC Name
+      defaultValue: group05
+    - name: cidr
+      type: string
+      displayName: VPC CIDR
+      defaultValue: 10.100.0.0/16

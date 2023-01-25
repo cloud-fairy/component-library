@@ -1,36 +1,47 @@
-data "aws_availability_zones" "available" {
-  state = "available"
-}
-
-variable "config" {
+variable config {
   type = any
 }
+
+variable "dependency" {
+  type = any
+}
+
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source = "../../modules/aws/vpc"
 
-  name = "cloudfairy-vpc"
-  cidr = "10.0.0.0/16"
+  name           = var.config.name
+  region         = "eu-west-1"
+  create_bastion = true
+  public_key     = var.dependency.hackinfra_gitlab_secrets.ssh.public
+  cidr           = var.config.cidr
 
-  azs             = data.aws_availability_zones.available.names
-  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  public_subnets  = ["10.0.101.0/24", "10.0.102.0/24", "10.0.103.0/24"]
+  availability_zones = [
+    "eu-west-1a",
+    "eu-west-1b",
+    "eu-west-1c"
+  ]
 
-  enable_nat_gateway = true
-  enable_vpn_gateway = true
+  private_subnet_tags = {
+    "kubernetes.io/role/internal-elb" = 1
+  }
 
-  tags = {
-    Terraform = "true"
-    Environment = "dev"
-    cloudfairy = "true"
+  public_subnet_tags = {
+    "kubernetes.io/role/elb" = 1
   }
 }
 
 output "cfout" {
   value = {
-    vpc_id = module.vpc.vpc_id,
-    subnets = {
+    vpc_id             = module.vpc.vpc_id
+    availability_zones = module.vpc.availability_zones
+    cidr               = module.vpc.cidr
+    subnets            = {
       private = module.vpc.private_subnets
-      public = module.vpc.public_subnets
+      public  = module.vpc.public_subnets
+    }
+    subnet_groups      = {
+      database    = module.vpc.database_subnet_group_name
+      elasticache = module.vpc.elasticache_subnet_group_name
     }
   }
 }
