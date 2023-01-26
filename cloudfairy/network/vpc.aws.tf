@@ -7,7 +7,7 @@ variable "dependency" {
 }
 
 module "vpc" {
-  source = "../../modules/aws/vpc"
+  source = "../../../tf-modules/cloudfairy/vpc/"
 
   name           = var.config.name
   region         = "eu-west-1"

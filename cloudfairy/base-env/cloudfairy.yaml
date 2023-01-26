@@ -1,4 +1,4 @@
-cloufairy_module:
+cloudfairy_module:
   type: component
   name: env-base
   internal: true

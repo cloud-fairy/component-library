@@ -1,0 +1,77 @@
+cloudfairy_module:
+  name: eks
+  displayName: EKS
+  type: component
+  interface:
+    - eks
+  internal: false
+  vendor: cloudfairy
+  runtime: terraform
+  entry:
+    aws: main.tf
+  dependencies:
+    - vpc
+  properties: 
+    - name: env
+      type: string
+      displayName: environment namefairey 
+      defaultValue: "dev"
+    - name: env_prefix
+      type: string
+      displayName: env prefix
+      defaultValue: "platform"
+
+    - name: private_subnet_ids
+      type: list(string)
+      displayName: private_subnet_ids
+      defaultValue: ""
+    - name: eks_cluster_domain
+      type: string
+      displayName: eks_cluster_domain
+      defaultValue: ""
+    - name: name
+      type: string
+      displayName: name
+      defaultValue: "eks_new"
+
+    - name: enable_public_access
+      type: bool
+      displayName: enable_public_access
+      defaultValue: true
+      
+    - name: ssh_key_secret_arn
+      type: string
+      displayName: ssh_key_secret_arn
+      defaultValue: ""
+    - name: cluster_additional_security_group_ids
+      type: string
+      displayName: additional security groups
+      defaultValue: "[]"
+    - name: k8s_version
+      type: string
+      displayName: k8s version
+      defaultValue: "1.22"
+    - name: managed_node_groups
+      type: string
+      displayName: managed_node_groups
+      defaultValue: "{}"
+    - name: map_users
+      type: string
+      displayName: k8s version
+      defaultValue: "{}"
+    - name: map_roles
+      type: string
+      displayName: map_roles
+      defaultValue: "[]"
+    - name: map_users
+      type: string
+      displayName: map_users
+      defaultValue: "[]"
+    - name: platform_teams
+      type: string
+      displayName: platform_teams
+      defaultValue: "{}"
+    - name: application_teams
+      type: string
+      displayName: k8s version
+      defaultValue: "{}"

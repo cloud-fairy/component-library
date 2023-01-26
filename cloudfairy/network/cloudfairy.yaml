@@ -4,10 +4,10 @@ cloudfairy_module:
   type: component
   interface:
     - vpc
-  internal: true
+  internal: false
   runtime: terraform
-  entry:
   vendor: cloudfairy
+  entry:
     aws: vpc.aws.tf
   dependencies:
     - cloud_provider
