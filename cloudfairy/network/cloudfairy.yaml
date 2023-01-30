@@ -5,8 +5,11 @@ cloudfairy_module:
   displayName: "Virtual Network"
   vendor: "cloudfairy"
   runtime: terraform
+  dependencies:
+    - "cloud_provider"
   entry:
     aws: vpc.aws.tf
+    gcp: vpc.gcp.tf
   interface:
     - network
   properties: []

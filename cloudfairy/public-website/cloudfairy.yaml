@@ -4,13 +4,11 @@ cloudfairy_module:
   name: "public-website"
   vendor: "cloudfairy"
   displayName: "Static Website"
-  supports:
-    - "gcp"
   dependencies:
     - "cloud_provider"
   runtime: "terraform"
   entry:
-    gcp: "main.tf"
+    gcp: "public-bucket.gcp.tf"
   properties:
     - name: "bucketName"
       displayName: "Storage name"

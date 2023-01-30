@@ -1,4 +1,4 @@
-cloufairy_module:
+cloudfairy_module:
   type: component
   name: env-base
   internal: true
@@ -8,6 +8,7 @@ cloufairy_module:
   entry:
     aws: base.aws.tf
     az: base.az.tf
+    gcp: base.gcp.tf
   interface:
     - base
   properties: []

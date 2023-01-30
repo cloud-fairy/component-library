@@ -2,7 +2,7 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-variable "config" {
+variable "properties" {
   type = any
 }
 module "vpc" {
@@ -19,9 +19,9 @@ module "vpc" {
   enable_vpn_gateway = true
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
-    cloudfairy = "true"
+    cloudfairy  = "true"
   }
 }
 
@@ -30,7 +30,7 @@ output "cfout" {
     vpc_id = module.vpc.vpc_id,
     subnets = {
       private = module.vpc.private_subnets
-      public = module.vpc.public_subnets
+      public  = module.vpc.public_subnets
     }
   }
 }

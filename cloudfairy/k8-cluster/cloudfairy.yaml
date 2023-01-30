@@ -1,0 +1,13 @@
+cloudfairy_module:
+  type: component
+  vendor: cloudfairy
+  name: k8_cluster
+  displayName: "Kubernetes Cluster"
+  dependencies:
+    - "cloud_provider"
+    - "network"
+  interface:
+    - k8_cluster
+  entry:
+    gcp: k8.gke.tf
+  properties: []

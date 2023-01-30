@@ -1,4 +1,4 @@
-variable "config" {
+variable "properties" {
   type = object({
     privateEndpoint = string
   })
@@ -15,7 +15,7 @@ variable "dependency" {
 output "cfout" {
   value = [
     {
-      name = var.config.privateEndpoint
+      name  = var.properties.privateEndpoint
       value = var.dependency.from_module.endpoint
     }
   ]
