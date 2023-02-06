@@ -15,7 +15,7 @@ variable "dependency" {
 output "cfout" {
   value = [
     {
-      name = var.properties.privateEndpoint
+      name  = var.properties.privateEndpoint
       value = var.dependency.from_module.endpoint
     }
   ]

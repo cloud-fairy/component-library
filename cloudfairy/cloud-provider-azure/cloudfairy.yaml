@@ -6,27 +6,40 @@ cloudfairy_module:
   vendor: "cloudfairy"
   name: "cloud-provider-azure"
   displayName: "Microsoft Azure"
-  outputs:
-   - "type"
-   - "projectId"
-   - "region"
   runtime: "terraform"
   entry: "az-provider.tf"
+  locals:
+    - filename: account.hcl
+      value_from: account_id
+      name: account_name
   properties:
-   - name: "projectId"
-     type: "string"
-     displayName: "Azure Tennant ID"
-     defaultValue: ""
-   - name: "subscriptionId"
-     type: "string"
-     displayName: "Azure Subscription Id (for multiple subscriptions user)"
-     defaultValue: ""
-   - name: "region"
-     displayName: "Region"
-     type: "options"
-     options:
-      - label: "West Europe"
-        value: "West Europe"
-  instructions: 
-      - 'az ad sp create-for-rbac --role="Contributor" --scopes="/subscriptions/SUBSCRIPTION_ID;'
-      - 
+    - name: "tenant_id"
+      type: "string"
+      displayName: "Azure tenant ID"
+      defaultValue: ""
+    - name: "resource_group_name"
+      type: "string"
+      displayName: "Azure Resource Group Name"
+      defaultValue: ""
+    - name: "storage_account_name"
+      type: "string"
+      displayName: "Azure Storage Account for Project State (Must exist on Azure cloud)"
+      defaultValue: ""
+    - name: "subscription_id"
+      type: "string"
+      displayName: "Azure Subscription Id (for multiple subscriptions user)"
+      defaultValue: ""
+    - name: "client_id"
+      type: "string"
+      displayName: "Client ID"
+      defaultValue: ""
+    - name: "client_secret"
+      type: "password"
+      displayName: "Client Secret"
+      defaultValue: ""
+    - name: "region"
+      displayName: "Region"
+      type: "options"
+      options:
+        - label: "West Europe"
+          value: "West Europe"

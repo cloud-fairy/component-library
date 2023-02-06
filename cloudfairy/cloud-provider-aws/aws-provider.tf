@@ -4,10 +4,10 @@ variable "properties" {
 
 output "cfout" {
   value = {
-    projectId = local.projectId
-    region    = var.properties.region
-    type      = "aws"
-    account_id= var.properties.account_id
+    projectId  = local.projectId
+    region     = var.properties.region
+    type       = "aws"
+    account_id = var.properties.account_id
   }
 }
 

@@ -7,7 +7,6 @@ output "cfout" {
     projectId = local.projectId
     region    = var.properties.region
     type      = "gcp"
-    _c        = var.properties.credentials
   }
 }
 
@@ -20,7 +19,6 @@ output "template" {
 provider "google" {
   project     = "${local.projectId}"
   region      = "${var.properties.region}"
-  credentials = "${var.properties.credentials}"
 }
 EOF
 }

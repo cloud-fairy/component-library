@@ -1,18 +1,18 @@
-variable properties {
+variable "properties" {
   type = any
 }
 
-variable "dependency" {
+variable "properties" {
   type = any
 }
 
 module "vpc" {
   source = "github.com/terraform-aws-modules/terraform-aws-vpc"
 
-  name           = var.properties.name
-  cidr           = var.properties.cidr
+  name = var.properties.name
+  cidr = var.properties.cidr
 
-  azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
@@ -23,8 +23,9 @@ module "vpc" {
     "kubernetes.io/role/elb" = 1
   }
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
+    cloudfairy  = "true"
   }
 }
 
@@ -33,14 +34,9 @@ output "cfout" {
     vpc_id             = module.vpc.vpc_id
     availability_zones = module.vpc.azs
     cidr               = module.vpc.vpc_cidr_block
-    subnets            = {
+    subnets = {
       private = module.vpc.private_subnets
       public  = module.vpc.public_subnets
     }
-    subnet_groups      = {
-      database    = module.vpc.database_subnet_group_name
-      elasticache = module.vpc.elasticache_subnet_group_name
-    }
   }
 }
-

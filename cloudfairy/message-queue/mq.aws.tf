@@ -4,8 +4,8 @@ resource "random_password" "amq_password" {
 }
 
 resource "random_string" "username" {
-  length      = 16
-  special     = false
+  length  = 16
+  special = false
 }
 
 
@@ -31,7 +31,7 @@ module "amq_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name                = "amq-sg-${var.project.environment.prefix}-${var.project.environment.name}"
+  name                = "amq-sg-${var.project.environment_name}-${var.project.environment_name}"
   description         = "AMQ access from within VPC"
   vpc_id              = var.dependency.network.vpc_id
   ingress_cidr_blocks = [data.aws_vpc.this.cidr_block]
@@ -42,16 +42,16 @@ module "amq_sg" {
 # Broker
 
 resource "aws_mq_broker" "rabbit_mq_broker" {
-  broker_name = "${var.project.environment.prefix}-${var.project.environment.name}-broker"
+  broker_name = "${var.project.environment_name}-${var.project.environment_name}-broker"
 
-  engine_type = "RabbitMQ"
-  engine_version = "3.9.16"
-  storage_type = "ebs"
+  engine_type        = "RabbitMQ"
+  engine_version     = "3.9.16"
+  storage_type       = "ebs"
   host_instance_type = "mq.t3.micro"
 
-  security_groups = [module.amq_sg.security_group_id]
+  security_groups            = [module.amq_sg.security_group_id]
   auto_minor_version_upgrade = true
-  subnet_ids = var.dependency.network.subnets.private
+  subnet_ids                 = var.dependency.network.subnets.private
 
   publicly_accessible = false
 

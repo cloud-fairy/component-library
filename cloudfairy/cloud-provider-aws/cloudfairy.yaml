@@ -30,3 +30,7 @@ cloudfairy_module:
       defaultValue: ""
       displayName: "Remote S3 Bucket name for state (leave blank for local state)"
       global: true
+  locals:
+    - filename: account.hcl
+      value_from: account_id
+      name: account_name
