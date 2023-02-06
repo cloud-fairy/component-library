@@ -1,7 +1,9 @@
-# Cloudfairy 
-Cloudfairy is a  tool that helps you genarate and automate your cloud infrastructure resources.
+# Cloudfairy
+
+Cloudfairy is a tool that helps you genarate and automate your cloud infrastructure resources.
 
 ## Requirements
+
 - Node.js 16+
 
 ## Features
@@ -11,8 +13,7 @@ Cloudfairy is a  tool that helps you genarate and automate your cloud infrastruc
 - Easily switch between different cloud providers
 - Supports multiple cloud platforms including AWS, GCP, and Azure
 - Provides real-time updates on resource deployment
-- User-friendly  interface by UI and cli.
-
+- User-friendly interface by UI and cli.
 
 ## Installation
 
@@ -24,16 +25,18 @@ update/install npm
 
 install cloudfairy
 # npm i -g @cloudfairy/cli
-```   
+```
 
 ## usage
 
 ```
 fairy init
 ```
+
 define default library.
 
 fairy project|p [options] [command] :
+
 ```
 
 Options:
@@ -54,7 +57,9 @@ Commands:
   disconnect-component|disc <from-component-id> <to-component-id>
   help [command]
 ```
+
 fairy library|l [options] [command] :
+
 ```
 Manage component libraries
 
@@ -71,28 +76,33 @@ Commands:
   help [command]      display help for command
 ```
 
-Now lets have a look how to adjust  [eks bluprint module](https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/examples/eks-cluster-with-new-vpc)
- to be applied by cloudfairy tool :
+Now lets have a look how to adjust [eks bluprint module](https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/examples/eks-cluster-with-new-vpc)
+to be applied by cloudfairy tool :
 
 ![Screenshot](./tutorial/screenshot.png)
 
 as we can see the module has inputs configured in variable.tf file and outpusts configured in outputs.tf
 
 project- shared properties.
+
 ```
 variable properties {
   type = any
 }
 
 ```
-properties- inputs of the module - inserted by user or as defaults. 
+
+properties- inputs of the module - inserted by user or as defaults.
+
 ```
 variable properties {
   type = any
 }
 
 ```
-cfout-  object of mapped variable presenting the ouput of the module. 
+
+cfout- object of mapped variable presenting the ouput of the module.
+
 ```
 
 output "cfout" {
@@ -106,9 +116,38 @@ output "cfout" {
 }
 ```
 
-dependency - maped variables injected from "cfout" object of the depend module 
+dependency - maped variables injected from "cfout" object of the depend module
+
 ```
 variable "dependency" {
   type = any
 }
+```
+
+# Onboarding as user
+
+## Azure
+
+Prerequisites:
+
+- Tenant Id
+- Subscription Id
+- Client Id
+- Client Secret
+- Resource Group for the terraform state management
+- Storage Account for terraform state
+- Storage container in that account
+
+```bash
+# Login to azure cloud
+az login
+
+# Create resource group
+az group create --name $RESOURCE_GROUP_NAME --location $location
+
+# Create storage account
+az storage account create --resource-group $RESOURCE_GROUP_NAME --name $STORAGE_ACCOUNT_NAME --sku Standard_LRS --encryption-services blob
+
+# Create blob container
+az storage container create --name $CONTAINER_NAME --account-name $STORAGE_ACCOUNT_NAME
 ```

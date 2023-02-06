@@ -3,10 +3,8 @@ cloudfairy_module:
   type: component
   name: network
   displayName: "Virtual Network"
-  type: component
   interface:
     - vpc
-  internal: false
   runtime: terraform
   dependencies:
     - "cloud_provider"
@@ -14,6 +12,4 @@ cloudfairy_module:
     aws: vpc.aws.tf
     gcp: vpc.gcp.tf
     az: vpc.az.tf
-  interface:
-    - network
   properties: []

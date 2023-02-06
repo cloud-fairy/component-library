@@ -4,7 +4,7 @@ cloudfairy_module:
     "cloudfairy.dev/cloud-provider-type": "az"
   type: "cloud-provider"
   vendor: "cloudfairy"
-  name: "cloud-provider-azure"
+  name: "cloud-provider-az"
   displayName: "Microsoft Azure"
   runtime: "terraform"
   entry: "az-provider.tf"
