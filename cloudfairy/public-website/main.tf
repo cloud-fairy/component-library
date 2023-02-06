@@ -3,7 +3,7 @@
 # dependencies:
 # - cloudfairy/cloud-provider
 
-variable "config" {
+variable "properties" {
   type = any
 }
 variable "dependency" {
@@ -12,7 +12,7 @@ variable "dependency" {
 
 resource "google_storage_bucket" "storage" {
   count = var.dependency.cloud_provider.type == "gcp" ? 1 : 0
-  name = var.config.bucketName
+  name = var.properties.bucketName
   # uniform_bucket_level_access = true
   project = var.dependency.cloud_provider.projectId
   location = var.dependency.cloud_provider.region
@@ -20,8 +20,8 @@ resource "google_storage_bucket" "storage" {
   force_destroy = false
 
   website {
-    main_page_suffix = var.config.indexPage
-    not_found_page = var.config.errorPage
+    main_page_suffix = var.properties.indexPage
+    not_found_page = var.properties.errorPage
   }
 
   cors {

@@ -1,4 +1,4 @@
-variable config {
+variable properties {
   type = any
 }
 
@@ -8,7 +8,7 @@ variable "dependency" {
 
 
 data "aws_route53_zone" "domain" {
-  name         = var.config.domain
+  name         = var.properties.domain
   private_zone = false
 }
 
@@ -41,38 +41,38 @@ provider "kubectl" {
 }
 
 locals {
-  vpc_id      = var.global_config.vpc_id
+  vpc_id      = var.project.vpc_id
 }
 module "eks_blueprints" {
   source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.19.0"
 
-  cluster_name = var.config.name
+  cluster_name = var.properties.name
 
   # EKS Cluster VPC and Subnets
-  vpc_id             = var.dependency.hackinfra_vpc.vpc_id
-  private_subnet_ids = var.dependency.hackinfra_vpc.subnets.private
+  vpc_id             = var.dependency.vpc.vpc_id
+  private_subnet_ids = var.dependency.vpc.subnets.private
 
   # Cluster Security Group
-  cluster_additional_security_group_ids = split(",",var.config.cluster_additional_security_group_ids)
+  cluster_additional_security_group_ids = split(",",var.properties.cluster_additional_security_group_ids)
 
 
   # EKS CONTROL PLANE VARIABLES
-  cluster_version = var.config.k8s_version
+  cluster_version = var.properties.k8s_version
 
-  cluster_endpoint_public_access  = var.config.enable_public_access
+  cluster_endpoint_public_access  = var.properties.enable_public_access
   cluster_endpoint_private_access = true
 
   # EKS MANAGED NODE GROUPS
-  managed_node_groups = var.config.managed_node_groups
+  managed_node_groups = var.properties.managed_node_groups
 
 
   /* aws_auth_users */
-  map_users = var.config.map_users
-  map_roles = var.config.map_roles
+  map_users = var.properties.map_users
+  map_roles = var.properties.map_roles
 
   # EKS Application Teams
-  platform_teams = var.config.platform_teams
-  application_teams = var.config.application_teams
+  platform_teams = var.properties.platform_teams
+  application_teams = var.properties.application_teams
 
   #Custom Tags.
   /* tags = local.tags */
@@ -103,7 +103,7 @@ module "eks_blueprints" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = [var.dependency.hackinfra_vpc.cidr]
+      cidr_blocks = [var.dependency.vpc.cidr]
     }
     # Allows Control Plane Nodes to talk to Worker nodes on all ports. Added this to simplify the example and further avoid issues with Add-ons communication with Control plane.
     # This can be restricted further to specific port based on the requirement for each Add-on e.g., metrics-server 4443, spark-operator 8080, karpenter 8443 etc.

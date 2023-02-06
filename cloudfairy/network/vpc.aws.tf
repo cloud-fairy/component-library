@@ -1,4 +1,4 @@
-variable config {
+variable properties {
   type = any
 }
 
@@ -7,34 +7,32 @@ variable "dependency" {
 }
 
 module "vpc" {
-  source = "../../../tf-modules/cloudfairy/vpc/"
+  source = "github.com/terraform-aws-modules/terraform-aws-vpc"
 
-  name           = var.config.name
-  region         = "eu-west-1"
-  create_bastion = true
-  public_key     = var.dependency.hackinfra_gitlab_secrets.ssh.public
-  cidr           = var.config.cidr
+  name           = var.properties.name
+  cidr           = var.properties.cidr
 
-  availability_zones = [
-    "eu-west-1a",
-    "eu-west-1b",
-    "eu-west-1c"
-  ]
+  azs             = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
 
   private_subnet_tags = {
     "kubernetes.io/role/internal-elb" = 1
   }
-
+  enable_nat_gateway = true
+  enable_vpn_gateway = true
   public_subnet_tags = {
     "kubernetes.io/role/elb" = 1
+  }
+  tags = {
+    Terraform = "true"
+    Environment = "dev"
   }
 }
 
 output "cfout" {
   value = {
     vpc_id             = module.vpc.vpc_id
-    availability_zones = module.vpc.availability_zones
-    cidr               = module.vpc.cidr
+    availability_zones = module.vpc.azs
+    cidr               = module.vpc.vpc_cidr_block
     subnets            = {
       private = module.vpc.private_subnets
       public  = module.vpc.public_subnets
@@ -45,3 +43,4 @@ output "cfout" {
     }
   }
 }
+

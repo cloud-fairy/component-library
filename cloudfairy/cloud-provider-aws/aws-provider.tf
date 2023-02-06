@@ -1,13 +1,13 @@
-variable "config" {
+variable "properties" {
   type = any
 }
 
 output "cfout" {
   value = {
     projectId = local.projectId
-    region    = var.config.region
+    region    = var.properties.region
     type      = "aws"
-    account_id= var.config.account_id
+    account_id= var.properties.account_id
   }
 }
 
@@ -18,9 +18,9 @@ locals {
 output "template" {
   value = <<EOF
 provider "aws" {
-  region     = "${var.config.region}"
-  access_key = "${var.config.awsAccessKey}"
-  secret_key = "${var.config.awsSecretKey}"
+  region     = "${var.properties.region}"
+  access_key = "${var.properties.awsAccessKey}"
+  secret_key = "${var.properties.awsSecretKey}"
 }
 EOF
 }

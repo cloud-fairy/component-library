@@ -9,11 +9,11 @@ resource "random_string" "username" {
 }
 
 
-variable "config" {
+variable "properties" {
   type = any
 }
 
-variable "global_config" {
+variable "project" {
   type = any
 }
 
@@ -31,7 +31,7 @@ module "amq_sg" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 4.0"
 
-  name                = "amq-sg-${var.global_config.environment.prefix}-${var.global_config.environment.name}"
+  name                = "amq-sg-${var.project.environment.prefix}-${var.project.environment.name}"
   description         = "AMQ access from within VPC"
   vpc_id              = var.dependency.network.vpc_id
   ingress_cidr_blocks = [data.aws_vpc.this.cidr_block]
@@ -42,7 +42,7 @@ module "amq_sg" {
 # Broker
 
 resource "aws_mq_broker" "rabbit_mq_broker" {
-  broker_name = "${var.global_config.environment.prefix}-${var.global_config.environment.name}-broker"
+  broker_name = "${var.project.environment.prefix}-${var.project.environment.name}-broker"
 
   engine_type = "RabbitMQ"
   engine_version = "3.9.16"
