@@ -74,7 +74,7 @@ Commands:
 Now lets have a look how to adjust  [eks bluprint module](https://github.com/aws-ia/terraform-aws-eks-blueprints/tree/main/examples/eks-cluster-with-new-vpc)
  to be applied by cloudfairy tool :
 
-![Screenshot](screenshot.png)
+![Screenshot](toturial/screenshot.png)
 
 as we can see the module has inputs configured in variable.tf file and outpusts configured in outputs.tf
 
