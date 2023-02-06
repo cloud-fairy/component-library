@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: true
+  internal: false
   type: component
   name: network
   displayName: "Virtual Network"
@@ -10,6 +10,7 @@ cloudfairy_module:
   entry:
     aws: vpc.aws.tf
     gcp: vpc.gcp.tf
+    az: vpc.az.tf
   interface:
     - network
   properties: []
