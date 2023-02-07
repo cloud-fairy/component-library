@@ -9,5 +9,5 @@ cloudfairy_module:
   interface:
     - k8_cluster
   entry:
-    gcp: k8.gke.tf
+    gcp: gcp
   properties: []

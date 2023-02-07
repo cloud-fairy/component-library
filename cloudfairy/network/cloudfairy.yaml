@@ -2,9 +2,10 @@ cloudfairy_module:
   internal: false
   type: component
   name: network
+  vendor: cloudfairy
   displayName: "Virtual Network"
   interface:
-    - vpc
+    - network
   runtime: terraform
   dependencies:
     - "cloud_provider"
