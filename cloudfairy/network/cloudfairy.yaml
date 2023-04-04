@@ -13,4 +13,16 @@ cloudfairy_module:
     aws: vpc.aws.tf
     gcp: vpc.gcp.tf
     az: vpc.az.tf
-  properties: []
+  properties: 
+    - name: vpc_name
+      displayName: "Network Name"
+      type: string
+      defaultValue: "my-vpc"
+    - name: cidr_block
+      displayName: "CIDR Block"
+      type: string
+      defaultValue: "10.0.0.0/16"
+    - name: enable_public_access
+      displayName: "Should the VPC be publicly accessible?"
+      type: bool
+      defaultValue: true

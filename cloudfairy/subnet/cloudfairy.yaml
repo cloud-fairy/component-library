@@ -1,0 +1,22 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: subnet
+  vendor: cloudfairy
+  displayName: "Subnet"
+  interface:
+    - subnet
+  runtime: terraform
+  dependencies:
+    - network
+  entry:
+    aws: subnet.aws.tf
+  properties: 
+    - name: subnet_name
+      displayName: "Subnet Name"
+      type: string
+      defaultValue: "apps"
+    - name: block
+      displayName: "IP Address Block"
+      type: string
+      defaultValue: "10.0.2.0/24"

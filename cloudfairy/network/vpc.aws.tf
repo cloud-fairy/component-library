@@ -2,41 +2,36 @@ variable "properties" {
   type = any
 }
 
-variable "properties" {
+variable "dependency" {
   type = any
 }
 
+variable "project" {
+  type = any
+}
+
+data "aws_availability_zones" "available" {}
+
 module "vpc" {
-  source = "github.com/terraform-aws-modules/terraform-aws-vpc"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.19.0"
 
-  name = var.properties.name
-  cidr = var.properties.cidr
+  name = var.properties.vpc_name
 
-  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  cidr = var.properties.cidr_block
+  azs  = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
-  }
-  enable_nat_gateway = true
-  enable_vpn_gateway = true
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
-  }
-  tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    cloudfairy  = "true"
-  }
+  # private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  # public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+
+  enable_nat_gateway   = var.properties.enable_public_access
+  single_nat_gateway   = true
+  enable_dns_hostnames = true
 }
 
 output "cfout" {
   value = {
-    vpc_id             = module.vpc.vpc_id
-    availability_zones = module.vpc.azs
-    cidr               = module.vpc.vpc_cidr_block
-    subnets = {
-      private = module.vpc.private_subnets
-      public  = module.vpc.public_subnets
-    }
+    name = var.properties.vpc_name
+     
   }
 }
