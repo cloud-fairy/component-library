@@ -17,8 +17,8 @@ module "security_group" {
   name   = var.properties.sg_name
   vpc_id = var.dependency.network.id
  
-  ingress_cidr_blocks   = [var.properties.block]
   ingress_rules         = [var.properties.rule]
+  ingress_cidr_blocks   = [var.properties.block]
 
 }
 

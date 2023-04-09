@@ -19,7 +19,7 @@ cloudfairy_module:
     - name: rule
       displayName: "Specify rule name (https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md)"
       type: string
-      defaultValue: ["http-80"]
+      defaultValue: "https-443-tcp"
     - name: block
       displayName: "IP Address Block"
       type: string
