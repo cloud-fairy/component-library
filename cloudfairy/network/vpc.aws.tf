@@ -21,8 +21,8 @@ module "vpc" {
   cidr = var.properties.cidr_block
   azs  = slice(data.aws_availability_zones.available.names, 0, 3)
 
-  # private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
-  # public_subnets  = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
+  private_subnets = ["10.0.1.0/24", "10.0.2.0/24", "10.0.3.0/24"]
+  public_subnets  = var.properties.enable_public_access ? ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"] : [""]
 
   enable_nat_gateway   = var.properties.enable_public_access
   single_nat_gateway   = true
@@ -32,6 +32,7 @@ module "vpc" {
 output "cfout" {
   value = {
     name = var.properties.vpc_name
-     
+    cidr = var.properties.cidr_block
+    id   = module.vpc.vpc_id
   }
 }

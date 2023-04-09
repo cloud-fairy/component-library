@@ -10,6 +10,14 @@ variable "project" {
   type = any
 }
 
+resource "aws_subnet" "main" {
+  vpc_id     = var.dependency.network.id
+  cidr_block = var.properties.block
+
+  tags = {
+    Name = var.properties.subnet_name
+  }
+}
 
 output "cfout" {
   value = {
