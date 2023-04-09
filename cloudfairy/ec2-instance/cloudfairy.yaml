@@ -1,0 +1,20 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: instance
+  vendor: cloudfairy
+  displayName: "EC2 Instance"
+  interface:
+    - instance
+  runtime: terraform
+  dependencies:
+    - subnet
+    - sg
+  entry:
+    aws: ec2.aws.tf
+  properties: 
+    - name: ec2_name
+      displayName: "Instance Name"
+      type: string
+      defaultValue: "webserver"
+

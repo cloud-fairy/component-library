@@ -22,6 +22,7 @@ resource "aws_subnet" "main" {
 output "cfout" {
   value = {
     network_name = var.dependency.network.name
-    block = var.properties.block
+    block        = var.properties.block
+    subnet_id    = aws_subnet.main.id
   }
 }
