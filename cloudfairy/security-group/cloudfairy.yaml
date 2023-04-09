@@ -1,0 +1,26 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: sg
+  vendor: cloudfairy
+  displayName: "Security Group"
+  interface:
+    - sg
+  runtime: terraform
+  dependencies:
+    - network
+  entry:
+    aws: sg.aws.tf
+  properties: 
+    - name: sg_name
+      displayName: "Security Group Name"
+      type: string
+      defaultValue: "sg_web"
+    - name: rule
+      displayName: "Specify rule name (https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md)"
+      type: string
+      defaultValue: ["http-80"]
+    - name: block
+      displayName: "IP Address Block"
+      type: string
+      defaultValue: "10.0.0.0/16"
