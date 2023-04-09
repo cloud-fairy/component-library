@@ -40,14 +40,14 @@ module "ec2_instance" {
 
   tags = {
     Terraform   = "true"
-    Environment = project  #.locals.environment_name
+    #Environment = project.locals.environment_name
   }
 }
 
 output "cfout" {
   value = {
     instance_name   = var.properties.ec2_name
-    ec2_id          = module.ec2_instance.id
-    public_ip       = module.ec2_instance.public_ip
+    ec2_id          = module.ec2_instance[0].id
+    public_ip       = module.ec2_instance[0].public_ip
   }
 }
