@@ -28,9 +28,7 @@ module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 3.0"
 
-  count = 1
-
-  name =  var.properties.ec2_name
+  name =  var.properties.instance_name
 
   ami                    = data.aws_ami.aws_linux.id
   instance_type          = "t2.micro"
@@ -40,14 +38,14 @@ module "ec2_instance" {
 
   tags = {
     Terraform   = "true"
-    #Environment = project.locals.environment_name
+    Environment = var.project.environment_name
   }
 }
 
 output "cfout" {
   value = {
-    instance_name   = var.properties.ec2_name
-    ec2_id          = module.ec2_instance[0].id
-    public_ip       = module.ec2_instance[0].public_ip
+    instance_name   = var.properties.instance_name
+    instance_id     = module.ec2_instance.id
+    public_ip       = module.ec2_instance.public_ip
   }
 }

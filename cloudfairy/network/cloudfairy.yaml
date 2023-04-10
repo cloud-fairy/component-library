@@ -20,7 +20,12 @@ cloudfairy_module:
       defaultValue: "my-vpc"
     - name: cidr_block
       displayName: "CIDR Block"
-      type: string
+      type: options
+      options: 
+        - label: "10.0.x.x"
+          value: "10.0.0.0/16"
+        - label: "172.31.x.x"
+          value: "172.31.0.0/16"
       defaultValue: "10.0.0.0/16"
     - name: enable_public_access
       displayName: "Should the VPC be publicly accessible?"

@@ -16,7 +16,7 @@ cloudfairy_module:
       displayName: "Subnet Name"
       type: string
       defaultValue: "apps"
-    - name: block
-      displayName: "IP Address Block"
+    - name: cidr
+      displayName: "IP Address CIDR (x.x.?.?/24 ; x.x is defined by the Network)"
       type: string
-      defaultValue: "10.0.7.0/24"
+      defaultValue: "7.0/24"

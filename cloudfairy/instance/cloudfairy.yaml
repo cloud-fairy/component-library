@@ -3,7 +3,7 @@ cloudfairy_module:
   type: component
   name: instance
   vendor: cloudfairy
-  displayName: "EC2 Instance"
+  displayName: "Compute Instance"
   interface:
     - instance
   runtime: terraform
@@ -11,9 +11,9 @@ cloudfairy_module:
     - subnet
     - sg
   entry:
-    aws: ec2.aws.tf
+    aws: instance.aws.tf
   properties: 
-    - name: ec2_name
+    - name: instance_name
       displayName: "Instance Name"
       type: string
       defaultValue: "webserver"
