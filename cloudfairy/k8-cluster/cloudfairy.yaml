@@ -9,5 +9,10 @@ cloudfairy_module:
   interface:
     - k8_cluster
   entry:
+    aws: eks.aws.tf
     gcp: gcp
-  properties: []
+  properties: 
+    - name: cluster_name
+      displayName: "Cluster Name"
+      type: string
+      defaultValue: "K8S-Cluster"

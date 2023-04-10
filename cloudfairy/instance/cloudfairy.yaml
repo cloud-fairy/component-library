@@ -8,6 +8,7 @@ cloudfairy_module:
     - instance
   runtime: terraform
   dependencies:
+    - "cloud_provider"
     - subnet
     - sg
   entry:
