@@ -12,6 +12,12 @@ variable "project" {
 
 data "aws_availability_zones" "available" {}
 
+resource "aws_eip" "nat" {
+  count = 1
+
+  vpc = true
+}
+
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "4.0.1"
@@ -24,10 +30,12 @@ module "vpc" {
   private_subnets = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "9.0/24")] : []
   public_subnets  = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "10.0/24")] : []
 
-  enable_nat_gateway   = var.properties.enable_public_access
-  single_nat_gateway   = true
-  reuse_nat_ips        = true  
-  enable_dns_hostnames = true
+  enable_nat_gateway     = var.properties.enable_public_access
+  single_nat_gateway     = var.properties.enable_public_access
+  one_nat_gateway_per_az = false
+  reuse_nat_ips          = true  
+  external_nat_ip_ids    = "${aws_eip.nat.*.id}" 
+  enable_dns_hostnames   = true
 }
 
 output "cfout" {

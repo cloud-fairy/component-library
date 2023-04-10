@@ -20,6 +20,7 @@ module "security_group" {
   ingress_rules         = [var.properties.rule]
   ingress_cidr_blocks   = [var.properties.block]
 
+  egress_rules          = [ "all-all" ]
 }
 
 output "cfout" {
