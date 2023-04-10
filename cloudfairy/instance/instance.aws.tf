@@ -39,6 +39,7 @@ module "ec2_instance" {
   tags = {
     Terraform   = "true"
     Environment = var.project.environment_name
+    Project     = var.project.project_name
   }
 }
 

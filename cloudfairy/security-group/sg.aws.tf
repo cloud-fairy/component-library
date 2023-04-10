@@ -21,6 +21,12 @@ module "security_group" {
   ingress_cidr_blocks   = [var.properties.block]
 
   egress_rules          = [ "all-all" ]
+
+  tags = {
+    Terraform   = "true"
+    Environment = var.project.environment_name
+    Project     = var.project.project_name
+  }
 }
 
 output "cfout" {

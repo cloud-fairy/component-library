@@ -36,6 +36,13 @@ module "vpc" {
   reuse_nat_ips          = true  
   external_nat_ip_ids    = "${aws_eip.nat.*.id}" 
   enable_dns_hostnames   = true
+
+  tags = {
+    Name        = var.properties.vpc_name
+    Terraform   = "true"
+    Environment = var.project.environment_name
+    Project     = var.project.project_name
+  }
 }
 
 output "cfout" {

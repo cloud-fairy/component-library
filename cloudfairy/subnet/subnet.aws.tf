@@ -15,7 +15,10 @@ resource "aws_subnet" "main" {
   cidr_block = replace(var.dependency.network.cidr, "/0\\.0/16/", var.properties.cidr)
 
   tags = {
-    Name = var.properties.subnet_name
+    Name        = var.properties.subnet_name
+    Terraform   = "true"
+    Environment = var.project.environment_name
+    Project     = var.project.project_name
   }
 }
 
