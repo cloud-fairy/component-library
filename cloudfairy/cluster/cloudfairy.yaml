@@ -1,6 +1,6 @@
 cloudfairy_module:
   name: eks
-  displayName: EKS
+  displayName: "Managed K8S Cluster"
   type: component
   interface:
     - eks
@@ -10,28 +10,12 @@ cloudfairy_module:
   entry:
     aws: main.tf
   dependencies:
-    - vpc
+    - "cloud_provider"
+    - network
   properties: 
-    - name: env
-      type: string
-      displayName: environment namefairey 
-      defaultValue: "dev"
-    - name: env_prefix
-      type: string
-      displayName: env prefix
-      defaultValue: "platform"
-
-    - name: private_subnet_ids
-      type: list(string)
-      displayName: private_subnet_ids
-      defaultValue: ""
-    - name: eks_cluster_domain
-      type: string
-      displayName: eks_cluster_domain
-      defaultValue: ""
     - name: name
       type: string
-      displayName: name
+      displayName: "Cluster Name"
       defaultValue: "eks_new"
 
     - name: enable_public_access
@@ -49,16 +33,8 @@ cloudfairy_module:
       defaultValue: "[]"
     - name: k8s_version
       type: string
-      displayName: k8s version
-      defaultValue: "1.22"
-    - name: managed_node_groups
-      type: string
-      displayName: managed_node_groups
-      defaultValue: "{}"
-    - name: map_users
-      type: string
-      displayName: k8s version
-      defaultValue: "{}"
+      displayName: Cluster Version
+      defaultValue: "1.24"
     - name: map_roles
       type: string
       displayName: map_roles
@@ -73,5 +49,5 @@ cloudfairy_module:
       defaultValue: "{}"
     - name: application_teams
       type: string
-      displayName: k8s version
+      displayName: application_teams
       defaultValue: "{}"

@@ -6,18 +6,12 @@ variable "dependency" {
   type = any
 }
 
-
-data "aws_route53_zone" "domain" {
-  name         = var.properties.domain
-  private_zone = false
-}
-
 data "aws_eks_cluster" "eks" {
-  name = module.eks.cluster_id
+  name = module.eks_blueprints.cluster_id
 }
 
 data "aws_eks_cluster_auth" "eks" {
-  name = module.eks.cluster_id
+  name = module.eks_blueprints.cluster_id
 }
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.cluster.endpoint
@@ -40,17 +34,14 @@ provider "kubectl" {
   token                  = data.aws_eks_cluster_auth.cluster.token
 }
 
-locals {
-  vpc_id      = var.project.vpc_id
-}
 module "eks_blueprints" {
   source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.19.0"
 
   cluster_name = var.properties.name
 
   # EKS Cluster VPC and Subnets
-  vpc_id             = var.dependency.vpc.vpc_id
-  private_subnet_ids = var.dependency.vpc.subnets.private
+  vpc_id             = var.dependency.network.id
+  private_subnet_ids = var.dependency.network.private_subnets
 
   # Cluster Security Group
   cluster_additional_security_group_ids = split(",",var.properties.cluster_additional_security_group_ids)
@@ -63,7 +54,18 @@ module "eks_blueprints" {
   cluster_endpoint_private_access = true
 
   # EKS MANAGED NODE GROUPS
-  managed_node_groups = var.properties.managed_node_groups
+  eks_managed_node_groups = {
+    one = {
+      name = "${var.properties.name}-node-group-1"
+
+      instance_types = ["t3.small"]
+      capacity_type  = "SPOT"
+
+      min_size     = 2
+      max_size     = 3
+      desired_size = 3
+    }
+  }
 
 
   /* aws_auth_users */
@@ -74,8 +76,13 @@ module "eks_blueprints" {
   platform_teams = var.properties.platform_teams
   application_teams = var.properties.application_teams
 
-  #Custom Tags.
-  /* tags = local.tags */
+  # Custom Tags
+    tags = {
+    Terraform   = "true"
+    Environment = var.project.environment_name
+    Project     = var.project.project_name
+  }
+
   node_security_group_additional_rules = {
     # Extend node-to-node security group rules. Recommended and required for the Add-ons
     ingress_self_all = {
@@ -131,7 +138,7 @@ module "eks_blueprints" {
 
 output "cfout" {
   value = {
-    name                   = module.eks.name
+    name                   = module.eks_blueprints.name
     host                   = data.aws_eks_cluster.eks.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.eks.token
