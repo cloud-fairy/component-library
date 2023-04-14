@@ -11,8 +11,9 @@ variable "project" {
 }
 
 resource "aws_subnet" "main" {
-  vpc_id     = var.dependency.network.id
-  cidr_block = replace(var.dependency.network.cidr, "/0\\.0/16/", var.properties.cidr)
+  vpc_id            = var.dependency.network.id
+  cidr_block        = replace(var.dependency.network.cidr, "/0\\.0/16/", var.properties.cidr)
+  availability_zone = var.properties.az
 
   tags = {
     Name        = var.properties.subnet_name

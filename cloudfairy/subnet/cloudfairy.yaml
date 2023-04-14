@@ -17,7 +17,13 @@ cloudfairy_module:
       displayName: "Subnet Name"
       type: string
       defaultValue: "apps"
+
     - name: cidr
       displayName: "IP Address CIDR (x.x.?.?/24 ; x.x is defined by the Network)"
       type: string
       defaultValue: "7.0/24"
+
+    - name: az
+      displayName: "At which AZ should the subnet be located?"
+      type: string
+      defaultValue: "eu-west-1a"

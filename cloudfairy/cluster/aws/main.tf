@@ -6,57 +6,55 @@ variable "dependency" {
   type = any
 }
 
-data "aws_eks_cluster" "eks" {
-  name = module.eks_blueprints.cluster_id
+variable "project" {
+  type = any
 }
 
-data "aws_eks_cluster_auth" "eks" {
-  name = module.eks_blueprints.cluster_id
-}
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
-  # load_config_file       = false
-}
-
-provider "helm" {
-  kubernetes {
-    host                   = data.aws_eks_cluster.cluster.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.cluster.token
+terraform {
+  required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+    }
   }
 }
 
-provider "kubectl" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.cluster.token
+data "aws_eks_cluster" "eks" {
+  name = var.properties.name
+
+  depends_on = [
+    module.eks
+  ]
 }
 
-module "eks_blueprints" {
-  source = "github.com/aws-ia/terraform-aws-eks-blueprints?ref=v4.19.0"
+data "aws_eks_cluster_auth" "eks" {
+  name = data.aws_eks_cluster.eks.name
+}
 
-  cluster_name = var.properties.name
+data "aws_subnet_ids" "subnets" {
+  vpc_id = var.dependency.network.id
+}
 
-  # EKS Cluster VPC and Subnets
-  vpc_id             = var.dependency.network.id
-  private_subnet_ids = var.dependency.network.private_subnets
+module "eks" {
+  # create  = length(data.aws_subnet_ids.subnets.*.ids) > 1 ? true : false
+  source  = "terraform-aws-modules/eks/aws"
+  version = "19.13.0"
 
-  # Cluster Security Group
-  cluster_additional_security_group_ids = split(",",var.properties.cluster_additional_security_group_ids)
-
-
-  # EKS CONTROL PLANE VARIABLES
+  cluster_name    = var.properties.name
   cluster_version = var.properties.k8s_version
 
-  cluster_endpoint_public_access  = var.properties.enable_public_access
-  cluster_endpoint_private_access = true
+  # EKS Cluster VPC and Subnets
+  vpc_id                         = var.dependency.network.id
+  subnet_ids                     = data.aws_subnet_ids.subnets.ids
+  cluster_endpoint_public_access = var.properties.enable_public_access
 
-  # EKS MANAGED NODE GROUPS
+  eks_managed_node_group_defaults = {
+    ami_type                   = "AL2_x86_64"
+    iam_role_attach_cni_policy = true
+  }
+
   eks_managed_node_groups = {
     one = {
-      name = "${var.properties.name}-node-group-1"
+      name = "${var.properties.name}-${var.project.environment_name}-ng"
 
       instance_types = ["t3.small"]
       capacity_type  = "SPOT"
@@ -67,17 +65,7 @@ module "eks_blueprints" {
     }
   }
 
-
-  /* aws_auth_users */
-  map_users = var.properties.map_users
-  map_roles = var.properties.map_roles
-
-  # EKS Application Teams
-  platform_teams = var.properties.platform_teams
-  application_teams = var.properties.application_teams
-
-  # Custom Tags
-    tags = {
+  tags = {
     Terraform   = "true"
     Environment = var.project.environment_name
     Project     = var.project.project_name
@@ -110,7 +98,7 @@ module "eks_blueprints" {
       from_port   = 0
       to_port     = 0
       type        = "ingress"
-      cidr_blocks = [var.dependency.vpc.cidr]
+      cidr_blocks = [var.dependency.network.cidr]
     }
     # Allows Control Plane Nodes to talk to Worker nodes on all ports. Added this to simplify the example and further avoid issues with Add-ons communication with Control plane.
     # This can be restricted further to specific port based on the requirement for each Add-on e.g., metrics-server 4443, spark-operator 8080, karpenter 8443 etc.
@@ -125,20 +113,43 @@ module "eks_blueprints" {
     }
   }
 
-  # cluster_timeouts = {
-  #   "create" = "30m",
-  #   "update" = "60m",
-  #   "delete" = "15m"
-  # }
-
-  eks_readiness_timeout = "1200"
-
+  cluster_timeouts = {
+    "create" = "30m",
+    "update" = "60m",
+    "delete" = "15m"
+  }
 }
 
+# provider "kubernetes" {
+#   host                   = data.aws_eks_cluster.eks.endpoint
+#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+#   token                  = data.aws_eks_cluster_auth.eks.token
+#   # load_config_file       = false
+# }
+
+provider "helm" {
+  kubernetes {
+    host                   = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+    token                  = data.aws_eks_cluster_auth.eks.token
+  }
+}
+
+provider "kubectl" {
+  host                   = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.eks.token
+}
+
+resource "null_resource" "kubectl" {
+    provisioner "local-exec" {
+        command = "aws eks --region ${var.dependency.cloud_provider.region} update-kubeconfig --name ${data.aws_eks_cluster.eks.name}"
+    }
+}
 
 output "cfout" {
   value = {
-    name                   = module.eks_blueprints.name
+    name                   = data.aws_eks_cluster.eks.name
     host                   = data.aws_eks_cluster.eks.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.eks.token
