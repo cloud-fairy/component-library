@@ -32,6 +32,6 @@ module "s3_bucket" {
 output "cfout" {
   value = {
     storage_name = var.properties.storage_name
-    priave       = var.properties.acl
+    acl          = var.properties.acl
   }
 }
