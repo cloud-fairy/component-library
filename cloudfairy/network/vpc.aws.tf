@@ -50,5 +50,6 @@ output "cfout" {
     name            = var.properties.vpc_name
     cidr            = var.properties.cidr_block
     id              = module.vpc.vpc_id
+    route_table_id  = module.vpc.private_route_table_ids[0]
   }
 }
