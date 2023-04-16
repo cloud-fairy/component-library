@@ -20,6 +20,7 @@ resource "aws_subnet" "main" {
     Terraform   = "true"
     Environment = var.project.environment_name
     Project     = var.project.project_name
+    Component   = "subnet"
   }
 }
 

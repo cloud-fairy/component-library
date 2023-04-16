@@ -30,12 +30,27 @@ data "aws_eks_cluster_auth" "eks" {
   name = data.aws_eks_cluster.eks.name
 }
 
-data "aws_subnet_ids" "subnets" {
-  vpc_id = var.dependency.network.id
+data "aws_subnets" "private" {
+  filter {
+    name   = "vpc-id"
+    values = [var.dependency.network.id]
+  }
+  filter {
+    name   = "tag:Environment"
+    values = [var.project.environment_name]
+  }
+  filter {
+    name   = "tag:Project"
+    values = [var.project.project_name]
+  }
+  filter {
+    name   = "tag:Component"
+    values = ["subnet"]
+  }
 }
 
 module "eks" {
-  # create  = length(data.aws_subnet_ids.subnets.*.ids) > 1 ? true : false
+  # create  = length(data.aws_subnets.private.ids) > 1 ? true : false
   source  = "terraform-aws-modules/eks/aws"
   version = "19.13.0"
 
@@ -44,7 +59,7 @@ module "eks" {
 
   # EKS Cluster VPC and Subnets
   vpc_id                         = var.dependency.network.id
-  subnet_ids                     = data.aws_subnet_ids.subnets.ids
+  subnet_ids                     = data.aws_subnets.private.ids
   cluster_endpoint_public_access = var.properties.enable_public_access
 
   eks_managed_node_group_defaults = {
