@@ -14,8 +14,9 @@ variable "project" {
 module "s3_bucket" {
   source = "terraform-aws-modules/s3-bucket/aws"
 
-  bucket = var.properties.storage_name
-  acl    = var.properties.acl ? "private" : "public"
+  bucket            = var.properties.storage_name
+  acl               = var.properties.acl
+  block_public_acls = var.properties.acl == "private" ? true : false
 
   versioning = {
     enabled = true

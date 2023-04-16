@@ -18,6 +18,18 @@ cloudfairy_module:
       defaultValue: "apps-bucket"
 
     - name: acl
-      displayName: "Should the bukcet be Private?"
-      type: bool
-      defaultValue: true
+      displayName: "What access level should the bucket have?"
+      type: options
+      options: 
+        - label: "private"
+          value: "private"
+        - label: "public-read"
+          value: "public-read"
+        - label: "public-read-write"
+          value: "public-read-write"
+        - label: "authenticated-read"
+          value: "authenticated-read"
+        - label: "aws-exec-read"
+          value: "aws-exec-read"
+        - label: "log-delivery-write"
+          value: "log-delivery-write"
