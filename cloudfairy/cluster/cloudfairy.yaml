@@ -12,6 +12,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - network
+    - subnet
   properties: 
     - name: name
       type: string
