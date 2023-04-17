@@ -1,5 +1,5 @@
 variable "properties" {
-  type = any
+    type = any
 }
 
 output "cfout" {
@@ -12,11 +12,11 @@ output "cfout" {
 }
 
 locals {
-  projectId = "cloudfairy-on-aws"
+    projectId = "cloudfairy-on-aws"
 }
 
 output "template" {
-  value = <<EOF
+    value = <<EOF
 provider "aws" {
   region     = "${var.properties.region}"
   access_key = "${var.properties.awsAccessKey}"

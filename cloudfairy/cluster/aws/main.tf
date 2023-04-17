@@ -135,13 +135,6 @@ module "eks" {
   }
 }
 
-# provider "kubernetes" {
-#   host                   = data.aws_eks_cluster.eks.endpoint
-#   cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-#   token                  = data.aws_eks_cluster_auth.eks.token
-#   # load_config_file       = false
-# }
-
 provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.eks.endpoint
@@ -168,6 +161,8 @@ output "cfout" {
     host                   = data.aws_eks_cluster.eks.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
     token                  = data.aws_eks_cluster_auth.eks.token
+    oidc_provider          = module.eks.oidc_provider
+    cluster_version        = var.properties.k8s_version
   }
   sensitive = true
 }

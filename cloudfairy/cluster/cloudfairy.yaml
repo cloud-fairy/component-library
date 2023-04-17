@@ -1,9 +1,9 @@
 cloudfairy_module:
-  name: eks
+  name: cluster
   displayName: "Managed K8S Cluster"
   type: component
   interface:
-    - eks
+    - cluster
   internal: false
   vendor: cloudfairy
   runtime: terraform

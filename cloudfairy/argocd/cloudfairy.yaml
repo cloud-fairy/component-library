@@ -1,0 +1,16 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: argocd
+  vendor: cloudfairy
+  displayName: "ArgoCD Add-on"
+  interface:
+    - argocd
+  runtime: terraform
+  dependencies:
+    - "cloud_provider"
+    - cluster
+  entry:
+    aws: argocd.aws.tf
+  properties: []
+
