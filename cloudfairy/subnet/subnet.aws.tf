@@ -26,7 +26,7 @@ resource "aws_subnet" "main" {
 
 resource "aws_route_table_association" "nat_access" {
   subnet_id      = aws_subnet.main.id
-  route_table_id = var.dependency.network.route_table_id
+  route_table_id = var.dependency.network.private_route_table_id
 }
 
 output "cfout" {
