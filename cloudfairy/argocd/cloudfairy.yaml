@@ -12,5 +12,17 @@ cloudfairy_module:
     - cluster
   entry:
     aws: argocd.aws.tf
-  properties: []
+  properties: 
+    - name: appname
+      displayName: "App name to bootstrap the cluster"
+      type: string
+      defaultValue: ""
+    - name: repo
+      displayName: "Repo url"
+      type: string
+      defaultValue: ""
+    - name: path
+      displayName: "Path"
+      type: string
+      defaultValue: ""
 

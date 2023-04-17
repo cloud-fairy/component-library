@@ -10,6 +10,7 @@ variable "project" {
   type = any
 }
 
+# Configuring required providers
 terraform {
   required_providers {
     random = {
@@ -20,6 +21,20 @@ terraform {
       source  = "viktorradnai/bcrypt"
       version = ">= 0.1.2"
     }
+  }
+}
+
+provider "kubernetes" {
+  host                   = var.dependency.cluster.host
+  cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
+  token                  = var.dependency.cluster.token
+}
+
+provider "helm" {
+  kubernetes {
+    host                   = var.dependency.cluster.host
+    cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
+    token                  = var.dependency.cluster.token
   }
 }
 
@@ -55,15 +70,10 @@ module "argocd" {
 
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
   argocd_applications = {
-    addons = {
-      path               = "chart"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-add-ons.git"
+    "${var.properties.appname}" = {
+      path               = var.properties.path
+      repo_url           = var.properties.repo
       add_on_application = true
-    }
-    workloads = {
-      path               = "envs/dev"
-      repo_url           = "https://github.com/aws-samples/eks-blueprints-workloads.git"
-      add_on_application = false
     }
   }
 
@@ -106,9 +116,15 @@ resource "bcrypt_hash" "argo" {
   cleartext = random_password.argocd.result
 }
 
-#tfsec:ignore:aws-ssm-secret-use-customer-key
+# Adding random_string so that each secret would be unique and duplicates would be prevented 
+resource "random_string" "suffix" {
+  length  = 8
+  special = false
+}
+
 resource "aws_secretsmanager_secret" "argocd" {
-  name                    = "argocd"
+  name                    = format("argocd-%s-%s-%s", var.project.project_name, var.project.environment_name, random_string.suffix.result)
+  description             = format("ArgoCD Admin Secret for %s in %s environment", var.project.project_name, var.project.environment_name)
   recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
 }
 
@@ -119,10 +135,6 @@ resource "aws_secretsmanager_secret_version" "argocd" {
 
 output "cfout" {
   value = {
-    argocd              = module.argocd.argocd
-    # irsa_arn          = module.argocd.irsa_arn
-    # irsa_name         = module.argocd.irsa_name
-    # release_metadata  = module.argocd.release_metadata
-    # service_account   = module.argocd.service_account
+    argocd    = module.argocd.argocd.release_metadata
   }
 }
