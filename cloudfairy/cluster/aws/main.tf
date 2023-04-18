@@ -157,12 +157,14 @@ resource "null_resource" "kubectl" {
 
 output "cfout" {
   value = {
-    name                   = data.aws_eks_cluster.eks.name
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.eks.token
-    oidc_provider          = module.eks.oidc_provider
-    cluster_version        = var.properties.k8s_version
+    name                    = data.aws_eks_cluster.eks.name
+    host                    = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate  = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+    token                   = data.aws_eks_cluster_auth.eks.token
+    oidc_provider           = module.eks.oidc_provider
+    oidc_provider_arn       = module.eks.oidc_provider_arn
+    cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
+    cluster_version         = var.properties.k8s_version
   }
   sensitive = true
 }

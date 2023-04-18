@@ -40,6 +40,22 @@ provider "helm" {
 
 provider "bcrypt" {}
 
+module "load_balancer_controller" {
+  source                           = "DNXLabs/eks-lb-controller/aws"
+  version                          = "0.7.0"
+  cluster_identity_oidc_issuer     = var.dependency.cluster.cluster_oidc_issuer_url
+  cluster_identity_oidc_issuer_arn = var.dependency.cluster.oidc_provider_arn
+  cluster_name                     = var.dependency.cluster.name
+}
+
+module "eks-external-dns" {
+  source  = "lablabs/eks-external-dns/aws"
+  version = "1.1.1"
+
+  cluster_identity_oidc_issuer 	    = var.dependency.cluster.cluster_oidc_issuer_url
+  cluster_identity_oidc_issuer_arn  = var.dependency.cluster.oidc_provider_arn
+}
+
 module "argocd" {
   source  = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
 
@@ -55,6 +71,36 @@ module "argocd" {
       {
         name  = "configs.secret.argocdServerAdminPassword"
         value = bcrypt_hash.argo.id
+      }
+    ]
+    set = [
+      {
+        name  = "server.service.type"
+        value = "LoadBalancer"
+      },
+      {
+        name  = "server.service.annotations\\.beta\\.kubernetes\\.io/aws-load-balancer-proxy-protocol"
+        value = "*"
+      },
+      {
+        name  = "server.service.annotations.service\\.beta\\.kubernetes.io/aws-load-balancer-scheme"
+        value = "internet-facing"
+      },
+      {
+        name  = "server.service.annotations.service\\.beta\\.kubernetes.io/aws-load-balancer-type"
+        value = "external"
+      },
+      {
+        name  = "server.ingress.enabled"
+        value = true
+      },
+      {
+        name  = "server.ingress.ingressClassName"
+        value = "alb"
+      },
+      {
+        name  = "server.ingress.annotations.external-dns.alpha\\.kubernetes.io/hostname"
+        value = "argocd-fairyeks.tikalk.dev"
       }
     ]
   }
@@ -135,6 +181,8 @@ resource "aws_secretsmanager_secret_version" "argocd" {
 
 output "cfout" {
   value = {
-    argocd    = module.argocd.argocd.release_metadata
+    chart         = module.argocd.argocd.release_metadata[0].chart
+    app_version   = module.argocd.argocd.release_metadata[0].app_version
+    namespace     = module.argocd.argocd.release_metadata[0].namespace
   }
 }
