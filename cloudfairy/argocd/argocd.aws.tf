@@ -103,6 +103,39 @@ module "argocd" {
         value = "argocd-fairyeks.tikalk.dev"
       }
     ]
+  # # Enable ingress for Argo CD server
+  # "server.ingress.enabled" = "true"
+  # # Set the ingress class name to use for Argo CD server
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/ingress.class" = "alb"
+  # # Set the ingress hostname to use for Argo CD server
+  # "server.ingress.annotations.external-dns.alpha.kubernetes.io/hostname" = "argocd-fairyeks.tikalk.dev"
+  # # Set the ingress scheme to use for Argo CD server
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/scheme" = "internet-facing"
+  # # Set the target type for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/target-type" = "ip"
+  # # Set the health check path for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
+  # # Set the listen ports for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/listen-ports" = jsonencode([{
+  #   HTTP  = 80
+  #   HTTPS = 443
+  # }])
+  # # Set the group name for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.name" = "argocd"
+  # # Set the group order for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.order" = "10"
+  # # Set the idle timeout for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.idle-timeout-seconds" = "60"
+  # # Set the load balancer attributes for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/load-balancer-attributes" = jsonencode({
+  #   "idle_timeout.timeout_seconds" = 60
+  # })
+  # # Set the tags for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/tags" = jsonencode({
+  #   Name = "argocd"
+  # })
+  # # Set the backend protocol for the ALB ingress controller
+  # "server.ingress.annotations.alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
   }
 
   keda_helm_config = {
@@ -115,13 +148,13 @@ module "argocd" {
   }
 
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
-  argocd_applications = {
+  argocd_applications = var.properties.appname != "" ? {
     "${var.properties.appname}" = {
       path               = var.properties.path
       repo_url           = var.properties.repo
       add_on_application = true
     }
-  }
+  } : {}
 
   # Add-ons
   # enable_amazon_eks_aws_ebs_csi_driver = true
