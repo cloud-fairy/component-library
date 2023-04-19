@@ -101,6 +101,30 @@ module "argocd" {
       {
         name  = "server.ingress.annotations.external-dns.alpha\\.kubernetes.io/hostname"
         value = "argocd-fairyeks.tikalk.dev"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/scheme"
+        value = "internet-facing"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/target-type"
+        value = "ip"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.name"
+        value = "argocd"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.order"
+        value = "4"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.idle-timeout-seconds"
+        value = "60"
+      },
+      {
+        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/backend-protocol"
+        value = "HTTPS"
       }
     ]
   # # Enable ingress for Argo CD server
