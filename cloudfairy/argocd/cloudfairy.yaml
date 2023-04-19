@@ -13,7 +13,7 @@ cloudfairy_module:
   entry:
     aws: argocd.aws.tf
   properties:
-    - name: appname
+    - name: hostname
       displayName: "ArgoCD ingress external hostname (leave blank for none)"
       type: string
       defaultValue: ""

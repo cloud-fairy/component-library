@@ -40,22 +40,6 @@ provider "helm" {
 
 provider "bcrypt" {}
 
-module "load_balancer_controller" {
-  source                           = "DNXLabs/eks-lb-controller/aws"
-  version                          = "0.7.0"
-  cluster_identity_oidc_issuer     = var.dependency.cluster.cluster_oidc_issuer_url
-  cluster_identity_oidc_issuer_arn = var.dependency.cluster.oidc_provider_arn
-  cluster_name                     = var.dependency.cluster.name
-}
-
-module "eks-external-dns" {
-  source  = "lablabs/eks-external-dns/aws"
-  version = "1.1.1"
-
-  cluster_identity_oidc_issuer 	    = var.dependency.cluster.cluster_oidc_issuer_url
-  cluster_identity_oidc_issuer_arn  = var.dependency.cluster.oidc_provider_arn
-}
-
 module "argocd" {
   source  = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
 
@@ -79,15 +63,7 @@ module "argocd" {
         value = "LoadBalancer"
       },
       {
-        name  = "server.service.annotations\\.beta\\.kubernetes\\.io/aws-load-balancer-proxy-protocol"
-        value = "*"
-      },
-      {
-        name  = "server.service.annotations.service\\.beta\\.kubernetes.io/aws-load-balancer-scheme"
-        value = "internet-facing"
-      },
-      {
-        name  = "server.service.annotations.service\\.beta\\.kubernetes.io/aws-load-balancer-type"
+        name  = "server.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
         value = "external"
       },
       {
@@ -99,67 +75,57 @@ module "argocd" {
         value = "alb"
       },
       {
-        name  = "server.ingress.annotations.external-dns.alpha\\.kubernetes.io/hostname"
+        name  = "server.ingress.annotations\\.external-dns.alpha\\.kubernetes\\.io/hostname"
         value = "argocd-fairyeks.tikalk.dev"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/scheme"
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/scheme"
         value = "internet-facing"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/target-type"
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/target-type"
         value = "ip"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.name"
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/group\\.name"
         value = "argocd"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.order"
+        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes.io/group\\.order"
         value = "4"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/group.idle-timeout-seconds"
+        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/group\\.idle-timeout-seconds"
         value = "60"
       },
       {
-        name  = "server.ingress.annotations.alb.ingress\\.kubernetes.io/backend-protocol"
+        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/backend-protocol"
         value = "HTTPS"
+      },
+      {
+        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/load-balancer-attributes"
+        value = jsonencode({
+                  "idle_timeout.timeout_seconds" = 60
+                })
+      },
+      {
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/listen-ports"
+        value = jsonencode({
+                  "HTTP"  = 80
+                  "HTTPS" = 443
+                })
+      },
+      {
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
+        value = "/"
+      },
+      {
+        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/tags"
+        value = jsonencode({
+                  Name = "argocd"
+                })
       }
     ]
-  # # Enable ingress for Argo CD server
-  # "server.ingress.enabled" = "true"
-  # # Set the ingress class name to use for Argo CD server
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/ingress.class" = "alb"
-  # # Set the ingress hostname to use for Argo CD server
-  # "server.ingress.annotations.external-dns.alpha.kubernetes.io/hostname" = "argocd-fairyeks.tikalk.dev"
-  # # Set the ingress scheme to use for Argo CD server
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/scheme" = "internet-facing"
-  # # Set the target type for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/target-type" = "ip"
-  # # Set the health check path for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/healthcheck-path" = "/healthz"
-  # # Set the listen ports for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/listen-ports" = jsonencode([{
-  #   HTTP  = 80
-  #   HTTPS = 443
-  # }])
-  # # Set the group name for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.name" = "argocd"
-  # # Set the group order for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.order" = "10"
-  # # Set the idle timeout for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/group.idle-timeout-seconds" = "60"
-  # # Set the load balancer attributes for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/load-balancer-attributes" = jsonencode({
-  #   "idle_timeout.timeout_seconds" = 60
-  # })
-  # # Set the tags for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/tags" = jsonencode({
-  #   Name = "argocd"
-  # })
-  # # Set the backend protocol for the ALB ingress controller
-  # "server.ingress.annotations.alb.ingress.kubernetes.io/backend-protocol" = "HTTPS"
   }
 
   keda_helm_config = {
