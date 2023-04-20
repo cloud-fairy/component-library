@@ -21,7 +21,7 @@ resource "aws_subnet" "main" {
     Environment = var.project.environment_name
     Project     = var.project.project_name
     Component   = "subnet"
-    "kubernetes.io/role/internal-elb" = "1"
+    "kubernetes.io/role/elb" = "1"
   }
 }
 
