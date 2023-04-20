@@ -21,3 +21,10 @@ module "eks-external-dns" {
     module.eks
   ]
 }
+
+# module "cert-manager" {
+#   source  = "terraform-iaac/cert-manager/kubernetes"
+#   version = "2.5.1"
+
+#   cluster_issuer_email = "mor.danino@tikalk.com"
+# }

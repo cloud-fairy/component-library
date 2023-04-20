@@ -59,14 +59,6 @@ module "argocd" {
     ]
     set = [
       {
-        name  = "server.service.type"
-        value = "LoadBalancer"
-      },
-      {
-        name  = "server.service.annotations.service\\.beta\\.kubernetes\\.io/aws-load-balancer-type"
-        value = "external"
-      },
-      {
         name  = "server.ingress.enabled"
         value = true
       },
@@ -75,55 +67,45 @@ module "argocd" {
         value = "alb"
       },
       {
-        name  = "server.ingress.annotations\\.external-dns.alpha\\.kubernetes\\.io/hostname"
+        name  = "server.ingress.hosts[0]"
         value = "argocd-fairyeks.tikalk.dev"
       },
       {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/scheme"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/scheme"
         value = "internet-facing"
       },
       {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/target-type"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/target-type"
         value = "ip"
       },
       {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/group\\.name"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.name"
         value = "argocd"
       },
       {
-        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes.io/group\\.order"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.order"
         value = "4"
       },
       {
-        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/group\\.idle-timeout-seconds"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.idle-timeout-seconds"
         value = "60"
       },
       {
-        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/backend-protocol"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/backend-protocol"
         value = "HTTPS"
       },
       {
-        name  = "server.ingress.annotations\\.alb.ingress\\.kubernetes\\.io/load-balancer-attributes"
-        value = jsonencode({
-                  "idle_timeout.timeout_seconds" = 60
-                })
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/listen-ports[0]"
+        value = "[{\"HTTPS\": 443}]"
       },
+      #       "[{\"HTTP\": 80},{\"HTTPS\": 443}]"
       {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/listen-ports"
-        value = jsonencode({
-                  "HTTP"  = 80
-                  "HTTPS" = 443
-                })
-      },
-      {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
         value = "/"
       },
       {
-        name  = "server.ingress.annotations\\.alb\\.ingress\\.kubernetes\\.io/tags"
-        value = jsonencode({
-                  Name = "argocd"
-                })
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
+        value = "[{\"Name\": 'argocd'}]"
       }
     ]
   }
