@@ -15,7 +15,7 @@ resource "helm_release" "cluster_autoscaler" {
 
   set {
     name  = "autoDiscovery.clusterName"
-    value = data.aws_eks_cluster.eks.id
+    value = var.dependency.cluster.name
   }
   set {
     name  = "awsRegion"
@@ -42,9 +42,6 @@ resource "helm_release" "cluster_autoscaler" {
     name  = "rbac.serviceAccount.annotations.eks\\.amazonaws\\.com/role-arn"
     value = module.iam_assumable_role_autoscaler[0].this_iam_role_arn
   }
-  depends_on = [
-    module.eks
-  ]
 }
 
 module "iam_assumable_role_autoscaler" {
@@ -53,13 +50,12 @@ module "iam_assumable_role_autoscaler" {
   source                        = "registry.terraform.io/terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version                       = "3.6.0"
   create_role                   = true
-  role_name                     = format("eks-%s-cluster-autoscaler-irsa", data.aws_eks_cluster.eks.id)
-  provider_url                  = replace(module.eks.cluster_oidc_issuer_url, "https://", "")
+  role_name                     = format("eks-%s-cluster-autoscaler-irsa", var.dependency.cluster.name)
+  provider_url                  = replace(var.dependency.cluster.cluster_oidc_issuer_url, "https://", "")
   role_policy_arns              = [aws_iam_policy.cluster_autoscaler[0].arn]
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:eks-cluster-autoscaler"]
 
   depends_on = [
-    module.eks,
     aws_iam_policy.cluster_autoscaler
   ]
 }
@@ -67,14 +63,12 @@ module "iam_assumable_role_autoscaler" {
 resource "aws_iam_policy" "cluster_autoscaler" {
   count = var.autoscaler_enabled ? 1 : 0
 
-  name        = format("eks-%s-cluster-autoscaler", data.aws_eks_cluster.eks.id)
-  description = format("EKS cluster-autoscaler policy for cluster %s", data.aws_eks_cluster.eks.id)
+  name        = format("eks-%s-cluster-autoscaler", var.dependency.cluster.name)
+  description = format("EKS cluster-autoscaler policy for cluster %s", var.dependency.cluster.name)
   policy      = data.aws_iam_policy_document.cluster_autoscaler.json
 
   depends_on = [
-    module.eks,
     data.aws_iam_policy_document.cluster_autoscaler,
-    data.aws_eks_cluster.eks
   ]
 }
 

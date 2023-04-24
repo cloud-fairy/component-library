@@ -1,3 +1,15 @@
+variable properties {
+  type = any
+}
+
+variable "dependency" {
+  type = any
+}
+
+variable "project" {
+  type = any
+}
+
 variable "autoscaler_version" {
   description = "Autoscaler chart version"
   type        = string

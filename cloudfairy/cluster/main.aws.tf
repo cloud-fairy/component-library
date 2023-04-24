@@ -14,6 +14,15 @@ terraform {
   required_providers {
     kubectl = {
       source  = "gavinbunney/kubectl"
+      version = "1.14.0"
+    }
+    helm = {
+      source = "hashicorp/helm"
+      version = "2.9.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.20.0"
     }
   }
 }
@@ -28,6 +37,10 @@ data "aws_eks_cluster" "eks" {
 
 data "aws_eks_cluster_auth" "eks" {
   name = data.aws_eks_cluster.eks.name
+
+  depends_on = [
+    module.eks
+  ]
 }
 
 data "aws_subnets" "private" {

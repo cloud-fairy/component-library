@@ -57,7 +57,7 @@ module "argocd" {
         value = bcrypt_hash.argo.id
       }
     ]
-    set = [
+    set = var.properties.hostname != "" ? [
       {
         name  = "server.ingress.enabled"
         value = true
@@ -68,7 +68,7 @@ module "argocd" {
       },
       {
         name  = "server.ingress.hosts[0]"
-        value = "argocd-fairyeks.tikalk.dev"
+        value = var.properties.hostname
       },
       {
         name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/scheme"
@@ -107,7 +107,7 @@ module "argocd" {
         name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
         value = "[{\"Name\": 'argocd'}]"
       }
-    ]
+    ] : []    # No Ingress configuration if hostname is not set
   }
 
   keda_helm_config = {

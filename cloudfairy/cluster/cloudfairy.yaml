@@ -8,7 +8,7 @@ cloudfairy_module:
   vendor: cloudfairy
   runtime: terraform
   entry:
-    aws: aws
+    aws: main.aws.tf
   dependencies:
     - "cloud_provider"
     - network

@@ -3,7 +3,7 @@ cloudfairy_module:
   type: component
   name: argocd
   vendor: cloudfairy
-  displayName: "ArgoCD Add-on"
+  displayName: "ArgoCD"
   interface:
     - argocd
   runtime: terraform

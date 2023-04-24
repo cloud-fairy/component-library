@@ -1,6 +1,6 @@
 cloudfairy_module:
   name: controller
-  displayName: "K8S cluster controller"
+  displayName: "Controller"
   type: component
   interface:
     - controller
