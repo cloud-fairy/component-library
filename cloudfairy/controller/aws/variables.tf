@@ -7,5 +7,11 @@ variable "autoscaler_version" {
 variable "autoscaler_enabled" {
   description = "Autoscaler Enabled"
   type        = bool
-  default     = true
+  default     = false
+}
+
+variable "external_dns_domain_filters" {
+  description = "External-dns Domain filters."
+  type        = list(string)
+  default     = ["tikalk.dev"]
 }
