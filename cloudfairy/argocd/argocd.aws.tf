@@ -99,18 +99,17 @@ module "argocd" {
         value = "HTTPS"
       },
       {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/listen-ports[0]"
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/listen-ports"
         value = "[{\"HTTPS\": 443}]"
       },
-      #       "[{\"HTTP\": 80},{\"HTTPS\": 443}]"
       {
         name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
         value = "/"
       },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
-        value = "[{\"Name\": 'argocd'}]"
-      }
+      # {
+      #   name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
+      #   value = "[{\"Name\": 'argocd'}]"
+      # }
     ] : []    # No Ingress configuration if hostname is not set
   }
 
