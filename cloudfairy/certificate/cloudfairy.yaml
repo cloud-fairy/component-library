@@ -1,0 +1,18 @@
+cloudfairy_module:
+  name: certificate
+  displayName: "Certificate"
+  type: component
+  interface:
+    - certificate
+  internal: false
+  vendor: cloudfairy
+  runtime: terraform
+  entry:
+    aws: cert.aws.tf
+  dependencies:
+    - "cloud_provider"
+  properties: 
+    - name: hostname
+      type: string
+      displayName: "Certificate Host Name"
+      defaultValue: ""

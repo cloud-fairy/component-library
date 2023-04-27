@@ -17,6 +17,10 @@ cloudfairy_module:
       displayName: "ArgoCD ingress external hostname (leave blank for none)"
       type: string
       defaultValue: ""
+    - name: certificate_arn
+      displayName: "Certificate ARN"
+      type: string
+      defaultValue: ""
     - name: appname
       displayName: "App name to bootstrap the cluster (leave blank for none)"
       type: string
@@ -29,4 +33,5 @@ cloudfairy_module:
       displayName: "Path"
       type: string
       defaultValue: ""
+    
 

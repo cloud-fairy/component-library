@@ -71,6 +71,10 @@ module "argocd" {
         value = var.properties.hostname
       },
       {
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/certificate-arn"
+        value = var.properties.certificate_arn
+      },
+      {
         name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/scheme"
         value = "internet-facing"
       },
