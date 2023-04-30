@@ -103,13 +103,13 @@ module "argocd" {
         value = "[{\"HTTPS\": 443}]"
       },
       {
+        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/ssl-redirect"
+        value = "443"
+      },
+      {
         name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
         value = "/"
-      },
-      # {
-      #   name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
-      #   value = "[{\"Name\": 'argocd'}]"
-      # }
+      }
     ] : []    # No Ingress configuration if hostname is not set
   }
 
