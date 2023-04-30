@@ -31,8 +31,8 @@ module "security_group" {
 
 output "cfout" {
   value = {
-    network_name        = var.dependency.network.name
-    block               = var.properties.block
-    security_group_id   = module.security_group.security_group_id
+    name               = var.properties.sg_name
+    block              = var.properties.block
+    security_group_id  = module.security_group.security_group_id
   }
 }

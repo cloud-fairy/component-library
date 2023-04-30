@@ -32,8 +32,9 @@ resource "aws_route_table_association" "nat_access" {
 
 output "cfout" {
   value = {
-    network_name = var.dependency.network.name
-    cidr         = var.properties.cidr
-    subnet_id    = aws_subnet.main.id
+    name      = var.properties.subnet_name
+    cidr      = var.properties.cidr
+    subnet_id = aws_subnet.main.id
+    vpc_id    = var.dependency.network.id
   }
 }
