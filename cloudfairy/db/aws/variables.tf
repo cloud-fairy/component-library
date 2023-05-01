@@ -1,5 +1,14 @@
 variable "properties" {
   type = any
+
+  # validation {
+  #   condition = !anytrue([
+  #     var.properties.name == "mysql",
+  #     var.properties.name == "postgresql",
+  #     var.properties.name == "oracle"
+  #   ])
+  #   error_message = "DB Name cannot be 'mysql'|'postgresql'|'oracle'|'aurora'"
+  # }
 }
 
 variable "dependency" {

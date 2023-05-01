@@ -25,7 +25,7 @@ cloudfairy_module:
         - label: "MySQL"
           value: "mysql"
         - label: "PostgreSQL"
-          value: "postgresql"
+          value: "postgres"
         - label: "Aurora"
           value: "aurora"
         - label: "MariaDB"

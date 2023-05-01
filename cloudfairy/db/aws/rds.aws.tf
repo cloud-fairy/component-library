@@ -1,11 +1,11 @@
 locals {
-  port            =  var.properties.engine == "oracle" ? 1521 : var.properties.engine == "postgresql" ? 5432 : 3306
+  port            =  var.properties.engine == "oracle" ? 1521 : var.properties.engine == "postgres" ? 5432 : 3306
   engine_version  = {
     mysql         = var.mysql_version
     postgres      = var.postgresql_version
     mariadb       = var.mariadb_version
   }
-  major_version   = join("", regex("^(\\d){1,2}(\\.)(\\d){1,2}", local.engine_version[var.properties.engine]))
+  major_version   = join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[var.properties.engine]))
 }
 
 data "aws_subnets" "private" {
@@ -52,7 +52,7 @@ module "db" {
   # Enhanced Monitoring - see example for details on how to create the role
   # by yourself, in case you don't want to create it automatically
   monitoring_interval = "30"
-  monitoring_role_name = "MyRDSMonitoringRole"
+  monitoring_role_name = "RDSMonitoringRole-${var.properties.name}"
   create_monitoring_role = true
 
   tags = {
@@ -72,7 +72,7 @@ module "db" {
   major_engine_version = local.major_version
 
   # Database Deletion Protection
-  deletion_protection = true
+  deletion_protection = false
 
   parameters = [
     {
