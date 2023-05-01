@@ -1,11 +1,18 @@
 locals {
-  port            =  var.properties.engine == "oracle" ? 1521 : var.properties.engine == "postgres" ? 5432 : 3306
+  engine          =  var.properties.engine
+  port            =  local.engine == "postgres" ? 5432 : 3306
+  
   engine_version  = {
-    mysql         = var.mysql_version
-    postgres      = var.postgresql_version
-    mariadb       = var.mariadb_version
+    mysql         =  var.mysql_version
+    postgres      =  var.postgresql_version
+    mariadb       =  var.mariadb_version
+    aurora-mysql  =  var.aurora_version
   }
-  major_version   = join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[var.properties.engine]))
+
+  major_version   = join("", local.engine != "postgres" ? [
+                      join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
+                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )
+                    
 }
 
 data "aws_subnets" "private" {
@@ -33,13 +40,13 @@ module "db" {
 
   identifier        = var.properties.name
 
-  engine            = var.properties.engine
-  engine_version    = local.engine_version[var.properties.engine]
-  instance_class    = var.instance_class
+  engine            = local.engine
+  engine_version    = local.engine_version[local.engine]
+  instance_class    = local.engine != "aurora-mysql" ? var.deafult_instance_class : var.aurora_instance_class
   allocated_storage = 5
 
   db_name  = var.properties.name
-  username = "admin"
+  username = "${var.properties.name}_admin"
   port     = local.port
 
   iam_database_authentication_enabled = true
@@ -66,32 +73,21 @@ module "db" {
   subnet_ids             = data.aws_subnets.private.ids
 
   # DB parameter group
-  family = "${var.properties.engine}${local.major_version}"
+  family = "${local.engine}${local.major_version}"
 
   # DB option group
-  major_engine_version = local.major_version
+  major_engine_version =  local.major_version
 
   # Database Deletion Protection
   deletion_protection = false
-
-  parameters = [
-    {
-      name = "character_set_client"
-      value = "utf8mb4"
-    },
-    {
-      name = "character_set_server"
-      value = "utf8mb4"
-    }
-  ]
 }
 
 output "cfout" {
   value = {
-    name              = var.properties.name
-    engine            = module.db.db_instance_engine
-    endpoint          = module.db.db_instance_endpoint
-    db_instance_arn   = module.db.db_instance_arn
-    monitoring_role   = module.db.enhanced_monitoring_iam_role_name
+    name             = var.properties.name
+    engine           = module.db.db_instance_engine
+    endpoint         = module.db.db_instance_endpoint
+    db_arn           = module.db.db_instance_arn
+    monitoring_role  = module.db.enhanced_monitoring_iam_role_name
   }
 }

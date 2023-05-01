@@ -26,11 +26,9 @@ cloudfairy_module:
           value: "mysql"
         - label: "PostgreSQL"
           value: "postgres"
-        - label: "Aurora"
-          value: "aurora"
+        - label: "Aurora MySQL"
+          value: "aurora-mysql"
         - label: "MariaDB"
           value: "mariadb"
-        - label: "Oracle"
-          value: "oracle"
       defaultValue: "mysql"
 

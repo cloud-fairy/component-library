@@ -1,14 +1,12 @@
 variable "properties" {
   type = any
 
-  # validation {
-  #   condition = !anytrue([
-  #     var.properties.name == "mysql",
-  #     var.properties.name == "postgresql",
-  #     var.properties.name == "oracle"
-  #   ])
-  #   error_message = "DB Name cannot be 'mysql'|'postgresql'|'oracle'|'aurora'"
-  # }
+  validation {
+    condition = !anytrue([
+      var.properties.name == "mysql",
+    ])
+    error_message = "DB Name cannot be 'mysql'"
+  }
 }
 
 variable "dependency" {
@@ -28,7 +26,7 @@ variable "mysql_version" {
 variable "postgresql_version" {
   description = "PostgreSQL Engine version"
   type        = string
-  default     = "14.6-R1"
+  default     = "14.7"
 }
 
 variable "mariadb_version" {
@@ -37,8 +35,20 @@ variable "mariadb_version" {
   default     = "10.6.12"
 }
 
-variable "instance_class" {
+variable "aurora_version" {
+  description = "Aurora MySQL Engine version"
+  type        = string
+  default     = "5.7.mysql_aurora.2.11.2"
+}
+
+variable "deafult_instance_class" {
   description = "RDS Instance class"
   type        = string
   default     = "db.t3.micro"
+}
+
+variable "aurora_instance_class" {
+  description = "RDS Instance class"
+  type        = string
+  default     = "db.r5.large"
 }
