@@ -26,9 +26,11 @@ cloudfairy_module:
           value: "mysql"
         - label: "PostgreSQL"
           value: "postgres"
-        - label: "Aurora MySQL"
-          value: "aurora-mysql"
         - label: "MariaDB"
           value: "mariadb"
       defaultValue: "mysql"
+    - name: size
+      displayName: "DB Size(GB)"
+      type: string
+      defaultValue: "5"
 

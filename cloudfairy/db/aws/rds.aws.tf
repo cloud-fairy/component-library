@@ -6,13 +6,11 @@ locals {
     mysql         =  var.mysql_version
     postgres      =  var.postgresql_version
     mariadb       =  var.mariadb_version
-    aurora-mysql  =  var.aurora_version
   }
 
   major_version   = join("", local.engine != "postgres" ? [
                       join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
-                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )
-                    
+                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )                    
 }
 
 data "aws_subnets" "private" {
@@ -43,8 +41,8 @@ module "db" {
   engine            = local.engine
   engine_version    = local.engine_version[local.engine]
   instance_class    = local.engine != "aurora-mysql" ? var.deafult_instance_class : var.aurora_instance_class
-  allocated_storage = 5
-
+  allocated_storage = var.properties.size
+      
   db_name  = var.properties.name
   username = "${var.properties.name}_admin"
   port     = local.port
