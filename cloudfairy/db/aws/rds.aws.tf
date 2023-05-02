@@ -10,7 +10,7 @@ locals {
 
   major_version   = join("", local.engine != "postgres" ? [
                       join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
-                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )                    
+                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )                
 }
 
 data "aws_subnets" "private" {
@@ -35,6 +35,7 @@ data "aws_subnets" "private" {
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "5.6.0"
+  #create_db_instance = length(data.aws_subnets.private.*.id) > 1 ? true : false
 
   identifier        = var.properties.name
 

@@ -63,7 +63,7 @@ data "aws_subnets" "private" {
 }
 
 module "eks" {
-  # create  = length(data.aws_subnets.private.ids) > 1 ? true : false
+  # create  = length(data.aws_subnets.private.*.id) > 1 ? true : false
   source  = "terraform-aws-modules/eks/aws"
   version = "19.13.0"
 
