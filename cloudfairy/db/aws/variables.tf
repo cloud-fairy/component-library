@@ -4,8 +4,9 @@ variable "properties" {
   validation {
     condition = !anytrue([
       var.properties.name == "mysql",
+      var.properties.name == "check"
     ])
-    error_message = "DB Name cannot be 'mysql'"
+    error_message = "DB Name cannot be 'mysql'|'check'"
   }
 }
 
