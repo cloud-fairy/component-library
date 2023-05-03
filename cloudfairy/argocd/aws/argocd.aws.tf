@@ -1,15 +1,3 @@
-variable "properties" {
-  type = any
-}
-
-variable "dependency" {
-  type = any
-}
-
-variable "project" {
-  type = any
-}
-
 # Configuring required providers
 terraform {
   required_providers {
