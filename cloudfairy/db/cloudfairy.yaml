@@ -31,6 +31,6 @@ cloudfairy_module:
       defaultValue: "mysql"
     - name: size
       displayName: "DB Size(GB)"
-      type: string
+      type: int
       defaultValue: "5"
 

@@ -2,11 +2,15 @@ variable "properties" {
   type = any
 
   validation {
-    condition = !anytrue([
+    condition     = !anytrue([
       var.properties.name == "mysql",
       var.properties.name == "check"
     ])
     error_message = "DB Name cannot be 'mysql'|'check'"
+  }
+  validation {
+    condition     = can(regex("^(\\d)+$", var.properties.size)) 
+    error_message = "DB Size must be an integer"
   }
 }
 
