@@ -3,7 +3,7 @@ variable "properties" {
 
   # Validating ArgoCD hostname is proper DNS name
   validation {
-    condition     = can(regex("^[a-z]+(\\.)[a-z]+[.a-z]*", var.properties.hostname))
+    condition     = can(regex("^[a-z-]+[0-9]*.*(\\.)[0-9a-z-]+((\\.)[0-9a-z-]+)*", var.properties.hostname))
     error_message = "ArgoCD hostname is invalid DNS name"
   }
   validation {
