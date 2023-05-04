@@ -183,6 +183,10 @@ output "cfout" {
     oidc_provider_arn       = module.eks.oidc_provider_arn
     cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
     cluster_version         = var.properties.k8s_version
-    error                   = local.create_cluster == false ? "Must have at least two subnets in two AZs in order to create EKS Cluster" : ""
   }
+  sensitive = true
+}
+
+output "error" {
+  value     = local.create_cluster == false ? "Must have at least two subnets in two AZs in order to create EKS Cluster" : ""
 }
