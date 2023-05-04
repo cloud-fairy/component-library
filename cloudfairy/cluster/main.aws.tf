@@ -10,6 +10,11 @@ variable "project" {
   type = any
 }
 
+locals {
+  subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
+  create_cluster  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
+}
+
 terraform {
   required_providers {
     kubectl = {
@@ -63,7 +68,7 @@ data "aws_subnets" "private" {
 }
 
 module "eks" {
-  # create  = length(data.aws_subnets.private.*.id) > 1 ? true : false
+  create  = local.create_cluster
   source  = "terraform-aws-modules/eks/aws"
   version = "19.13.0"
 
@@ -178,6 +183,6 @@ output "cfout" {
     oidc_provider_arn       = module.eks.oidc_provider_arn
     cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
     cluster_version         = var.properties.k8s_version
+    error                   = local.create_cluster == false ? "Must have at least two subnets in two AZs in order to create EKS Cluster" : ""
   }
-  sensitive = true
 }
