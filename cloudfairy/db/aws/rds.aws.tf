@@ -1,7 +1,8 @@
 locals {
   engine          =  var.properties.engine
   port            =  local.engine == "postgres" ? 5432 : 3306
-  
+  subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
+  create_db       =  local.subnets_count > 1 ? true : false    # Two subnets required to create RDS Subnet group
   engine_version  = {
     mysql         =  var.mysql_version
     postgres      =  var.postgresql_version
@@ -10,7 +11,7 @@ locals {
 
   major_version   = join("", local.engine != "postgres" ? [
                       join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
-                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )                
+                      join("", regex("^(\\d{1,2})(?:\\.)", local.engine_version[local.engine]))  ]  )           
 }
 
 data "aws_subnets" "private" {
@@ -35,7 +36,7 @@ data "aws_subnets" "private" {
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
   version = "5.6.0"
-  #create_db_instance = length(data.aws_subnets.private.*.id) > 1 ? true : false
+  create_db_instance = local.create_db
 
   identifier        = var.properties.name
 
@@ -88,5 +89,6 @@ output "cfout" {
     endpoint         = module.db.db_instance_endpoint
     db_arn           = module.db.db_instance_arn
     monitoring_role  = module.db.enhanced_monitoring_iam_role_name
+    error            = local.create_db == false ? "Must have at least two subnets in two AZs in order to create subnet group" : ""
   }
 }
