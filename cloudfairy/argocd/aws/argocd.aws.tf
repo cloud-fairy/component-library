@@ -172,6 +172,8 @@ resource "aws_secretsmanager_secret" "argocd" {
   name                    = format("argocd-%s-%s-%s", var.project.project_name, var.project.environment_name, random_string.suffix.result)
   description             = format("ArgoCD Admin Secret for %s in %s environment", var.project.project_name, var.project.environment_name)
   recovery_window_in_days = 0 # Set to zero for this example to force delete during Terraform destroy
+
+  depends_on = [ module.argocd ]
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
