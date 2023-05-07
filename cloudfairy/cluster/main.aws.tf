@@ -68,21 +68,23 @@ data "aws_subnets" "private" {
 }
 
 module "eks" {
-  create  = local.create_cluster
-  source  = "terraform-aws-modules/eks/aws"
-  version = "19.13.0"
+  create                          = local.create_cluster
+  source                          = "terraform-aws-modules/eks/aws"
+  version                         = "19.13.0"
 
-  cluster_name    = var.properties.name
-  cluster_version = var.properties.k8s_version
+  cluster_name                    = var.properties.name
+  cluster_version                 = var.properties.k8s_version
 
   # EKS Cluster VPC and Subnets
-  vpc_id                         = var.dependency.network.id
-  subnet_ids                     = data.aws_subnets.private.ids
-  cluster_endpoint_public_access = var.properties.enable_public_access
+  vpc_id                          = var.dependency.network.id
+  subnet_ids                      = data.aws_subnets.private.ids
+  cluster_endpoint_public_access  = var.properties.enable_public_access
 
+  # Cloudwatch log group
+  create_cloudwatch_log_group     = local.create_cluster
   eks_managed_node_group_defaults = {
-    ami_type                   = "AL2_x86_64"
-    iam_role_attach_cni_policy = true
+       ami_type                   = "AL2_x86_64"
+       iam_role_attach_cni_policy = true
   }
 
   eks_managed_node_groups = {
