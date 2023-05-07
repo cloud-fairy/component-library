@@ -36,7 +36,7 @@ data "aws_subnets" "private" {
 
 module "db" {
   source  = "terraform-aws-modules/rds/aws"
-  version = "5.6.0"
+  version = "5.9.0"
   create_db_instance = local.create_db
 
   identifier        = var.properties.name
@@ -70,7 +70,7 @@ module "db" {
   }
 
   # DB subnet group
-  create_db_subnet_group = true
+  create_db_subnet_group = local.create_db
   subnet_ids             = data.aws_subnets.private.ids
 
   # DB parameter group
