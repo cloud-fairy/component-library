@@ -8,7 +8,7 @@ variable "properties" {
   }
   # Validating AZ is in the correct format
   validation {
-    condition     = can(regex("^(us|eu|sa|ap|ca|af|me)-[a-z]+-\\d[a-z]?$", var.properties.az))
+    condition     = can(regex("^(us|eu|sa|ap|ca|af|me)-[a-z]+-\\d[a-z]$", var.properties.az))
     error_message = "Availability Zone is incorrect"
   }
 }
