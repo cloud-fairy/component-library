@@ -11,7 +11,7 @@ cloudfairy_module:
     - "cloud_provider"
     - network
   entry:
-    aws: subnet.aws.tf
+    aws: aws
   properties: 
     - name: subnet_name
       displayName: "Subnet Name"
