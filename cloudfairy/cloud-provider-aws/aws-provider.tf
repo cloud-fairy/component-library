@@ -2,17 +2,17 @@ variable "properties" {
     type = any
 }
 
-output "cfout" {
-  value = {
-    projectId  = local.projectId
-    region     = var.properties.region
-    type       = "aws"
-    account_id = var.properties.account_id
-  }
+locals {
+    projectId              = "cloudfairy-on-aws"
 }
 
-locals {
-    projectId = "cloudfairy-on-aws"
+output "cfout" {
+  value = {
+    projectId              = local.projectId
+    region                 = var.properties.region
+    type                   = "aws"
+    account_id             = var.properties.account_id
+  }
 }
 
 output "template" {
