@@ -61,7 +61,8 @@ module "db" {
   # by yourself, in case you don't want to create it automatically
   monitoring_interval                 = "30"
   monitoring_role_name                = "RDSMonitoringRole-${var.properties.name}"
-  create_monitoring_role              = true
+  # Create monitoring role only if DB can be created
+  create_monitoring_role              = local.create_db
 
   tags = {
     Terraform                         = "true"
