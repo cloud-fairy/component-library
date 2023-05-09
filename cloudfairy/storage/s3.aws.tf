@@ -34,7 +34,7 @@ module "s3_bucket" {
   tags              = local.tags  
 }
 
-module "iam_policy" {
+module "s3_iam_policy" {
   source            = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version           = "5.18.0"
 
@@ -53,11 +53,19 @@ module "iam_policy" {
         "s3-object-lambda:*"
       ],
       "Effect": "Allow",
-      "Resource": "${module.s3_bucket.s3_bucket_arn}"
+      "Resource": [
+                "${module.s3_bucket.s3_bucket_arn}",
+                "${module.s3_bucket.s3_bucket_arn}/*"
+      ]
     }
   ]
 }
 EOF
+}
+
+resource "aws_iam_role_policy_attachment" "example_policy_attachment" {
+  policy_arn       = module.s3_iam_policy.arn
+  role             = "${var.project.project_name}_${var.project.environment_name}_admin_role"
 }
 
 output "cfout" {

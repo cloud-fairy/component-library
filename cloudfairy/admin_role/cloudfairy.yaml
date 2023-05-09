@@ -1,0 +1,14 @@
+cloudfairy_module:
+  name: admin_role
+  displayName: "Admin Role"
+  type: component
+  interface:
+    - admin_role
+  internal: false
+  vendor: cloudfairy
+  runtime: terraform
+  entry:
+    aws: role.aws.tf
+  dependencies:
+    - "cloud_provider"
+  properties: []
