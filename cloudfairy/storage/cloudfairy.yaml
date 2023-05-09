@@ -11,7 +11,7 @@ cloudfairy_module:
     - "cloud_provider"
     - admin_role
   entry:
-    aws: s3.aws.tf
+    aws: aws
   properties: 
     - name: storage_name
       displayName: "Storage Name"
