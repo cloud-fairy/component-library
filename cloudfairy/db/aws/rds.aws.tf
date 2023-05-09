@@ -9,6 +9,11 @@ locals {
     postgres      =  var.postgresql_version
     mariadb       =  var.mariadb_version
   }
+  tags = {
+    Terraform                         = "true"
+    Environment                       = var.project.environment_name
+    Project                           = var.project.project_name
+  }
 
   major_version   = join("", local.engine != "postgres" ? [
                       join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
@@ -64,11 +69,7 @@ module "db" {
   # Create monitoring role only if DB can be created
   create_monitoring_role              = local.create_db
 
-  tags = {
-    Terraform                         = "true"
-    Environment                       = var.project.environment_name
-    Project                           = var.project.project_name
-  }
+  tags                                = local.tags
 
   # Create DB subnet group only if DB can be created
   create_db_subnet_group              = local.create_db
