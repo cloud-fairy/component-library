@@ -43,7 +43,7 @@ data "aws_iam_policy_document" "custom_trust_policy" {
     condition {
         test               = "NotIpAddress"
         variable           = "aws:SourceIp"
-        values             = ["213.57.221.168"]
+        values             = ["213.57.221.168","213.8.170.206"]
     }
 
     condition {
