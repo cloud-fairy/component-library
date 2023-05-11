@@ -6,7 +6,7 @@ cloudfairy_module:
   displayName: "Environment Base Module"
   runtime: terraform
   entry:
-    aws: base.aws.tf
+    aws: aws
     az: base.az.tf
     gcp: base.gcp.tf
   interface:

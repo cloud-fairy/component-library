@@ -26,4 +26,4 @@ cloudfairy_module:
     - name: az
       displayName: "At which AZ should the subnet be located?"
       type: string
-      defaultValue: "eu-west-1a"
+      defaultValue: "us-west-2a"

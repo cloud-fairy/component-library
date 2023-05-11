@@ -31,27 +31,6 @@ data "aws_iam_policy_document" "custom_trust_policy" {
       identifiers          = ["*"]
     }
   }
-  statement {
-    effect                 = "Deny"
-    actions                = ["sts:AssumeRole"]
-
-    principals {
-      type                 = "AWS"
-      identifiers          = ["*"]
-    }
-
-    condition {
-        test               = "NotIpAddress"
-        variable           = "aws:SourceIp"
-        values             = ["213.57.221.168","213.8.170.206"]
-    }
-
-    condition {
-        test               = "Bool"
-        variable           = "aws:ViaAWSService"
-        values             = ["false"]
-    }
-  }
 }
 
 output "cfout" {
