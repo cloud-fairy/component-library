@@ -17,8 +17,6 @@ cloudfairy_module:
       displayName: "Cluster Controller"
       type: options
       options: 
-        - label: "Cluster Auto-Scaler"
-          value: "auto-scaler"
         - label: "Externel DNS"
           value: "external-dns"
         - label: "Load balancer"

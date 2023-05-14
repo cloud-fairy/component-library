@@ -1,15 +1,3 @@
-variable properties {
-  type = any
-}
-
-variable "dependency" {
-  type = any
-}
-
-variable "project" {
-  type = any
-}
-
 locals {
   subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
   create_cluster  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
@@ -109,7 +97,6 @@ module "eks" {
     Environment                   = var.project.environment_name
     Project                       = var.project.project_name
     ProjectID                     = var.dependency.cloud_provider.projectId
-
   }
 
   node_security_group_additional_rules = {
