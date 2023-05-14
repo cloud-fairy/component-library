@@ -6,13 +6,18 @@ variable "project" {
   type                     = any
 }
 
+variable "dependency" {
+  type                     = any
+}
+
 locals {
         role_name          = "${var.project.project_name}_${var.project.environment_name}_admin_role"
         policy_name        = "${var.project.project_name}_${var.project.environment_name}_admin_policy"
         tags = {
-          Terraform            = "true"
-          Environment          = var.project.environment_name
-          Project              = var.project.project_name
+          Terraform        = "true"
+          Environment      = var.project.environment_name
+          Project          = var.project.project_name
+          ProjectID        = var.dependency.cloud_provider.projectId
         }
 }
 
@@ -44,7 +49,7 @@ data "aws_iam_policy_document" "custom_trust_policy" {
 # Configuring policy document with permissions for all CloudFairy components
 data "aws_iam_policy_document" "admin" {
     statement {
-        actions            = ["ec2:Describe*"]
+        actions            = ["ec2:Describe*","ec2:*","rds:*","s3:*","s3-object-lambda:*"]
         resources          = [ "*" ]
         condition {
           test             = "StringEquals"
@@ -56,47 +61,10 @@ data "aws_iam_policy_document" "admin" {
           variable         = "aws:PrincipalTag/Project"
           values           = ["${var.project.project_name}"]
         }
-    }
-    statement {
-        actions            = ["ec2:*"]
-        resources          = [ "*" ]
         condition {
           test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Environment"
-          values           = ["${var.project.environment_name}"]
-        }
-        condition {
-          test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Project"
-          values           = ["${var.project.project_name}"]
-        }
-    }
-    statement {
-        actions            = ["rds:*"]
-        resources          = [ "*" ]
-        condition {
-          test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Environment"
-          values           = ["${var.project.environment_name}"]
-        }
-        condition {
-          test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Project"
-          values           = ["${var.project.project_name}"]
-        }
-    }
-    statement {
-        actions            = ["s3:*","s3-object-lambda:*"]
-        resources          = [ "*" ]
-        condition {
-          test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Environment"
-          values           = ["${var.project.environment_name}"]
-        }
-        condition {
-          test             = "StringEquals"
-          variable         = "aws:PrincipalTag/Project"
-          values           = ["${var.project.project_name}"]
+          variable         = "aws:PrincipalTag/ProjectID"
+          values           = ["${var.dependency.cloud_provider.projectId}"]
         }
     }
 }

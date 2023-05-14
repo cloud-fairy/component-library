@@ -62,6 +62,10 @@ data "aws_subnets" "private" {
     values = [var.project.project_name]
   }
   filter {
+    name   = "tag:ProjectID"
+    values = [var.dependency.cloud_provider.projectId]
+  }
+  filter {
     name   = "tag:Component"
     values = ["subnet"]
   }
@@ -88,52 +92,54 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    one = {
-      name = "${var.properties.name}-${var.project.environment_name}-ng"
+    one                           = {
+      name                        = "${var.properties.name}-${var.project.environment_name}-ng"
 
-      instance_types = ["t3.small"]
-      capacity_type  = "SPOT"
+      instance_types              = ["t3.small"]
+      capacity_type               = "SPOT"
 
-      min_size     = 2
-      max_size     = 3
-      desired_size = 3
+      min_size                    = 2
+      max_size                    = 3
+      desired_size                = 3
     }
   }
 
   tags = {
-    Terraform   = "true"
-    Environment = var.project.environment_name
-    Project     = var.project.project_name
+    Terraform                     = "true"
+    Environment                   = var.project.environment_name
+    Project                       = var.project.project_name
+    ProjectID                     = var.dependency.cloud_provider.projectId
+
   }
 
   node_security_group_additional_rules = {
     # Extend node-to-node security group rules. Recommended and required for the Add-ons
-    ingress_self_all = {
-      description = "Node to node all ports/protocols"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      self        = true
+    ingress_self_all              = {
+      description                 = "Node to node all ports/protocols"
+      protocol                    = "-1"
+      from_port                   = 0
+      to_port                     = 0
+      type                        = "ingress"
+      self                        = true
     }
 
     # Recommended outbound traffic for Node groups
     egress_all = {
-      description      = "Node all egress"
-      protocol         = "-1"
-      from_port        = 0
-      to_port          = 0
-      type             = "egress"
-      cidr_blocks      = ["0.0.0.0/0"]
-      ipv6_cidr_blocks = ["::/0"]
+      description                 = "Node all egress"
+      protocol                    = "-1"
+      from_port                   = 0
+      to_port                     = 0
+      type                        = "egress"
+      cidr_blocks                 = ["0.0.0.0/0"]
+      ipv6_cidr_blocks            = ["::/0"]
     }
     ingress_all_vpc = {
-      description = "all VPC ingress"
-      protocol    = "-1"
-      from_port   = 0
-      to_port     = 0
-      type        = "ingress"
-      cidr_blocks = [var.dependency.network.cidr]
+      description                 = "all VPC ingress"
+      protocol                    = "-1"
+      from_port                   = 0
+      to_port                     = 0
+      type                        = "ingress"
+      cidr_blocks                 = [var.dependency.network.cidr]
     }
     # Allows Control Plane Nodes to talk to Worker nodes on all ports. Added this to simplify the example and further avoid issues with Add-ons communication with Control plane.
     # This can be restricted further to specific port based on the requirement for each Add-on e.g., metrics-server 4443, spark-operator 8080, karpenter 8443 etc.
@@ -157,16 +163,16 @@ module "eks" {
 
 provider "helm" {
   kubernetes {
-    host                   = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-    token                  = data.aws_eks_cluster_auth.eks.token
+    host                             = data.aws_eks_cluster.eks.endpoint
+    cluster_ca_certificate           = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+    token                            = data.aws_eks_cluster_auth.eks.token
   }
 }
 
 provider "kubectl" {
-  host                   = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-  token                  = data.aws_eks_cluster_auth.eks.token
+  host                              = data.aws_eks_cluster.eks.endpoint
+  cluster_ca_certificate            = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
+  token                             = data.aws_eks_cluster_auth.eks.token
 }
 
 resource "null_resource" "kubectl" {

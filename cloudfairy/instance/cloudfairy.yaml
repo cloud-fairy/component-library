@@ -12,7 +12,7 @@ cloudfairy_module:
     - subnet
     - sg
   entry:
-    aws: aws
+    aws: instance.aws.tf
   properties: 
     - name: instance_name
       displayName: "Instance Name"

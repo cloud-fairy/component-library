@@ -10,7 +10,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
   entry:
-    aws: aws
+    aws: s3.aws.tf
   properties: 
     - name: storage_name
       displayName: "Storage Name"

@@ -13,6 +13,7 @@ locals {
     Terraform                         = "true"
     Environment                       = var.project.environment_name
     Project                           = var.project.project_name
+    ProjectID                         = var.dependency.cloud_provider.projectId
   }
 
   major_version   = join("", local.engine != "postgres" ? [
@@ -32,6 +33,10 @@ data "aws_subnets" "private" {
   filter {
     name                              = "tag:Project"
     values                            = [var.project.project_name]
+  }
+  filter {
+    name                              = "tag:ProjectID"
+    values                            = [var.dependency.cloud_provider.projectId]
   }
   filter {
     name                              = "tag:Component"
