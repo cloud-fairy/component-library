@@ -9,7 +9,6 @@ cloudfairy_module:
   runtime: terraform
   dependencies:
     - "cloud_provider"
-    - admin_role
   entry:
     aws: aws
   properties: 

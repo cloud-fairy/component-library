@@ -1,13 +1,13 @@
 locals {
-  engine          =  var.properties.engine
-  port            =  local.engine == "postgres" ? 5432 : 3306
-  subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
-  create_db       =  local.subnets_count > 1 ? true : false    # Two subnets required to create RDS Subnet group
+  engine                              =  var.properties.engine
+  port                                =  local.engine == "postgres" ? 5432 : 3306
+  subnets_count                       =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
+  create_db                           =  local.subnets_count > 1 ? true : false    # Two subnets required to create RDS Subnet group
   
-  engine_version  = {
-    mysql         =  var.mysql_version
-    postgres      =  var.postgresql_version
-    mariadb       =  var.mariadb_version
+  engine_version                      = {
+    mysql                             =  var.mysql_version
+    postgres                          =  var.postgresql_version
+    mariadb                           =  var.mariadb_version
   }
   tags = {
     Terraform                         = "true"
@@ -22,20 +22,20 @@ locals {
 
 data "aws_subnets" "private" {
   filter {
-    name   = "vpc-id"
-    values = [var.dependency.subnet.vpc_id]
+    name                              = "vpc-id"
+    values                            = [var.dependency.subnet.vpc_id]
   }
   filter {
-    name   = "tag:Environment"
-    values = [var.project.environment_name]
+    name                              = "tag:Environment"
+    values                            = [var.project.environment_name]
   }
   filter {
-    name   = "tag:Project"
-    values = [var.project.project_name]
+    name                              = "tag:Project"
+    values                            = [var.project.project_name]
   }
   filter {
-    name   = "tag:Component"
-    values = ["subnet"]
+    name                              = "tag:Component"
+    values                            = ["subnet"]
   }
 }
 
@@ -87,11 +87,11 @@ module "db" {
 
 output "cfout" {
   value = {
-    name             = var.properties.name
-    engine           = module.db.db_instance_engine
-    endpoint         = module.db.db_instance_endpoint
-    db_arn           = module.db.db_instance_arn
-    monitoring_role  = module.db.enhanced_monitoring_iam_role_name
-    error            = local.create_db == false ? "Must have at least two subnets in two AZs in order to create subnet group" : ""
+    name                              = var.properties.name
+    engine                            = module.db.db_instance_engine
+    endpoint                          = module.db.db_instance_endpoint
+    db_arn                            = module.db.db_instance_arn
+    monitoring_role                   = module.db.enhanced_monitoring_iam_role_name
+    error                             = local.create_db == false ? "Must have at least two subnets in two AZs in order to create subnet group" : ""
   }
 }

@@ -1,13 +1,13 @@
 variable "properties" {
-  type = any
+  type              = any
 }
 
 variable "dependency" {
-  type = any
+  type              = any
 }
 
 variable "project" {
-  type = any
+  type              = any
 }
 
 locals {
@@ -20,14 +20,14 @@ locals {
 
 
 module "s3_bucket" {
-  source = "terraform-aws-modules/s3-bucket/aws"
-  version = "3.10.1"
+  source            = "terraform-aws-modules/s3-bucket/aws"
+  version           = "3.10.1"
 
   bucket            = var.properties.storage_name
   acl               = var.properties.acl != "private" ? var.properties.acl : null
   block_public_acls = var.properties.acl == "private" ? true : false
 
-  versioning = {
+  versioning        = {
     enabled         = true
   }
 
@@ -36,8 +36,8 @@ module "s3_bucket" {
 
 
 output "cfout" {
-  value = {
-    storage_name  = var.properties.storage_name
-    acl           = var.properties.acl
+  value             = {
+    storage_name    = var.properties.storage_name
+    acl             = var.properties.acl
   }
 }
