@@ -12,8 +12,9 @@ locals {
   cluster = var.dependency.from_module
 }
 
-output "cfouot" {
+output "cfout" {
   value = {
     cluster = local.cluster
+    subdomain = var.properties.subdomain
   }
 }

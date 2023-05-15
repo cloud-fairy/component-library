@@ -3,7 +3,11 @@ cloudfairy_module:
   vendor: cloudfairy
   name: controller_to_cluster_connector
   displayName: "Controller To Cluster Connect"
-  properties: []
+  properties:
+    - name: subdomain
+      displayName: "tikalk.dev subdomain (*.tikalk.dev)"
+      defaultValue: "change-me"
+      type: string
   builder_runtime: "terraform"
   entry:
     aws: "controller_to_cluster.aws.tf"
