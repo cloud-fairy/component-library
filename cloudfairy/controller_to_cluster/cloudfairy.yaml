@@ -1,0 +1,13 @@
+cloudfairy_module:
+  type: connector
+  vendor: cloudfairy
+  name: controller_to_cluster_connector
+  displayName: "Controller To Cluster Connect"
+  properties: []
+  builder_runtime: "terraform"
+  entry:
+    aws: "controller_to_cluster.aws.tf"
+  from:
+    - cluster
+  to:
+    - controller

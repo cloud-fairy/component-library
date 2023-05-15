@@ -12,7 +12,7 @@ cloudfairy_module:
     - base
   entry:
     aws: aws
-  properties: 
+  properties:
     - name: storage_name
       displayName: "Storage Name"
       type: string
@@ -21,7 +21,8 @@ cloudfairy_module:
     - name: acl
       displayName: "What access level should the bucket have?"
       type: options
-      options: 
+      defaultValue: "private"
+      options:
         - label: "private"
           value: "private"
         - label: "public-read"

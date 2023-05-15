@@ -11,16 +11,19 @@ cloudfairy_module:
     aws: aws
   dependencies:
     - "cloud_provider"
-    - cluster
-  properties: 
+  properties:
     - name: name
       displayName: "Cluster Controller"
       type: options
-      options: 
+      options:
         - label: "Externel DNS"
           value: "external-dns"
         - label: "Load balancer"
           value: "load-balancer"
         - label: "Cert Manager"
           value: "cert-manager"
-      defaultValue: ""
+      defaultValue: "external-dns"
+    - name: subdomainName
+      displayName: "Subdomain for tikalk.dev"
+      defaultValue: "change-me"
+      type: string
