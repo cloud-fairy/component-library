@@ -1,0 +1,37 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: argocd
+  vendor: cloudfairy
+  displayName: "ArgoCD"
+  interface:
+    - argocd
+  runtime: terraform
+  dependencies:
+    - "cloud_provider"
+    - cluster
+  entry:
+    aws: aws
+  properties:
+    - name: hostname
+      displayName: "ArgoCD ingress external hostname (leave blank for none)"
+      type: string
+      defaultValue: ""
+    - name: certificate_arn
+      displayName: "Certificate ARN"
+      type: string
+      defaultValue: ""
+    - name: appname
+      displayName: "App name to bootstrap the cluster (leave blank for none)"
+      type: string
+      defaultValue: ""
+    - name: repo
+      displayName: "Repo url"
+      type: string
+      defaultValue: ""
+    - name: path
+      displayName: "Path"
+      type: string
+      defaultValue: ""
+    
+

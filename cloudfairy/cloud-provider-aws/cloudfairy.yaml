@@ -7,7 +7,7 @@ cloudfairy_module:
   annotations:
     "cloudfairy.dev/cloud-provider-type": "aws"
   runtime: "terraform"
-  entry: "aws-provider.tf"
+  entry: aws-provider.tf
   properties:
     - name: "account_id"
       displayName: "Account ID"

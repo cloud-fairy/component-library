@@ -1,0 +1,29 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: subnet
+  vendor: cloudfairy
+  displayName: "Subnet"
+  interface:
+    - subnet
+  runtime: terraform
+  dependencies:
+    - "cloud_provider"
+    - network
+  entry:
+    aws: aws
+  properties: 
+    - name: subnet_name
+      displayName: "Subnet Name"
+      type: string
+      defaultValue: "apps"
+
+    - name: cidr
+      displayName: "IP Address CIDR (x.x.?.?/24 ; x.x is defined by the Network)"
+      type: string
+      defaultValue: "7.0/24"
+
+    - name: az
+      displayName: "At which AZ should the subnet be located?"
+      type: string
+      defaultValue: "us-west-2a"

@@ -1,42 +1,57 @@
 variable "properties" {
-  type = any
+  type                      = any
 }
 
-variable "properties" {
-  type = any
+variable "dependency" {
+  type                      = any
+}
+
+variable "project" {
+  type                      = any
+}
+
+data "aws_availability_zones" "available" {}
+
+resource "aws_eip" "nat" {
+  count                     = 1
+
+  vpc                       = true
 }
 
 module "vpc" {
-  source = "github.com/terraform-aws-modules/terraform-aws-vpc"
+  source                    = "terraform-aws-modules/vpc/aws"
+  version                   = "4.0.1"
 
-  name = var.properties.name
-  cidr = var.properties.cidr
+  name                      = var.properties.vpc_name
 
-  azs = ["eu-west-1a", "eu-west-1b", "eu-west-1c"]
+  cidr                      = var.properties.cidr_block
+  azs                       = slice(data.aws_availability_zones.available.names, 0, 1)
 
-  private_subnet_tags = {
-    "kubernetes.io/role/internal-elb" = 1
-  }
-  enable_nat_gateway = true
-  enable_vpn_gateway = true
-  public_subnet_tags = {
-    "kubernetes.io/role/elb" = 1
-  }
+  private_subnets           = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "9.0/24")] : []
+  public_subnets            = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "10.0/24")] : []
+
+  enable_nat_gateway        = var.properties.enable_public_access
+  single_nat_gateway        = var.properties.enable_public_access
+  one_nat_gateway_per_az    = false
+  reuse_nat_ips             = true  
+  external_nat_ip_ids       = "${aws_eip.nat.*.id}" 
+  enable_dns_hostnames      = true
+
   tags = {
-    Terraform   = "true"
-    Environment = "dev"
-    cloudfairy  = "true"
+    Name        = var.properties.vpc_name
+    Terraform               = "true"
+    Environment             = var.project.environment_name
+    Project                 = var.project.project_name
+    ProjectID               = var.dependency.cloud_provider.projectId
+
   }
 }
 
 output "cfout" {
   value = {
-    vpc_id             = module.vpc.vpc_id
-    availability_zones = module.vpc.azs
-    cidr               = module.vpc.vpc_cidr_block
-    subnets = {
-      private = module.vpc.private_subnets
-      public  = module.vpc.public_subnets
-    }
+    name                    = var.properties.vpc_name
+    cidr                    = var.properties.cidr_block
+    id                      = module.vpc.vpc_id
+    private_route_table_id  = module.vpc.private_route_table_ids[0]
   }
 }

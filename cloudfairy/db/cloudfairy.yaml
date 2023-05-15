@@ -1,0 +1,37 @@
+cloudfairy_module:
+  internal: false
+  type: component
+  name: db
+  vendor: cloudfairy
+  displayName: "Database"
+  interface:
+    - db
+  runtime: terraform
+  dependencies:
+    - "cloud_provider"
+    - base
+    - subnet
+    - sg
+  entry:
+    aws: aws
+  properties: 
+    - name: name
+      displayName: "RDS Name"
+      type: string
+      defaultValue: "db1"
+    - name: engine
+      displayName: "RDS Engine"
+      type: options
+      options: 
+        - label: "MySQL"
+          value: "mysql"
+        - label: "PostgreSQL"
+          value: "postgres"
+        - label: "MariaDB"
+          value: "mariadb"
+      defaultValue: "mysql"
+    - name: size
+      displayName: "DB Size(GB)"
+      type: int
+      defaultValue: "5"
+
