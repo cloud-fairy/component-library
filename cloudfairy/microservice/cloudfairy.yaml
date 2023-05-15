@@ -1,0 +1,49 @@
+cloudfairy_module:
+  type: component
+  subtype: "instance"
+  name: "microservice_k8"
+  displayName: "Microservice Deployment"
+  vendor: "cloudfairy"
+  dependencies:
+    - k8_cluster
+    - cloud_provider
+  builder: terraform
+  entry:
+    gcp: k8_deployment.gcp.tf
+  interface:
+    - k8_deployment
+  properties:
+    - name: "deployment_name"
+      displayName: "Service/Deployment name"
+      type: string
+      defaultValue: "microservice"
+    - name: "port"
+      displayName: "HTTP Port"
+      type: number
+      defaultValue: 8080
+    - name: "cpu"
+      displayName: "Required CPUs"
+      type: options
+      defaultValue: ["250m", "0.5"]
+      options:
+        - label: "0.25 / 0.5"
+          value: ["250m", "0.5"]
+        - label: "0.5 / 1"
+          value: ["0.5", "1"]
+    - name: "memory"
+      displayName: "Required Memory"
+      type: options
+      defaultValue: ["50Mi", "512Mi"]
+      options:
+        - label: "50Mb / 512Mb"
+          value: ["50Mi", "512Mi"]
+        - label: "128Mi / 1024Mi"
+          value: ["128Mi", "1024Mi"]
+    - name: "with_ingress"
+      displayName: "Ingress"
+      type: options
+      options:
+        - label: "Yes"
+          value: "true"
+        - label: "No"
+          value: "false"

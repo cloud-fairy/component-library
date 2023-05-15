@@ -1,0 +1,26 @@
+cloudfairy_module:
+  type: connector
+  name: k8_microservice_to_managed_sql
+  displayName: "Managed SQL Connector for K8 Pods"
+  vendor: cloudfairy
+  from: managed_sql
+  to: k8_deployment
+  entry:
+    gcp: k8pod-to-managed_sql.gcp.tf
+  properties:
+    - name: username_env_var
+      displayName: "Environment Variable Name for database username"
+      type: string
+      defaultValue: "DB_USER"
+    - name: password_env_var
+      displayName: "Environment Variable Name for database password"
+      type: string
+      defaultValue: "DB_PASSWORD"
+    - name: connection_env_var
+      displayName: "Environment Variable Name for database connection string"
+      type: string
+      defaultValue: "DB_CONNECTION"
+    - name: hostname_env_var
+      displayName: "Environment Variable Name for database hostname"
+      type: string
+      defaultValue: "DB_HOSTNAME"
