@@ -9,10 +9,11 @@ cloudfairy_module:
   runtime: terraform
   dependencies:
     - "cloud_provider"
+    - base
     - subnet
     - sg
   entry:
-    aws: instance.aws.tf
+    aws: aws
   properties: 
     - name: instance_name
       displayName: "Instance Name"

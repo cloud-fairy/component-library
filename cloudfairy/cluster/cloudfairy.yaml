@@ -8,11 +8,12 @@ cloudfairy_module:
   vendor: cloudfairy
   runtime: terraform
   entry:
-    aws: main.aws.tf
+    aws: aws
   dependencies:
     - "cloud_provider"
     - network
     - subnet
+    - admin_role
   properties: 
     - name: name
       type: string

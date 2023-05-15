@@ -1,9 +1,9 @@
 variable "properties" {
-    type = any
+  type                      = any
 }
 
 locals {
-    projectId               = "cloudfairy-on-aws-${random_string.suffix.result}"
+  projectId                 = "cloudfairy-on-aws-${random_string.suffix.result}"
 }
 
 resource "random_string" "suffix" {

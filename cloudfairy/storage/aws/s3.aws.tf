@@ -40,5 +40,6 @@ output "cfout" {
   value             = {
     storage_name    = var.properties.storage_name
     acl             = var.properties.acl
+    policy_arn      = module.bucket_iam_policy.arn
   }
 }

@@ -9,8 +9,9 @@ cloudfairy_module:
   runtime: terraform
   dependencies:
     - "cloud_provider"
+    - base
   entry:
-    aws: s3.aws.tf
+    aws: aws
   properties: 
     - name: storage_name
       displayName: "Storage Name"

@@ -53,5 +53,6 @@ output "cfout" {
     instance_name        = var.properties.instance_name
     instance_id          = module.ec2_instance.id
     public_ip            = module.ec2_instance.public_ip
+    policy_arn           = module.ec2_iam_policy.arn
   }
 }

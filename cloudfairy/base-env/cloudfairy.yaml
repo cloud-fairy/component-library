@@ -5,8 +5,10 @@ cloudfairy_module:
   vendor: cloudfairy
   displayName: "Environment Base Module"
   runtime: terraform
+  dependencies:
+    - "cloud_provider"
   entry:
-    aws: aws
+    aws: base.aws.tf
     az: base.az.tf
     gcp: base.gcp.tf
   interface:

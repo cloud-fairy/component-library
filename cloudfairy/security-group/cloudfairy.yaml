@@ -16,7 +16,7 @@ cloudfairy_module:
     - name: sg_name
       displayName: "Security Group Name"
       type: string
-      defaultValue: "sg_web"
+      defaultValue: "AllowAll"
     - name: rule
       displayName: "Specify rule name (https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md)"
       type: string

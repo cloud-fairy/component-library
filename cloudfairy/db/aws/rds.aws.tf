@@ -97,6 +97,7 @@ output "cfout" {
     endpoint                          = module.db.db_instance_endpoint
     db_arn                            = module.db.db_instance_arn
     monitoring_role                   = module.db.enhanced_monitoring_iam_role_name
+    policy_arn                        = module.rds_iam_policy.arn
     error                             = local.create_db == false ? "Must have at least two subnets in two AZs in order to create subnet group" : ""
   }
 }
