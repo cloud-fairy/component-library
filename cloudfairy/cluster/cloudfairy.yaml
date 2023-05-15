@@ -13,7 +13,6 @@ cloudfairy_module:
     - "cloud_provider"
     - network
     - subnet
-    - admin_role
   properties: 
     - name: name
       type: string
