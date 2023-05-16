@@ -1,13 +1,13 @@
 variable properties {
-  type        = any
+  type                     = any
 }
 
 variable "dependency" {
-  type        = any
+  type                     = any
 }
 
 variable "project" {
-  type        = any
+  type                     = any
 }
 
 locals {
@@ -39,7 +39,22 @@ data "aws_iam_policy_document" "custom_trust_policy" {
 
     principals {
       type                 = "AWS"
-      identifiers          = ["*"]
+      identifiers          = ["557680788250"]
+    }
+    condition {
+      test                 = "StringEquals"
+      variable             = "aws:PrincipalTag/Environment"
+      values               = [ var.project.environment_name ]
+    }
+    condition {
+      test                 = "StringEquals"
+      variable             = "aws:PrincipalTag/Project"
+      values               = [ var.project.project_name ]
+    }
+    condition {
+      test                 = "StringEquals"
+      variable             = "aws:PrincipalTag/ProjectID"
+      values               = [ var.dependency.cloud_provider.projectId ]
     }
   }
 }
