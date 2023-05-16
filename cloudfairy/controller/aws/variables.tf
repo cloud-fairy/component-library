@@ -10,6 +10,10 @@ variable "project" {
   type        = any
 }
 
+variable "connector" {
+  type        = any
+}
+
 variable "external_dns_domain_filters" {
   description = "External-dns Domain filters."
   type        = list(string)

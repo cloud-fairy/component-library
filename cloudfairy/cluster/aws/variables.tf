@@ -21,3 +21,9 @@ variable "autoscaler_enabled" {
   type        = bool
   default     = true
 }
+
+variable "service_account" {
+  description = "Name of irsa role service account name"
+  type        = string
+  default     = "cloudfairysa"
+}

@@ -17,7 +17,6 @@ cloudfairy_module:
       displayName: "Storage Name"
       type: string
       defaultValue: "apps-bucket"
-
     - name: acl
       displayName: "What access level should the bucket have?"
       type: options

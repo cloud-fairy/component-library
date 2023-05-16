@@ -11,6 +11,7 @@ cloudfairy_module:
     aws: aws
   dependencies:
     - "cloud_provider"
+    - base
     - network
     - subnet
   properties:
@@ -18,7 +19,6 @@ cloudfairy_module:
       type: string
       displayName: "Cluster Name"
       defaultValue: "eks_new"
-
     - name: k8s_version
       displayName: "Cluster Version"
       type: options
@@ -34,17 +34,7 @@ cloudfairy_module:
         - label: "1.26"
           value: "1.26"
       defaultValue: "1.24"
-
     - name: enable_public_access
       type: boolean
       displayName: enable_public_access
       defaultValue: true
-
-    # - name: ssh_key_secret_arn
-    #   type: string
-    #   displayName: ssh_key_secret_arn
-    #   defaultValue: ""
-    # - name: cluster_additional_security_group_ids
-    #   type: string
-    #   displayName: additional security groups
-    #   defaultValue: "[]"

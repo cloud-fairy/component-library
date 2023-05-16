@@ -1,5 +1,5 @@
 locals {
-  cluster = var.connector.controller_to_cluster_connector[0].cluster
+  cluster                = var.connector.cloudfairy_controller_to_cluster_connector[0].cluster
 }
 
 provider "kubernetes" {
