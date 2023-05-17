@@ -4,7 +4,7 @@ cloudfairy_module:
   type: component
   interface:
     - cluster
-  internal: false
+  internal: true
   vendor: cloudfairy
   runtime: terraform
   entry:

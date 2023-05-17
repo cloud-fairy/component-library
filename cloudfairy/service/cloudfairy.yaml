@@ -1,0 +1,22 @@
+cloudfairy_module:
+  type: component
+  name: service
+  displayName: "Service"
+  vendor: "cloudfairy"
+  dependencies:
+    - cloud_provider
+    - cluster
+  builder: terraform
+  entry:
+    aws: service.aws.tf
+  interface:
+    - k8_deployment
+  properties:
+    - name: service_name
+      displayName: "Service/Deployment name"
+      type: string
+      defaultValue: "dbservice"
+    - name: repo_url
+      displayName: "URL for Dockerfile repository"
+      type: string
+      defaultValue: ""
