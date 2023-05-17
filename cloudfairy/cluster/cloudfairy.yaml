@@ -1,6 +1,6 @@
 cloudfairy_module:
   name: cluster
-  displayName: "Managed K8S Cluster"
+  displayName: "K8S Cluster"
   type: component
   interface:
     - cluster
