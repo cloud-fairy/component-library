@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: false
+  internal: true
   type: component
   name: db
   vendor: cloudfairy
@@ -16,7 +16,7 @@ cloudfairy_module:
     aws: aws
   properties: 
     - name: name
-      displayName: "RDS Name"
+      displayName: "DB Name"
       type: string
       defaultValue: "db1"
     - name: engine

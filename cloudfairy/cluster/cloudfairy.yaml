@@ -9,6 +9,7 @@ cloudfairy_module:
   runtime: terraform
   entry:
     aws: aws
+    gcp: gcp
   dependencies:
     - "cloud_provider"
     - base
