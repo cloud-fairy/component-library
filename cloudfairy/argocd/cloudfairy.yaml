@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: true
+  internal: false
   type: component
   name: argocd
   vendor: cloudfairy

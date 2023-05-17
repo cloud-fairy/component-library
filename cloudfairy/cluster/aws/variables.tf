@@ -19,7 +19,7 @@ variable "autoscaler_version" {
 variable "autoscaler_enabled" {
   description = "Autoscaler Enabled"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "service_account" {

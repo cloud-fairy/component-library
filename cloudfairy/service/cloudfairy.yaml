@@ -8,7 +8,7 @@ cloudfairy_module:
     - cluster
   builder: terraform
   entry:
-    aws: service.aws.tf
+    aws: aws
   interface:
     - k8_deployment
   properties:

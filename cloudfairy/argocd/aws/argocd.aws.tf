@@ -28,6 +28,48 @@ provider "helm" {
 
 provider "bcrypt" {}
 
+locals {
+    argocd_values = [
+    <<-EOF
+    controller:
+      enableStatefulSet: true
+    redis-ha:
+      enabled: true
+    repoServer:
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+    server:
+      service:
+        # needed for alb
+        type: NodePort
+      extraArgs:
+        - --insecure
+      autoscaling:
+        enabled: true
+        minReplicas: 2
+      ingress:
+        enabled: true
+        extraPaths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ssl-redirect
+                port:
+                  name: use-annotation
+        annotations:
+          alb.ingress.kubernetes.io/actions.ssl-redirect: '{"Type": "redirect", "RedirectConfig": { "Protocol": "HTTPS", "Port": "443", "Path": "/#{path}", "Query": "#{query}", "StatusCode": "HTTP_301"}}'
+          kubernetes.io/ingress.class: alb
+          alb.ingress.kubernetes.io/target-type: ip
+          alb.ingress.kubernetes.io/scheme: internet-facing
+          alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
+          alb.ingress.kubernetes.io/certificate-arn: "${var.properties.certificate_arn}"
+          external-dns.alpha.kubernetes.io/hostname: "${var.properties.hostname}"
+    EOF
+    ]
+}
+
 module "argocd" {
   source  = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
 
@@ -45,64 +87,7 @@ module "argocd" {
         value = bcrypt_hash.argo.id
       }
     ]
-    set = var.properties.hostname != "" ? [
-      {
-        name  = "server.ingress.enabled"
-        value = true
-      },
-      {
-        name  = "server.ingress.ingressClassName"
-        value = "alb"
-      },
-      {
-        name  = "server.ingress.hosts[0]"
-        value = var.properties.hostname
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/certificate-arn"
-        value = var.properties.certificate_arn
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/scheme"
-        value = "internet-facing"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/target-type"
-        value = "ip"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.name"
-        value = "argocd"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.order"
-        value = "4"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/group\\.idle-timeout-seconds"
-        value = "60"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/backend-protocol"
-        value = "HTTPS"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/listen-ports"
-        value = "[{\"HTTPS\": 443}]"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/ssl-redirect"
-        value = "443"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/healthcheck-path"
-        value = "/"
-      },
-      {
-        name  = "server.ingress.annotations.alb\\.ingress\\.kubernetes\\.io/tags"
-        value = "Name=argocd"
-      }
-    ] : []    # No Ingress configuration if hostname is not set
+    values = var.properties.hostname != "" ? local.argocd_values : []    # No Ingress configuration if hostname is not set
   }
 
   keda_helm_config = {
