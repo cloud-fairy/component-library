@@ -6,6 +6,7 @@ provider "external" {
 locals {
   role_name                     = "${var.project.project_name}_${var.project.environment_name}_${var.properties.name}"
   policies                      = split(" ", base64decode(data.external.policies.result.ecoded_doc))
+  service_account               = "${var.service_account}_${var.project.environment_name}"
 }   
 
 data "external" "policies" {
@@ -32,4 +33,11 @@ module "iam_assumable_role_admin" {
   oidc_fully_qualified_subjects = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
 
   depends_on                    = [ data.external.policies ]
+}
+
+output "irsa_role" {
+  value = {
+    service_account             = local.service_account
+    irs_role_arn                = module.iam_assumable_role_admin.iam_role_arn
+  }
 }
