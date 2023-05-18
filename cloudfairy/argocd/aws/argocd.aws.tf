@@ -15,16 +15,10 @@ terraform {
 provider "kubernetes" {
   host                   = var.dependency.cluster.host
   cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
-  token                  = var.dependency.cluster.token
-
   exec {
     api_version = "client.authentication.k8s.io/v1"
-    command     = "aws-iam-authenticator"
-    args = [
-      "token",
-      "-i",
-      var.dependency.cluster.cluster_id,
-    ]
+    args        = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
+    command     = "aws"
   }
 }
 

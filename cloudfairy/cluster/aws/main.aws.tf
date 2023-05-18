@@ -163,16 +163,10 @@ provider "helm" {
 provider "kubectl" {
   host                              = data.aws_eks_cluster.eks.endpoint
   cluster_ca_certificate            = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-  token                             = data.aws_eks_cluster_auth.eks.token
-
   exec {
     api_version = "client.authentication.k8s.io/v1"
-    command     = "aws-iam-authenticator"
-    args = [
-      "token",
-      "-i",
-      module.eks.cluster_id,
-    ]
+    args        = ["eks", "get-token", "--cluster-name", var.properties.name]
+    command     = "aws"
   }
 }
 
@@ -185,7 +179,6 @@ resource "null_resource" "kubectl" {
 output "cfout" {
   value = {
     name                    = data.aws_eks_cluster.eks.name
-    cluster_id              = module.eks.cluster_id
     host                    = data.aws_eks_cluster.eks.endpoint
     cluster_ca_certificate  = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
     token                   = data.aws_eks_cluster_auth.eks.token

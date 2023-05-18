@@ -5,16 +5,10 @@ locals {
 provider "kubernetes" {
   host                   = local.cluster.host
   cluster_ca_certificate = local.cluster.cluster_ca_certificate
-  token                  = local.cluster.token
-
   exec {
     api_version = "client.authentication.k8s.io/v1"
-    command     = "aws-iam-authenticator"
-    args = [
-      "token",
-      "-i",
-      local.cluster.name
-    ]
+    args        = ["eks", "get-token", "--cluster-name", local.cluster.name]
+    command     = "aws"
   }
 }
 
