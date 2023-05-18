@@ -94,12 +94,12 @@ module "eks" {
     one                           = {
       name                        = "${var.properties.name}-${var.project.environment_name}-ng"
 
-      instance_types              = ["t3.meduim"]
+      instance_types              = ["t3.large"]
       capacity_type               = "SPOT"
 
       min_size                    = 2
       max_size                    = 4
-      desired_size                = 4
+      desired_size                = 3
     }
   }
 
@@ -164,6 +164,16 @@ provider "kubectl" {
   host                              = data.aws_eks_cluster.eks.endpoint
   cluster_ca_certificate            = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
   token                             = data.aws_eks_cluster_auth.eks.token
+
+  exec {
+    api_version = "client.authentication.k8s.io/v1"
+    command     = "aws-iam-authenticator"
+    args = [
+      "token",
+      "-i",
+      module.eks.cluster_id,
+    ]
+  }
 }
 
 resource "null_resource" "kubectl" {

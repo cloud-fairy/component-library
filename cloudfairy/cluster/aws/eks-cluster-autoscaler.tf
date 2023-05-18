@@ -52,7 +52,8 @@ module "iam_assumable_role_autoscaler" {
   oidc_fully_qualified_subjects = ["system:serviceaccount:kube-system:eks-cluster-autoscaler"]
 
   depends_on                    = [
-    aws_iam_policy.cluster_autoscaler
+    aws_iam_policy.cluster_autoscaler,
+    module.eks
   ]
 }
 
@@ -65,6 +66,7 @@ resource "aws_iam_policy" "cluster_autoscaler" {
 
   depends_on                    = [
     data.aws_iam_policy_document.cluster_autoscaler,
+    module.eks
   ]
 }
 
