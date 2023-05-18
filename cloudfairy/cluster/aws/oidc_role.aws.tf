@@ -31,7 +31,8 @@ module "iam_assumable_role_admin" {
   
   role_policy_arns              = local.policies
 
-  oidc_fully_qualified_subjects = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
+  #oidc_fully_qualified_subjects = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
+  oidc_subjects_with_wildcards  = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
 
   depends_on                    = [ data.external.policies ]
 }
@@ -39,6 +40,6 @@ module "iam_assumable_role_admin" {
 output "irsa_role" {
   value = {
     service_account             = local.service_account
-    irs_role_arn                = module.iam_assumable_role_admin.iam_role_arn
+    irsa_role_arn                = module.iam_assumable_role_admin.iam_role_arn
   }
 }
