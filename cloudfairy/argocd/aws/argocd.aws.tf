@@ -34,7 +34,7 @@ locals {
     controller:
       enableStatefulSet: true
     redis-ha:
-      enabled: true
+      enabled: false
     repoServer:
       autoscaling:
         enabled: true
@@ -47,7 +47,7 @@ locals {
         - --insecure
       autoscaling:
         enabled: true
-        minReplicas: 2
+        minReplicas: 1
       ingress:
         enabled: true
         extraPaths:

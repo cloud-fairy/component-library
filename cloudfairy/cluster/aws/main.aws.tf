@@ -94,12 +94,12 @@ module "eks" {
     one                           = {
       name                        = "${var.properties.name}-${var.project.environment_name}-ng"
 
-      instance_types              = ["t3.small"]
+      instance_types              = ["t3.meduim"]
       capacity_type               = "SPOT"
 
       min_size                    = 2
-      max_size                    = 3
-      desired_size                = 3
+      max_size                    = 4
+      desired_size                = 4
     }
   }
 
