@@ -23,7 +23,7 @@ provider "kubernetes" {
     args = [
       "token",
       "-i",
-      var.dependency.cluster.name,
+      var.dependency.cluster.cluster_id,
     ]
   }
 }
