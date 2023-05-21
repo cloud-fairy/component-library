@@ -11,7 +11,7 @@ locals {
 }   
 
 data "external" "policies" {
-  program                       = ["bash", "${path.module}/get-policies.bash", "${var.dependency.base.role_name}"]
+  program                       = ["sh", "${path.module}/get-policies.bash", "${var.dependency.base.role_name}"]
 }
 
 ###############################
