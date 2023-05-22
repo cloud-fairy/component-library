@@ -48,7 +48,7 @@ resource "aws_ecr_repository" "docker" {
 }
 
 resource "local_file" "docker_build" {
-  filename             = "${path.module}/${local.service_name}.docker-build.ci.sh"
+  filename             = "${path.module}/../../../${local.service_name}.docker-build.ci.sh"
   content              = <<EOF
 set -x
 aws ecr get-login-password --region ${var.dependency.cloud_provider.region} | docker login --username AWS --password-stdin ${local.ecr_url}
@@ -59,7 +59,7 @@ docker push ${local.ecr_url}:dev
 }
 
 resource "local_file" "deployment" {
-  filename = "${path.module}/${local.service_name}.deployment.yaml"
+  filename = "${path.module}/../../../${local.service_name}.deployment.yaml"
   content = <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -74,7 +74,7 @@ spec:
       labels:
         {{- include "service.selectorLabels" . | nindent 8 }}
     spec:
-      serviceAccountName: ${var.dependency.cluster.irsa_role.service_account}
+      serviceAccountName: ${var.dependency.cluster.service_account}
       containers:
         - name: ${local.service_name}
           image: "${aws_ecr_repository.docker.repository_url}:${local.docker_tag}"
@@ -87,10 +87,10 @@ EOF
 }
 
 resource "local_file" "lifecycle" {
-  filename             = "${path.module}/${local.service_name}.cloudfairy-lifecycle.sh"
+  filename             = "${path.module}/../../../${local.service_name}.cloudfairy-lifecycle.sh"
   content              = <<EOF
 CF_CI_FILES=        $(find . -type f -name '*.ci.sh' | xargs bash)
-CF_DEPLOYMENT_FILES=$(find . -type f -name '*.deployment.yaml' | xars kubectl apply -f < {};)
+CF_DEPLOYMENT_FILES=$(find . -type f -name '*.deployment.yaml' | xargs kubectl apply -f )
   EOF
 }
 
