@@ -17,6 +17,6 @@ cloudfairy_module:
       type: string
       defaultValue: "dbservice"
     - name: repo_url
-      displayName: "URL for Dockerfile repository"
+      displayName: "Relative path for Dockerfile"
       type: string
       defaultValue: ""
