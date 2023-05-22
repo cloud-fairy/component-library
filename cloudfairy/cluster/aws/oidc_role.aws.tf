@@ -6,7 +6,7 @@ provider "external" {
 locals {
   role_name                     = "${var.project.project_name}_${var.project.environment_name}_${var.properties.name}_irsa_role"
   external_output               = base64decode(data.external.policies.result.ecoded_doc)
-  policies                      = local.external_output != "" ? split(" ", local.external_output) : [] #regex("arn:aws:iam::aws", local.external_output) != "" ? split(" ", local.external_output) : [] #
+  policies                      = local.external_output != "" ? split(" ", local.external_output) : []
   service_account               = "${var.service_account}_${var.project.environment_name}"
 }   
 
@@ -17,28 +17,28 @@ data "external" "policies" {
 ###############################
 # IAM assumable role for admin
 ###############################
-# module "iam_assumable_role_admin" {
-#   source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+module "iam_assumable_role_admin" {
+  source                        = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
 
-#   create_role                   = true
+  create_role                   = true
 
-#   role_name                     = local.role_name
+  role_name                     = local.role_name
 
-#   tags                          = local.tags
+  tags                          = local.tags
 
-#   provider_url                  = module.eks.cluster_oidc_issuer_url
+  provider_url                  = module.eks.cluster_oidc_issuer_url
   
-#   role_policy_arns              = local.policies
+  role_policy_arns              = local.policies
 
-#   oidc_subjects_with_wildcards  = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
+  oidc_subjects_with_wildcards  = ["system:serviceaccount:*:${var.service_account}_${var.project.environment_name}"]
 
-#   depends_on                    = [ data.external.policies ]
-# }
+  depends_on                    = [ data.external.policies ]
+}
 
 output "irsa_role" {
   value = {
     service_account             = local.service_account
-    #irsa_role_arn               = module.iam_assumable_role_admin.iam_role_arn
+    irsa_role_arn               = module.iam_assumable_role_admin.iam_role_arn
     policies                    = local.policies
   }
 }
