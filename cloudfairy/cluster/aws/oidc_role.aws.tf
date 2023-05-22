@@ -6,7 +6,7 @@ provider "external" {
 locals {
   role_name                     = "${var.project.project_name}_${var.project.environment_name}_${var.properties.name}_irsa_role"
   external_output               = base64decode(data.external.policies.result.ecoded_doc)
-  policies                      = regex("arn:aws:iam::aws", local.external_output) != "" ? split(" ", local.external_output) : [] #local.external_output != "" ? split(" ", local.external_output) : []
+  policies                      = local.external_output != "" ? split(" ", local.external_output) : [] #regex("arn:aws:iam::aws", local.external_output) != "" ? split(" ", local.external_output) : [] #
   service_account               = "${var.service_account}_${var.project.environment_name}"
 }   
 
@@ -27,7 +27,6 @@ data "external" "policies" {
 #   tags                          = local.tags
 
 #   provider_url                  = module.eks.cluster_oidc_issuer_url
-
   
 #   role_policy_arns              = local.policies
 
