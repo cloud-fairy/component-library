@@ -186,6 +186,9 @@ output "cfout" {
     oidc_provider_arn       = module.eks.oidc_provider_arn
     cluster_oidc_issuer_url = module.eks.cluster_oidc_issuer_url
     cluster_version         = var.properties.k8s_version
+    eks                     = module.eks
+    irsa_role_arn           = module.iam_assumable_role_admin.iam_role_arn
+    service_account         = local.service_account
   }
   sensitive = true
 }

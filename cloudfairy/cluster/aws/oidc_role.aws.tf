@@ -34,10 +34,3 @@ module "iam_assumable_role_admin" {
 
   depends_on                    = [ data.external.policies ]
 }
-
-output "irsa_role" {
-  value = {
-    service_account             = local.service_account
-    irsa_role_arn               = module.iam_assumable_role_admin.iam_role_arn
-  }
-}
