@@ -99,6 +99,7 @@ resource "local_file" "lifecycle" {
   content              = <<EOF
 #!/usr/bin/env sh
 
+set -x
 find . -type f -name '*.ci.sh' -exec {} +
 find . -type f -name '*.deployment.yaml' -exec kubectl apply -f {} +
   EOF
