@@ -63,6 +63,11 @@ docker push ${local.ecr_url}:dev
 resource "local_file" "deployment" {
   filename = "${path.module}/../../../../../../../${local.service_name}.deployment.yaml"
   content = <<EOF
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${var.dependency.cluster.service_account}
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,7 +85,7 @@ spec:
       serviceAccountName: ${var.dependency.cluster.service_account}
       containers:
         - name: ${local.service_name}
-          image: "${local.ecr_url}:${local.docker_tag}"
+          image: ${local.ecr_url}:${local.docker_tag}
           imagePullPolicy: Always
           ports:
             - name: http
