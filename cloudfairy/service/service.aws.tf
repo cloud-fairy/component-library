@@ -100,7 +100,7 @@ resource "local_file" "lifecycle" {
 #!/usr/bin/env sh
 
 set -x
-find . -type f -name '*.ci.sh' -exec ls -l {} +
+find . -type f -name '*.ci.sh' -exec {} +
 find . -type f -name '*.deployment.yaml' -exec kubectl apply -f {} +
   EOF
 }
