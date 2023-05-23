@@ -50,9 +50,11 @@ resource "aws_ecr_repository" "docker" {
 resource "local_file" "docker_build" {
   filename             = "${path.module}/../../../../../../../${local.service_name}.docker-build.ci.sh"
   content              = <<EOF
+#!/usr/bin/env sh
+
 set -x
 aws ecr get-login-password --region ${var.dependency.cloud_provider.region} | docker login --username AWS --password-stdin ${local.ecr_url}
-docker build -t ${local.service_name}:${local.docker_tag} ./${local.dockerfile_path}
+docker build -t ${local.service_name}:${local.docker_tag} ${local.dockerfile_path}
 docker tag ${local.service_name}:${local.docker_tag} ${local.ecr_url}:dev
 docker push ${local.ecr_url}:dev
   EOF
@@ -66,19 +68,20 @@ kind: Deployment
 metadata:
   name: ${local.service_name}
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      {{- include "service.selectorLabels" . | nindent 6 }}
+      app: ${local.service_name}
   template:
     metadata:
       labels:
-        {{- include "service.selectorLabels" . | nindent 8 }}
+        app: ${local.service_name}
     spec:
       serviceAccountName: ${var.dependency.cluster.service_account}
       containers:
         - name: ${local.service_name}
-          image: "${aws_ecr_repository.docker.repository_url}:${local.docker_tag}"
-          imagePullPolicy: always
+          image: "${local.ecr_url}:${local.docker_tag}"
+          imagePullPolicy: Always
           ports:
             - name: http
               containerPort: 8080
@@ -89,8 +92,10 @@ EOF
 resource "local_file" "lifecycle" {
   filename             = "${path.module}/../../../../../../../${local.service_name}.cloudfairy-lifecycle.sh"
   content              = <<EOF
-CF_CI_FILES=        $(find . -type f -name '*.ci.sh' | xargs bash)
-CF_DEPLOYMENT_FILES=$(find . -type f -name '*.deployment.yaml' | xargs kubectl apply -f )
+#!/usr/bin/env sh
+
+find . -type f -name '*.ci.sh' -exec {} +
+find . -type f -name '*.deployment.yaml' -exec kubectl apply -f {} +
   EOF
 }
 

@@ -19,4 +19,4 @@ cloudfairy_module:
     - name: repo_url
       displayName: "Relative path for Dockerfile"
       type: string
-      defaultValue: ""
+      defaultValue: "./packages/app1"
