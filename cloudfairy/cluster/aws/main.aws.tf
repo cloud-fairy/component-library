@@ -171,6 +171,9 @@ provider "kubectl" {
 }
 
 resource "null_resource" "kubectl" {
+    triggers = {
+      always_run = timestamp()
+    }
     provisioner "local-exec" {
         command = "aws eks --region ${var.dependency.cloud_provider.region} update-kubeconfig --name ${data.aws_eks_cluster.eks.name}"
     }
