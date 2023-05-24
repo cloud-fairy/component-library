@@ -67,11 +67,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: ${var.dependency.cluster.service_account}
+  namespace: default
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: ${local.service_name}
+  namespace: default
 spec:
   replicas: 1
   selector:
