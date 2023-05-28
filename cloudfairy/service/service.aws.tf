@@ -111,12 +111,12 @@ metadata:
   labels:
     app: ${local.service_name}
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
-    - port: 80
+    - nodePort: 30110
+      port: 80
       targetPort: 8080
       protocol: TCP
-      name: http
   selector:
     app: ${local.service_name}
 ---
