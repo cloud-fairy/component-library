@@ -68,6 +68,8 @@ kind: ServiceAccount
 metadata:
   name: ${var.dependency.cluster.service_account}
   namespace: default
+  annotations:
+    eks.amazonaws.com/role-arn: ${var.dependency.cluster.irsa_role_arn}
 ---
 apiVersion: apps/v1
 kind: Deployment
