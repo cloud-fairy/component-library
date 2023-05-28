@@ -113,8 +113,7 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - nodePort: 30110
-      port: 80
+    - port: 80
       targetPort: 8080
       protocol: TCP
   selector:
