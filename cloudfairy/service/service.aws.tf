@@ -96,6 +96,55 @@ spec:
 EOF
 }
 
+resource "local_file" "ingress" {
+  count = var.properties.isexposed ? 1 : 0
+  
+  filename = "${path.module}/../../../../../../../${local.service_name}.ingress.yaml"
+  content = <<EOF
+  apiVersion: v1
+kind: Service
+metadata:
+  name: ${local.service_name}
+  labels:
+    app: ${local.service_name}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app: ${local.service_name}
+  ---
+  apiVersion: networking.k8s.io/v1
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ${local.service_name}
+  labels:
+    app: ${local.service_name}
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.tikalk.dev
+spec:
+  ingressClassName: alb
+  rules:
+    - host: ${local.service_name}.tikalk.dev
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ${local.service_name}
+                port:
+                  number: 80
+  EOF
+}
+
 resource "local_file" "lifecycle" {
   filename             = "${path.module}/../../../../../../../${local.service_name}.cloudfairy-lifecycle.sh"
   content              = <<EOF
