@@ -45,7 +45,7 @@ locals {
 # Run the script to get the environment variables of interest.
 # This is a data source, so it will run at plan time.
 data "external" "env" {
-  program = ["${path.module}/env.sh"]
+  program = ["bash", "${path.module}/env.bash"]
 }
 
 resource "aws_ecr_repository" "docker" {
