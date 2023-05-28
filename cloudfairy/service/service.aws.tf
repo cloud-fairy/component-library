@@ -92,8 +92,7 @@ spec:
           image: ${local.ecr_url}:${local.docker_tag}
           imagePullPolicy: Always
           ports:
-            - name: http
-              containerPort: 8080
+            - containerPort: 8080
               protocol: TCP
 EOF
 }
