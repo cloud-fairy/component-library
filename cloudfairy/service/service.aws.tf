@@ -20,10 +20,6 @@ variable "connector" {
   type                 = any
 }
 
-# variable "environment_variables" {
-#   type = any
-# }
-
 locals {
   tags = {
     Terraform          = "true"
@@ -31,10 +27,16 @@ locals {
     Project            = var.project.project_name
     ProjectID          = var.dependency.cloud_provider.projectId
   }
-  docker_tag           = var.project.environment_name #try(var.environment_variables.CI_COMMIT_SHA, var.project.environment_name)
+  docker_tag           = try(data.external.env.result["CI_COMMIT_SHA"], var.project.environment_name)
   ecr_url              = aws_ecr_repository.docker.repository_url
   service_name         = var.properties.service_name
   dockerfile_path      = var.properties.repo_url
+}
+
+# Run the script to get the environment variables of interest.
+# This is a data source, so it will run at plan time.
+data "external" "env" {
+  program = ["${path.module}/env.sh"]
 }
 
 resource "aws_ecr_repository" "docker" {
