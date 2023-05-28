@@ -119,7 +119,6 @@ spec:
     app: ${local.service_name}
 ---
 apiVersion: networking.k8s.io/v1
-apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ${local.service_name}
