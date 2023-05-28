@@ -36,7 +36,7 @@ locals {
     Project            = var.project.project_name
     ProjectID          = var.dependency.cloud_provider.projectId
   }
-  docker_tag           = try(data.external.env.result["CI_COMMIT_SHA"], var.project.environment_name)
+  docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   ecr_url              = aws_ecr_repository.docker.repository_url
   service_name         = var.properties.service_name
   dockerfile_path      = var.properties.repo_url
