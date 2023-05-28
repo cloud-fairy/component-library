@@ -126,7 +126,7 @@ metadata:
   labels:
     app: ${local.service_name}
   annotations:
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.tikalk.dev
@@ -152,8 +152,8 @@ resource "local_file" "lifecycle" {
 #!/usr/bin/env sh
 
 set -x
-find . -type f -name '${local.service_name}.docker-build.ci.sh' -exec {} ;
-find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ;
+find . -type f -name '${local.service_name}.docker-build.ci.sh' -exec {} ';'
+find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';'
   EOF
 }
 
