@@ -92,7 +92,7 @@ spec:
           image: ${local.ecr_url}:${local.docker_tag}
           imagePullPolicy: Always
           ports:
-            - containerPort: 8080
+            - containerPort: 80
               protocol: TCP
 EOF
 }
@@ -113,7 +113,7 @@ spec:
   type: NodePort
   ports:
     - port: 80
-      targetPort: 8080
+      targetPort: 80
       protocol: TCP
   selector:
     app: ${local.service_name}
