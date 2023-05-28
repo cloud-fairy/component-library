@@ -101,10 +101,11 @@ resource "local_file" "ingress" {
   
   filename = "${path.module}/../../../../../../../${local.service_name}.ingress.yaml"
   content = <<EOF
-  apiVersion: v1
+apiVersion: v1
 kind: Service
 metadata:
   name: ${local.service_name}
+  namespace: default
   labels:
     app: ${local.service_name}
 spec:
@@ -116,12 +117,13 @@ spec:
       name: http
   selector:
     app: ${local.service_name}
-  ---
-  apiVersion: networking.k8s.io/v1
+---
+apiVersion: networking.k8s.io/v1
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   name: ${local.service_name}
+  namespace: default
   labels:
     app: ${local.service_name}
   annotations:
