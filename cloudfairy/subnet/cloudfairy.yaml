@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: false
+  internal: true
   type: component
   name: subnet
   vendor: cloudfairy

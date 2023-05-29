@@ -4,7 +4,7 @@ cloudfairy_module:
   type: component
   interface:
     - cluster
-  internal: true
+  internal: false
   vendor: cloudfairy
   runtime: terraform
   entry:
@@ -14,7 +14,6 @@ cloudfairy_module:
     - "cloud_provider"
     - base
     - network
-    - subnet
   properties:
     - name: name
       type: string

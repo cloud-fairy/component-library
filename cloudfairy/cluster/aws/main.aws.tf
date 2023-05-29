@@ -53,22 +53,6 @@ data "aws_subnets" "private" {
     name   = "vpc-id"
     values = [var.dependency.network.id]
   }
-  filter {
-    name   = "tag:Environment"
-    values = [var.project.environment_name]
-  }
-  filter {
-    name   = "tag:Project"
-    values = [var.project.project_name]
-  }
-  filter {
-    name   = "tag:ProjectID"
-    values = [var.dependency.cloud_provider.projectId]
-  }
-  filter {
-    name   = "tag:Component"
-    values = ["subnet"]
-  }
 }
 
 module "eks" {

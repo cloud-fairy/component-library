@@ -25,9 +25,9 @@ module "vpc" {
   name                      = var.properties.vpc_name
 
   cidr                      = var.properties.cidr_block
-  azs                       = slice(data.aws_availability_zones.available.names, 0, 1)
+  azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
 
-  private_subnets           = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "9.0/24")] : []
+  private_subnets           = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "1.0/24"), replace(var.properties.cidr_block, "/0\\.0/16/", "2.0/24")] : []
   public_subnets            = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "10.0/24")] : []
 
   enable_nat_gateway        = var.properties.enable_public_access
@@ -38,12 +38,11 @@ module "vpc" {
   enable_dns_hostnames      = true
 
   tags = {
-    Name        = var.properties.vpc_name
+    Name                    = var.properties.vpc_name
     Terraform               = "true"
     Environment             = var.project.environment_name
     Project                 = var.project.project_name
     ProjectID               = var.dependency.cloud_provider.projectId
-
   }
 }
 

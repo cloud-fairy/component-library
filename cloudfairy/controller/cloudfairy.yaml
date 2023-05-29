@@ -1,6 +1,6 @@
 cloudfairy_module:
   name: controller
-  displayName: "Controller"
+  displayName: "Auxiliary"
   type: component
   interface:
     - controller

@@ -9,6 +9,7 @@ cloudfairy_module:
   runtime: "terraform"
   entry:
     gcp: "public-bucket.gcp.tf"
+    aws: public-website.aws.tf"
   properties:
     - name: "bucketName"
       displayName: "Storage name"

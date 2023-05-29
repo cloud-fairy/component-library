@@ -3,7 +3,7 @@ cloudfairy_module:
   type: component
   name: db
   vendor: cloudfairy
-  displayName: "Database"
+  displayName: "Relational Database"
   interface:
     - db
   runtime: terraform
@@ -20,7 +20,7 @@ cloudfairy_module:
       type: string
       defaultValue: "db1"
     - name: engine
-      displayName: "RDS Engine"
+      displayName: "DB Engine"
       type: options
       options: 
         - label: "MySQL"
@@ -32,6 +32,6 @@ cloudfairy_module:
       defaultValue: "mysql"
     - name: size
       displayName: "DB Size(GB)"
-      type: int
+      type: number
       defaultValue: "5"
 
