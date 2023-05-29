@@ -1,22 +1,27 @@
 variable "properties" {
-  type = object({
-    privateEndpoint = string
-  })
+  type = any
 }
 
 variable "dependency" {
   type = object({
-    from_module = object({
-      public_url = string
-    })
+    from_module = any
   })
+}
+
+locals {
+    service_hostname   = var.dependency.from_module.service_hostname
+    service_port       = var.dependency.from_module.service_port
 }
 
 output "cfout" {
   value = [
     {
-      name  = var.properties.privateEndpoint
-      value = var.dependency.from_module.endpoint
+      name  = var.properties.hostname
+      value = local.service_hostname
+    },
+    {
+      name  = var.properties.port
+      value = local.service_port
     }
   ]
 }

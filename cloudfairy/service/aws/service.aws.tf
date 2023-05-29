@@ -39,8 +39,10 @@ locals {
   docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   ecr_url              = aws_ecr_repository.docker.repository_url
   service_name         = var.properties.service_name
-  dockerfile_path      = var.properties.repo_url
+  dockerfile_path      = var.properties.dockerfile_path
   container_port       = var.properties.container_port
+  conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
+  inject_env_vars      = flatten(local.conn_to_services)
 }
 
 # Run the script to get the environment variables of interest.
@@ -102,6 +104,7 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.ecr_url}:${local.docker_tag}
+          env: ${yamlencode(local.inject_env_vars)}
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
@@ -172,5 +175,8 @@ find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';
 output "cfout" {
   value = {
     repository_url     = local.ecr_url
+    service_hostname   = local.service_name
+    service_port       = 80
+    env_vars           = local.inject_env_vars
   }
 }

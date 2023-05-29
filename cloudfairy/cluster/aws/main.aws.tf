@@ -33,7 +33,7 @@ terraform {
 }
 
 data "aws_eks_cluster" "eks" {
-  name = var.properties.name
+  name = local.cluster_name
 
   depends_on = [
     module.eks
@@ -52,6 +52,10 @@ data "aws_subnets" "private" {
   filter {
     name   = "vpc-id"
     values = [var.dependency.network.id]
+  }
+  filter {
+    name   = "tag:type"
+    values = ["Private"]
   }
 }
 
@@ -79,7 +83,7 @@ module "eks" {
   eks_managed_node_groups = {
     "${var.properties.name}"                           = {
       instance_types              = ["t3.large"]
-      capacity_type               = "SPOT"
+      #capacity_type               = "SPOT"
 
       min_size                    = 2
       max_size                    = 4

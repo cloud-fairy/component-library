@@ -1,20 +1,22 @@
 cloudfairy_module:
   type: connector
   vendor: cloudfairy
-  name: "connector-extract-process-ip-as-env-vars"
+  name: "service_to_service"
   builder_runtime: "terraform"
   entry:
     gcp: "connector-extract-process-ip-as-env-vars.tf"
     aws: "connector-extract-process-ip-as-env-vars.tf"
     az: "connector-extract-process-ip-as-env-vars.tf"
   from:
-    - "process"
-    - "env_vars"
+    - "k8_deployment"
   to:
-    - "process"
-    - "env_vars"
+    - "k8_deployment"
   properties:
-    - name: "privateEndpoint"
+    - name: "hostname"
       type: "string"
-      defaultValue: "ENDPOINT_URL"
-      displayName: "Private endpoint"
+      defaultValue: "SVC_HOST"
+      displayName: "Service Hostname"
+    - name: "port"
+      type: "string"
+      defaultValue: "SVC_PORT"
+      displayName: "Service Port"

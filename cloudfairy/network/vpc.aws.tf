@@ -11,8 +11,8 @@ variable "project" {
 }
 
 locals {
-  vpc_prefix                = "${var.dependency.cloud_provider.projectId}-${var.project.project_name}-${var.project.environment_name}"
-  vpc_suffix                = var.properties.vpc_name != "" ? var.properties.vpc_name : "vpc"
+  vpc_suffix                = "${var.dependency.cloud_provider.projectId}-${var.project.project_name}-${var.project.environment_name}"
+  vpc_prefix                = var.properties.vpc_name != "" ? var.properties.vpc_name : "vpc"
   vpc_name                  = "${local.vpc_prefix}-${local.vpc_suffix}"
 }
 
@@ -33,8 +33,14 @@ module "vpc" {
   cidr                      = var.properties.cidr_block
   azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
 
-  private_subnets           = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "1.0/24"), replace(var.properties.cidr_block, "/0\\.0/16/", "2.0/24")] : []
-  public_subnets            = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "10.0/24")] : []
+  private_subnets           = [
+    cidrsubnet(var.properties.cidr_block, 8, 1),
+    cidrsubnet(var.properties.cidr_block, 8, 2),
+  ]
+  private_subnet_tags       = {
+    type                    = "Private"
+  }
+  public_subnets            = var.properties.enable_public_access ? [cidrsubnet(var.properties.cidr_block, 8, 10)] : []
 
   enable_nat_gateway        = var.properties.enable_public_access
   single_nat_gateway        = var.properties.enable_public_access
