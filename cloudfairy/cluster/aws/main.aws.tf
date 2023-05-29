@@ -1,6 +1,7 @@
 locals {
   subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
   create_cluster  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
+  cluster_name    =  "${var.project.environment_name}-${var.project.project_name}-${var.properties.name}"
 
   tags = {
     Terraform                     = "true"
@@ -75,7 +76,7 @@ module "eks" {
   source                          = "terraform-aws-modules/eks/aws"
   version                         = "19.13.0"
 
-  cluster_name                    = var.properties.name
+  cluster_name                    = local.cluster_name
   cluster_version                 = var.properties.k8s_version
 
   # EKS Cluster VPC and Subnets
@@ -92,14 +93,14 @@ module "eks" {
 
   eks_managed_node_groups = {
     one                           = {
-      name                        = "${var.properties.name}-${var.project.environment_name}-ng"
+      name                        = "${local.cluster_name}-ng"
 
       instance_types              = ["t3.large"]
       capacity_type               = "SPOT"
 
       min_size                    = 2
       max_size                    = 4
-      desired_size                = 3
+      desired_size                = 2
     }
   }
 
