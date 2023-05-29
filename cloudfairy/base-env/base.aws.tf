@@ -11,7 +11,7 @@ variable "project" {
 }
 
 locals {
-  role_name                = "${var.project.project_name}_${var.project.environment_name}_admin_role"
+  role_name                = "${var.project.project_name}_${var.project.environment_name}_${var.dependency.cloud_provider.projectId}_admin_role"
   tags                     = {
     Terraform              = "true"
     Environment            = var.project.environment_name

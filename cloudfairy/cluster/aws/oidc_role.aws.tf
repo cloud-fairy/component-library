@@ -4,7 +4,7 @@ provider "external" {
 
 # Setting a name for the Cluster irsa assuamble role
 locals {
-  role_name                     = "${var.project.project_name}_${var.project.environment_name}_${var.properties.name}_irsa_role"
+  role_name                     = "${local.tags.Project}_${local.tags.Environment}_${local.tags.ProjectID}_${var.properties.name}_irsa_role"
   external_output               = base64decode(data.external.policies.result.ecoded_doc)
   policies                      = local.external_output != "" ? split(" ", local.external_output) : []
   service_account               = "${var.service_account}-${var.project.environment_name}-${var.dependency.cloud_provider.projectId}"
