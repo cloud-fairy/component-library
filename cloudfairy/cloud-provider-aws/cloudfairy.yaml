@@ -9,21 +9,12 @@ cloudfairy_module:
   runtime: "terraform"
   entry: aws-provider.tf
   properties:
-    - name: "account_id"
-      displayName: "Account ID"
-      type: string
-      defaultValue: ""
-    - name: "awsAccessKey"
-      displayName: "AWS ACCESS KEY"
-      type: password
-      defaultValue: ""
-    - name: "awsSecretKey"
-      displayName: "AWS ACCESS SECRET KEY"
-      type: password
-      defaultValue: ""
     - name: "region"
       displayName: "Region"
-      type: "string"
+      type: options
+      options: 
+        - label: "eu-west-1"
+          value: "eu-west-1"
       defaultValue: "eu-west-1"
     - name: "remote_bucket"
       type: "string"

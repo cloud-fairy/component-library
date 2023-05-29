@@ -24,8 +24,6 @@ output "template" {
   value = <<EOF
   provider "aws" {
     region                 = "${var.properties.region}"
-    access_key             = "${var.properties.awsAccessKey}"
-    secret_key             = "${var.properties.awsSecretKey}"
   }
 EOF
 }
