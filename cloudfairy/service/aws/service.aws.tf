@@ -104,7 +104,7 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.ecr_url}:${local.docker_tag}
-          env: ${yamlencode(local.inject_env_vars)}
+          ${length(local.inject_env_vars) > 0 ? "env:\n ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []" }
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
