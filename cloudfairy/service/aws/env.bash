@@ -8,7 +8,6 @@
 set -eo pipefail
 
 if [ -z ${CI_COMMIT_SHA} ]; then
-     echo "Null!"
      ci_commit_sha=""
 else ci_commit_sha="$CI_COMMIT_SHA"
 fi

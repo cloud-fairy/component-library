@@ -59,7 +59,7 @@ resource "aws_ecr_repository" "docker" {
 }
 
 resource "local_file" "docker_build" {
-  filename             = "${path.module}/../../../../../../../${local.service_name}.docker-build.ci.sh"
+  filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
   content              = <<EOF
 #!/usr/bin/env sh
 
@@ -72,7 +72,7 @@ docker push ${local.ecr_url}:${local.docker_tag}
 }
 
 resource "local_file" "deployment" {
-  filename = "${path.module}/../../../../../../../${local.service_name}.deployment.yaml"
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
   content = <<EOF
 apiVersion: v1
 kind: ServiceAccount
@@ -111,7 +111,7 @@ EOF
 resource "local_file" "ingress" {
   count = var.properties.isexposed ? 1 : 0
   
-  filename = "${path.module}/../../../../../../../${local.service_name}.ingress.yaml"
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
   content = <<EOF
 apiVersion: v1
 kind: Service
@@ -158,7 +158,7 @@ spec:
 }
 
 resource "local_file" "lifecycle" {
-  filename             = "${path.module}/../../../../../../../${local.service_name}.cloudfairy-lifecycle.sh"
+  filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.cloudfairy-lifecycle.sh"
   content              = <<EOF
 #!/usr/bin/env sh
 
