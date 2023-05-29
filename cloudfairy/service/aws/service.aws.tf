@@ -40,6 +40,7 @@ locals {
   ecr_url              = aws_ecr_repository.docker.repository_url
   service_name         = var.properties.service_name
   dockerfile_path      = var.properties.repo_url
+  container_port       = var.properties.container_port
 }
 
 # Run the script to get the environment variables of interest.
@@ -103,7 +104,7 @@ spec:
           image: ${local.ecr_url}:${local.docker_tag}
           imagePullPolicy: Always
           ports:
-            - containerPort: 80
+            - containerPort: ${local.container_port}
               protocol: TCP
 EOF
 }
@@ -121,10 +122,10 @@ metadata:
   labels:
     app: ${local.service_name}
 spec:
-  type: NodePort
+  type: ClusterIP
   ports:
     - port: 80
-      targetPort: 80
+      targetPort: ${local.container_port}
       protocol: TCP
   selector:
     app: ${local.service_name}

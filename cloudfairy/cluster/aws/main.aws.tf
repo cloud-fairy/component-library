@@ -77,9 +77,7 @@ module "eks" {
   }
 
   eks_managed_node_groups = {
-    one                           = {
-      name                        = "${local.cluster_name}-ng"
-
+    "${var.properties.name}"                           = {
       instance_types              = ["t3.large"]
       capacity_type               = "SPOT"
 

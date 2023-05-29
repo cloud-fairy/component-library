@@ -10,6 +10,12 @@ variable "project" {
   type                      = any
 }
 
+locals {
+  vpc_prefix                = "${var.dependency.cloud_provider.projectId}-${var.project.project_name}-${var.project.environment_name}"
+  vpc_suffix                = var.properties.vpc_name != "" ? var.properties.vpc_name : "vpc"
+  vpc_name                  = "${local.vpc_prefix}-${local.vpc_suffix}"
+}
+
 data "aws_availability_zones" "available" {}
 
 resource "aws_eip" "nat" {
@@ -22,7 +28,7 @@ module "vpc" {
   source                    = "terraform-aws-modules/vpc/aws"
   version                   = "4.0.1"
 
-  name                      = var.properties.vpc_name
+  name                      = local.vpc_name
 
   cidr                      = var.properties.cidr_block
   azs                       = slice(data.aws_availability_zones.available.names, 0, 2)
@@ -38,7 +44,7 @@ module "vpc" {
   enable_dns_hostnames      = true
 
   tags = {
-    Name                    = var.properties.vpc_name
+    Name                    = local.vpc_name
     Terraform               = "true"
     Environment             = var.project.environment_name
     Project                 = var.project.project_name
@@ -48,7 +54,7 @@ module "vpc" {
 
 output "cfout" {
   value = {
-    name                    = var.properties.vpc_name
+    name                    = local.vpc_name
     cidr                    = var.properties.cidr_block
     id                      = module.vpc.vpc_id
     private_route_table_id  = module.vpc.private_route_table_ids[0]

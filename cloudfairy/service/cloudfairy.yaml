@@ -16,10 +16,14 @@ cloudfairy_module:
       displayName: "Service/Deployment name"
       type: string
       defaultValue: "dbservice"
-    - name: repo_url #dockerfile_path
+    - name: dockerfile_path
       displayName: "Relative path for Dockerfile"
       type: string
       defaultValue: "./packages/app1"
+    - name: container_port
+      displayName: "Container Port"
+      type: string
+      defaultValue: "8080"
     - name: isexposed
       displayName: "Should the service be exposed externally?"
       type: boolean

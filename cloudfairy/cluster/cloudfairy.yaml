@@ -18,7 +18,7 @@ cloudfairy_module:
     - name: name
       type: string
       displayName: "Cluster Name"
-      defaultValue: "fairycluster"
+      defaultValue: "k8s"
     - name: k8s_version
       displayName: "Cluster Version"
       type: options

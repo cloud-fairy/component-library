@@ -3,7 +3,7 @@ variable "properties" {
 }
 
 locals {
-  projectId                 = "cloudfairy-on-aws-${random_string.suffix.result}"
+  projectId                 = "cf${random_string.suffix.result}"
 }
 
 resource "random_string" "suffix" {
@@ -16,7 +16,6 @@ output "cfout" {
     projectId              = local.projectId
     region                 = var.properties.region
     type                   = "aws"
-    account_id             = var.properties.account_id
   }
 }
 
