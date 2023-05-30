@@ -38,6 +38,7 @@ locals {
   }
   docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   ecr_url              = aws_ecr_repository.docker.repository_url
+  ecr_name             = "${local.service_name}-${local.tags.Project}-${local.tags.Environment}-${local.tags.ProjectID}"
   service_name         = var.properties.service_name
   dockerfile_path      = var.properties.dockerfile_path
   container_port       = var.properties.container_port
@@ -52,7 +53,7 @@ data "external" "env" {
 }
 
 resource "aws_ecr_repository" "docker" {
-  name                 = local.service_name
+  name                 = local.ecr_name
   image_tag_mutability = "MUTABLE"
 
   image_scanning_configuration {
