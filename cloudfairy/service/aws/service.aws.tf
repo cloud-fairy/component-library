@@ -69,7 +69,7 @@ resource "local_file" "docker_build" {
 
 set -x
 aws ecr get-login-password --region ${var.dependency.cloud_provider.region} | docker login --username AWS --password-stdin ${local.ecr_url}
-docker build -t ${local.service_name}:${local.docker_tag} ../${local.dockerfile_path}
+docker build -t ${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
 docker tag ${local.service_name}:${local.docker_tag} ${local.ecr_url}:${local.docker_tag}
 docker push ${local.ecr_url}:${local.docker_tag}
   EOF
