@@ -104,19 +104,23 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.ecr_url}:${local.docker_tag}
-          ${length(local.inject_env_vars) > 0 ? "env:\n ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []" }
+          ${length(local.inject_env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []" }
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
               protocol: TCP
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
 EOF
 }
 
 resource "local_file" "ingress" {
-  count = var.properties.isexposed ? 1 : 0
+  count         = var.properties.isexposed ? 1 : 0
   
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
-  content = <<EOF
+  filename      = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  content       = <<EOF
 apiVersion: v1
 kind: Service
 metadata:

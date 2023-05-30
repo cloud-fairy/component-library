@@ -13,10 +13,10 @@ cloudfairy_module:
     - "k8_deployment"
   properties:
     - name: "hostname"
-      type: "string"
+      type: string
       defaultValue: "SVC_HOST"
       displayName: "Service Hostname"
     - name: "port"
-      type: "string"
+      type: string
       defaultValue: "SVC_PORT"
       displayName: "Service Port"
