@@ -149,11 +149,11 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.tikalk.dev
+    external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
 spec:
   ingressClassName: alb
   rules:
-    - host: ${local.service_name}.tikalk.dev
+    - host: ${local.service_name}.${local.tags.Project}.tikalk.dev
       http:
         paths:
           - path: /
