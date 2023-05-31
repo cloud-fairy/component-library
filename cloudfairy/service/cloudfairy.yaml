@@ -6,6 +6,7 @@ cloudfairy_module:
   dependencies:
     - cloud_provider
     - cluster
+    - controller
   builder: terraform
   entry:
     aws: aws

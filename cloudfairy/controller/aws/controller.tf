@@ -1,5 +1,5 @@
 locals {
-  cluster                = var.connector.cloudfairy_controller_to_cluster_connector[0].cluster
+  cluster                = var.dependency.cluster
 }
 
 provider "kubernetes" {
@@ -21,7 +21,7 @@ provider "helm" {
 }
 
 module "load_balancer_controller" {
-  count = var.properties.name == "load-balancer" ? 1 : 0
+  count =  1 
 
   source                           = "DNXLabs/eks-lb-controller/aws"
   version                          = "0.7.0"
@@ -31,7 +31,7 @@ module "load_balancer_controller" {
 }
 
 module "eks-external-dns" {
-  count = var.properties.name == "external-dns" ? 1 : 0
+  count            =  1
 
   source  = "lablabs/eks-external-dns/aws"
   version = "1.1.1"
@@ -44,7 +44,7 @@ module "eks-external-dns" {
 }
 
 module "cert-manager" {
-  count = var.properties.name == "cert-manager" ? 1 : 0
+  count =  0
 
   source  = "terraform-iaac/cert-manager/kubernetes"
   version = "2.5.1"

@@ -4,26 +4,12 @@ cloudfairy_module:
   type: component
   interface:
     - controller
-  internal: false
+  internal: true
   vendor: cloudfairy
   runtime: terraform
   entry:
     aws: aws
   dependencies:
     - "cloud_provider"
-  properties:
-    - name: name
-      displayName: "Cluster Controller"
-      type: options
-      options:
-        - label: "Externel DNS"
-          value: "external-dns"
-        - label: "Load balancer"
-          value: "load-balancer"
-        - label: "Cert Manager"
-          value: "cert-manager"
-      defaultValue: "external-dns"
-    - name: subdomainName
-      displayName: "Subdomain for tikalk.dev"
-      defaultValue: "change-me"
-      type: string
+    - cluster
+  properties: []
