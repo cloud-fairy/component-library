@@ -41,10 +41,7 @@ locals {
           url: git@gitlab.tikalk.dev:tikalk
       knownHosts:
         data:
-          ssh_known_hosts: |
-            gitlab.tikalk.dev ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD9bMHGkhWxyd9uP5ZXtA4Uu+6+D7jsTGSpDwTudTiwpc/T4UYBZaJB6xVhpcdasmUJg3d7p81Hzyb0Mlg3cSYpiayN/mGzP9yqQMolVdPCY4e5Nkzp4z6dHaJwSFWTJwGQwnGd7MAZX7EAA8PgFpMAIThl5z9yacB/U6n7IX4tiUGWYNs3ILiJ11so5hTbZBhJ0c19I2vysBO9KST/2psfUObac60YFmQUudTJXI+fOJSSA4/ePRMC3Wii1AQvmMhSeBu0WugTCEUU5GRkv5xwjlERjBtxetH/AAxbl5Wl3c3j+uXmSYJP5NGycYM6H0dEB26R0kDQXVaRFmnMllxrG59+I9wss1TatDy5ZIHHsfOBVL4AQJCLiQz7zwLDGhsgm8maRqN9jFcXU2CN6Jhtub9wK6Cs+S6xTbGrBDWayx9XCqdTBnRImRf5TPhkTBg8Jya/kzEA6RhXlFGPGFDMHBO0dRFvNjlB3tJANo9RxeRuSSk0nxQssVEZBAHhajc=
-            gitlab.tikalk.dev ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEy6RM1NADfXg3TtpWq2zs7ZqMntu89UXzkHs5/e5KL3
-            gitlab.tikalk.dev ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMxndSHx4FTEJlAcgX8hKR5vdOR2gpR0IWJzFH/HA0fv4psv/RbSjhhfyrU4g9tiFjigldMn6il2Glf0/7Aybvw=
+          ssh_known_hosts:
     controller:
       enableStatefulSet: true
     redis-ha:
