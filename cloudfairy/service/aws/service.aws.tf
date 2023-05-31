@@ -183,5 +183,6 @@ output "cfout" {
     service_hostname   = local.service_name
     service_port       = 80
     env_vars           = local.inject_env_vars
+    docker_tag         = local.docker_tag 
   }
 }
