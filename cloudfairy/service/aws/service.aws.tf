@@ -150,6 +150,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
+    alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
 spec:
   ingressClassName: alb
   rules:
