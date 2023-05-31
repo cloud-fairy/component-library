@@ -1,5 +1,12 @@
 locals {
-  cluster                = var.dependency.cluster
+  cluster                         = var.dependency.cluster
+
+  tags = {
+    Terraform                     = "true"
+    Environment                   = var.project.environment_name
+    Project                       = var.project.project_name
+    ProjectID                     = var.dependency.cloud_provider.projectId
+  }
 }
 
 provider "kubernetes" {
@@ -35,6 +42,7 @@ module "eks-external-dns" {
 
   source  = "lablabs/eks-external-dns/aws"
   version = "1.1.1"
+  irsa_role_name_prefix             = "${local.tags.ProjectID}-${local.tags.Environment}"
 
   cluster_identity_oidc_issuer 	    = local.cluster.cluster_oidc_issuer_url
   cluster_identity_oidc_issuer_arn  = local.cluster.oidc_provider_arn
