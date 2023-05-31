@@ -59,3 +59,9 @@ module "cert-manager" {
 
   cluster_issuer_email = "mor.danino@tikalk.com"
 }
+
+output "cfout" {
+  value = {
+    Installed_Operators     = "[ load_balancer_controller , eks-external-dns ]"
+  }
+}
