@@ -117,11 +117,9 @@ spec:
 EOF
 }
 
-resource "local_file" "ingress" {
-  count         = var.properties.isexposed ? 1 : 0
-  
-  filename      = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
-  content       = <<EOF
+resource "local_file" "service" {
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.service.yaml"
+  content = <<EOF
 apiVersion: v1
 kind: Service
 metadata:
@@ -132,12 +130,19 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - port: 80
+    - port: ${local.container_port}
       targetPort: ${local.container_port}
       protocol: TCP
   selector:
     app: ${local.service_name}
----
+EOF
+}
+
+resource "local_file" "ingress" {
+  count         = var.properties.isexposed ? 1 : 0
+  
+  filename      = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  content       = <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -163,7 +168,7 @@ spec:
               service:
                 name: ${local.service_name}
                 port:
-                  number: 80
+                  number: ${local.container_port}
   EOF
 }
 
