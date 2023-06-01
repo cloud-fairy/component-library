@@ -63,6 +63,7 @@ resource "aws_ecr_repository" "docker" {
 }
 
 resource "local_file" "docker_build" {
+  count                = local.dockerfile_path != "" ? 1 : 0
   filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
   content              = <<EOF
 #!/usr/bin/env sh

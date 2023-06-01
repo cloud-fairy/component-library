@@ -18,9 +18,9 @@ cloudfairy_module:
       type: string
       defaultValue: "dbservice"
     - name: dockerfile_path
-      displayName: "Relative path for Dockerfile"
+      displayName: "Relative path for Dockerfile (eg: ./packages/app1)"
       type: string
-      defaultValue: "./packages/app1"
+      defaultValue: ""
     - name: container_port
       displayName: "Container Port"
       type: string
