@@ -8,8 +8,8 @@ cloudfairy_module:
     - "cloud_provider"
   runtime: "terraform"
   entry:
-    gcp: "public-bucket.gcp.tf"
-    aws: public-website.aws.tf"
+    gcp: public-bucket.gcp.tf
+    aws: aws
   properties:
     - name: "bucketName"
       displayName: "Storage name"
@@ -24,14 +24,3 @@ cloudfairy_module:
       displayName: "Error (404) Page"
       defaultValue: "/error.html"
       type: "string"
-  out_vars:
-    - name: "URL"
-      description: "Public URL"
-      output: "url"
-    - name: "STORAGE_URI"
-      description: "Bucket storage access"
-      output: "self_link"
-  outputs:
-    - "url"
-    - "self_link"
-    - "instructions"
