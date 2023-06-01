@@ -73,6 +73,13 @@ module "eks" {
   subnet_ids                      = data.aws_subnets.private.ids
   cluster_endpoint_public_access  = var.properties.enable_public_access
 
+  # EKS Addons
+  cluster_addons = {
+    coredns    = {}
+    kube-proxy = {}
+    vpc-cni    = {}
+  }
+  
   # Cloudwatch log group
   create_cloudwatch_log_group     = local.create_cluster
   eks_managed_node_group_defaults = {
