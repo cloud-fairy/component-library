@@ -6,6 +6,7 @@ cloudfairy_module:
   displayName: "Static Website"
   dependencies:
     - "cloud_provider"
+    - base
   runtime: "terraform"
   entry:
     gcp: public-bucket.gcp.tf
