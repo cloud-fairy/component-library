@@ -3,7 +3,7 @@ cloudfairy_module:
   subtype: "storage"
   name: "public-website"
   vendor: "cloudfairy"
-  displayName: "Static Website"
+  displayName: "Public Website"
   dependencies:
     - "cloud_provider"
     - base
