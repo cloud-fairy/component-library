@@ -9,7 +9,7 @@ cloudfairy_module:
     - controller
   builder: terraform
   entry:
-    aws: aws
+    aws: docker.aws.tf
   interface:
     - k8_deployment_dockerhub
   properties:

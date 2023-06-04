@@ -40,6 +40,7 @@ locals {
 
   service_name         = var.properties.service_name
   dockerhub_image      = var.properties.dockerhub_image
+  container_port       = var.properties.container_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
   inject_env_vars      = flatten(local.conn_to_services)
 }
@@ -149,7 +150,6 @@ resource "local_file" "lifecycle" {
 #!/usr/bin/env sh
 
 set -x
-find . -type f -name '${local.service_name}.docker-build.ci.sh' -exec {} ';'
 find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';'
   EOF
 }
