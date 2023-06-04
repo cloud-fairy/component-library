@@ -1,0 +1,31 @@
+cloudfairy_module:
+  type: component
+  name: docker
+  displayName: "Docker from DockerHub"
+  vendor: "cloudfairy"
+  dependencies:
+    - cloud_provider
+    - cluster
+    - controller
+  builder: terraform
+  entry:
+    aws: aws
+  interface:
+    - k8_deployment_dockerhub
+  properties:
+    - name: service_name
+      displayName: "Service/Deployment name"
+      type: string
+      defaultValue: "dbservice"
+    - name: dockerhub_image
+      displayName: "DockerHub Image"
+      type: string
+      defaultValue: "nginx"
+    - name: container_port
+      displayName: "Container Port"
+      type: string
+      defaultValue: "8080"
+    - name: isexposed
+      displayName: "Should the service be exposed externally?"
+      type: boolean
+      defaultValue: true
