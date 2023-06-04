@@ -2,23 +2,23 @@
 terraform {
   required_providers {
     random = {
-      source  = "hashicorp/random"
-      version = "3.3.2"
+      source               = "hashicorp/random"
+      version              = "3.3.2"
     }
     bcrypt = {
-      source  = "viktorradnai/bcrypt"
-      version = ">= 0.1.2"
+      source               = "viktorradnai/bcrypt"
+      version              = ">= 0.1.2"
     }
   }
 }
 
 provider "kubernetes" {
-  host                   = var.dependency.cluster.host
-  cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
+  host                     = var.dependency.cluster.host
+  cluster_ca_certificate   = var.dependency.cluster.cluster_ca_certificate
   exec {
-    api_version = "client.authentication.k8s.io/v1"
-    args        = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
-    command     = "aws"
+    api_version            = "client.authentication.k8s.io/v1"
+    args                   = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
+    command                = "aws"
   }
 }
 
@@ -82,17 +82,17 @@ locals {
 }
 
 module "argocd" {
-  source  = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
+  source                   = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
 
-  eks_cluster_id       = var.dependency.cluster.name
-  eks_cluster_endpoint = var.dependency.cluster.host
-  eks_oidc_provider    = var.dependency.cluster.oidc_provider
-  eks_cluster_version  = var.dependency.cluster.cluster_version
+  eks_cluster_id           = var.dependency.cluster.name
+  eks_cluster_endpoint     = var.dependency.cluster.host
+  eks_oidc_provider        = var.dependency.cluster.oidc_provider
+  eks_cluster_version      = var.dependency.cluster.cluster_version
 
-  enable_argocd = true
+  enable_argocd            = true
   # This example shows how to set default ArgoCD Admin Password using SecretsManager with Helm Chart set_sensitive values.
-  argocd_helm_config = {
-    set_sensitive = [
+  argocd_helm_config       = {
+    set_sensitive          = [
       {
         name  = "configs.secret.argocdServerAdminPassword"
         value = bcrypt_hash.argo.id
@@ -101,21 +101,21 @@ module "argocd" {
     values = var.properties.hostname != "" ? local.argocd_values : []    # No Ingress configuration if hostname is not set
   }
 
-  keda_helm_config = {
-    values = [
+  keda_helm_config         = {
+    values                 = [
       {
-        name  = "serviceAccount.create"
-        value = "false"
+        name               = "serviceAccount.create"
+        value              = "false"
       }
     ]
   }
 
   argocd_manage_add_ons = true # Indicates that ArgoCD is responsible for managing/deploying add-ons
-  argocd_applications = var.properties.appname != "" ? {
+  argocd_applications      = var.properties.appname != "" ? {
     "${var.properties.appname}" = {
-      path               = var.properties.path
-      repo_url           = var.properties.repo
-      add_on_application = true
+      path                 = var.properties.path
+      repo_url             = var.properties.repo
+      add_on_application   = true
     }
   } : {}
 
@@ -135,11 +135,11 @@ module "argocd" {
   # enable_yunikorn                       = true
   # enable_argo_rollouts                  = true
 
-  tags = {
-    Terraform   = "true"
-    Environment = var.project.environment_name
-    Project     = var.project.project_name
-    ProjectID   = var.dependency.cloud_provider.projectId
+  tags                     = {
+    Terraform              = "true"
+    Environment            = var.project.environment_name
+    Project                = var.project.project_name
+    ProjectID              = var.dependency.cloud_provider.projectId
   }
 }
 
@@ -148,21 +148,21 @@ module "argocd" {
 # Login to AWS Secrets manager with the same role as Terraform to extract the ArgoCD admin password with the secret name as "argocd"
 #---------------------------------------------------------------
 resource "random_password" "argocd" {
-  length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  length                   = 16
+  special                  = true
+  override_special         = "!#$%&*()-_=+[]{}<>:?"
 }
 
 # Argo requires the password to be bcrypt, we use custom provider of bcrypt,
 # as the default bcrypt function generates diff for each terraform plan
 resource "bcrypt_hash" "argo" {
-  cleartext = random_password.argocd.result
+  cleartext                = random_password.argocd.result
 }
 
 # Adding random_string so that each secret would be unique and duplicates would be prevented 
 resource "random_string" "suffix" {
-  length  = 8
-  special = false
+  length                  = 8
+  special                 = false
 }
 
 resource "aws_secretsmanager_secret" "argocd" {
@@ -174,14 +174,15 @@ resource "aws_secretsmanager_secret" "argocd" {
 }
 
 resource "aws_secretsmanager_secret_version" "argocd" {
-  secret_id     = aws_secretsmanager_secret.argocd.id
-  secret_string = random_password.argocd.result
+  secret_id               = aws_secretsmanager_secret.argocd.id
+  secret_string           = random_password.argocd.result
 }
 
 output "cfout" {
-  value = {
-    chart         = module.argocd.argocd.release_metadata[0].chart
-    app_version   = module.argocd.argocd.release_metadata[0].app_version
-    namespace     = module.argocd.argocd.release_metadata[0].namespace
+  value                   = {
+    chart                 = module.argocd.argocd.release_metadata[0].chart
+    app_version           = module.argocd.argocd.release_metadata[0].app_version
+    namespace             = module.argocd.argocd.release_metadata[0].namespace
+    showpassword_command  = "aws secretsmanager get-secret-value --secret-id ${aws_secretsmanager_secret.argocd.name} --region ${var.dependency.cloud_provider.region} | jq .SecretString"
   }
 }
