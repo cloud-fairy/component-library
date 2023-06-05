@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: true
+  internal: false
   type: component
   name: network
   vendor: cloudfairy
@@ -17,7 +17,11 @@ cloudfairy_module:
     - name: vpc_name
       displayName: "Network Name"
       type: string
-      defaultValue: ""
+      defaultValue: "myvpc"
+    - name: subnet_names
+      displayName: "Subnet names"
+      type: list
+      defaultValue: ["my-subnet"]
     - name: cidr_block
       displayName: "CIDR Block"
       type: options
