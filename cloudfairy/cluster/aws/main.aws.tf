@@ -72,6 +72,7 @@ module "eks" {
   vpc_id                          = var.dependency.network.id
   subnet_ids                      = data.aws_subnets.private.ids
   cluster_endpoint_public_access  = var.properties.enable_public_access
+  iam_role_use_name_prefix        = false
 
   # EKS Addons
   cluster_addons = {
