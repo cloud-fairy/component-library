@@ -1,7 +1,7 @@
 locals {
   subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
   create_cluster  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
-  cluster_name    =  "${var.properties.name}-${var.project.environment_name}-${var.project.project_name}-${var.dependency.cloud_provider.projectId}"
+  cluster_name    =  "${var.properties.name}-${var.project.environment_name}-${var.dependency.cloud_provider.projectId}"
 
   tags = {
     Terraform                     = "true"
