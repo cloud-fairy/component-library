@@ -134,7 +134,7 @@ spec:
     - host: ${local.service_name}.${local.tags.Project}.tikalk.dev
       http:
         paths:
-          - path: /
+          - path: /*
             pathType: Prefix
             backend:
               service:
