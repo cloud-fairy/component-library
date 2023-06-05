@@ -189,7 +189,7 @@ output "cfout" {
   value = {
     repository_url     = local.ecr_url
     service_hostname   = local.service_name
-    service_port       = 80
+    service_port       = local.container_port
     env_vars           = local.inject_env_vars
     docker_tag         = local.docker_tag 
   }
