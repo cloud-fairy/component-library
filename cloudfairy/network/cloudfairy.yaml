@@ -17,7 +17,7 @@ cloudfairy_module:
     - name: vpc_name
       displayName: "Network Name"
       type: string
-      defaultValue: ""
+      defaultValue: "myvpc"
     - name: cidr_block
       displayName: "CIDR Block"
       type: options
