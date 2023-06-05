@@ -22,10 +22,14 @@ cloudfairy_module:
       type: string
       defaultValue: "nginx"
     - name: container_port
-      displayName: "Container Port"
+      displayName: "Container Ports (comma separated, i.e. 3001,1337...)"
       type: string
       defaultValue: "8080"
     - name: isexposed
       displayName: "Should the service be exposed externally?"
       type: boolean
       defaultValue: true
+    - name: env_vars
+      displayName: "Environment variables, comma separated (i.e. FOO=bar,BAZ=foo)"
+      defaultValue: "CLOUDFAIRY=true"
+      type: string

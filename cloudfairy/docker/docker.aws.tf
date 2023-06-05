@@ -42,9 +42,26 @@ locals {
   dockerhub_image      = var.properties.dockerhub_image
   container_port       = var.properties.container_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
-  inject_env_vars      = flatten(local.conn_to_services)
+  inject_env_vars_kv   = split(",", var.properties.env_vars)
+  # ["FOO=bar", "BAZ=foo"]
+  # { name = "FOO" value="bar" },
+  # { name = "BAZ" value="foo" },
+  inject_env_vars      = map(inject_env_vars_kv,)
 }
 
+resource "null_resource" "env_vars" {
+  for_each = toset(local.inject_env_vars_kv)
+  triggers = {
+    name = split("=", each.value)[0]
+    value = split("=", each.value)[1]
+  }
+}
+
+resource "null_resource" "env_vars_yaml" {
+  triggers = <<EOF
+          ${length(null_resource.env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(null_resource.env_vars))}" : "env: []" }
+EOF
+}
 
 
 resource "local_file" "deployment" {
@@ -77,7 +94,7 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.dockerhub_image}
-          ${length(local.inject_env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []" }
+          ${null_resource.env_vars_yaml}
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}

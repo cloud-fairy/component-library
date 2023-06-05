@@ -9,14 +9,14 @@ variable "dependency" {
 }
 
 locals {
-    service_hostname   = var.dependency.from_module.service_hostname
+    bucket             = var.dependency.from_module.storage_name
 }
 
 output "cfout" {
   value = [
     {
-      name            = var.properties.hostname
-      value           = local.service_hostname
+      name             = var.properties.bucketname
+      value            = local.bucket
     }
   ]
 }

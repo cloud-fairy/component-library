@@ -14,7 +14,3 @@ cloudfairy_module:
       type: string
       defaultValue: "SVC_HOST"
       displayName: "Service Hostname"
-    - name: "port"
-      type: string
-      defaultValue: "SVC_PORT"
-      displayName: "Service Port"

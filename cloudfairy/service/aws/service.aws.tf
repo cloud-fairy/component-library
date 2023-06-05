@@ -43,7 +43,8 @@ locals {
   dockerfile_path      = var.properties.dockerfile_path
   container_port       = var.properties.container_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
-  inject_env_vars      = flatten(local.conn_to_services)
+  conn_to_storages     = try(var.connector.cloudfairy_connector_svc_storage, [])
+  inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages])
 }
 
 # Run the script to get the environment variables of interest.
