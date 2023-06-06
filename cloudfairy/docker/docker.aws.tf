@@ -42,11 +42,10 @@ locals {
   dockerhub_image      = var.properties.dockerhub_image
   container_port       = var.properties.container_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
-  inject_env_vars_kv   = split(",", var.properties.env_vars)
+  inject_env_vars_kv   = toset(var.properties.env_vars)
   # ["FOO=bar", "BAZ=foo"]
   # { name = "FOO" value="bar" },
   # { name = "BAZ" value="foo" },
-  inject_env_vars      = map(inject_env_vars_kv,)
 }
 
 resource "null_resource" "env_vars" {
@@ -58,9 +57,11 @@ resource "null_resource" "env_vars" {
 }
 
 resource "null_resource" "env_vars_yaml" {
-  triggers = <<EOF
-          ${length(null_resource.env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(null_resource.env_vars))}" : "env: []" }
+  triggers = {
+    value = <<EOF
+          ${length(null_resource.env_vars) > 0 ? "${indent(12, yamlencode(null_resource.env_vars))}" : "[]" }
 EOF
+  }
 }
 
 
@@ -94,7 +95,6 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.dockerhub_image}
-          ${null_resource.env_vars_yaml}
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
@@ -104,6 +104,7 @@ spec:
               memory: "1Gi"
               cpu: "500m"
 EOF
+#          env: ${[for i in null_resource.env_vars_yaml : toset(i.triggers)]}
 }
 
 resource "local_file" "service" {
@@ -151,7 +152,7 @@ spec:
     - host: ${local.service_name}.${local.tags.Project}.tikalk.dev
       http:
         paths:
-          - path: /*
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -175,6 +176,6 @@ output "cfout" {
   value = {
     service_hostname   = local.service_name
     service_port       = 80
-    env_vars           = local.inject_env_vars
+    env_vars           = null_resource.env_vars
   }
 }

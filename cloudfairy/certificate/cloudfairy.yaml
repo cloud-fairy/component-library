@@ -15,4 +15,4 @@ cloudfairy_module:
     - name: hostname
       type: string
       displayName: "Certificate Host Name"
-      defaultValue: "argocd-fairy.group00.tikalk.dev"
+      defaultValue: ""

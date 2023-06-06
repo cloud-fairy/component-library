@@ -153,11 +153,12 @@ metadata:
   labels:
     app: ${local.service_name}
   annotations:
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}}, {"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
     alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
+    alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
 spec:
   ingressClassName: alb
   rules:

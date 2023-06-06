@@ -16,8 +16,16 @@ locals {
 
   # Removing trailing dot from domain - just to be sure :)
   domain_name               = trim(regex("[\\w]*\\.[\\w]*$", var.properties.hostname), ".")
+  hostname                  = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
 
   zone_id                   = try(data.aws_route53_zone.this[0].zone_id, aws_route53_zone.this[0].zone_id, null)
+  tags                      = {
+    Terraform               = "true"
+    Environment             = var.project.environment_name
+    Project                 = var.project.project_name
+    ProjectID               = var.dependency.cloud_provider.projectId
+    Name                    = local.domain_name
+  }
 }
 
 data "aws_route53_zone" "this" {
@@ -43,11 +51,11 @@ module "acm" {
   zone_id                   = local.zone_id
 
   subject_alternative_names = [
-    "${var.properties.hostname}",
+    "${local.hostname}",
   ]
 
   tags = {
-    Name                    = local.domain_name
+    Name                    = local.tags
   }
 }
 
