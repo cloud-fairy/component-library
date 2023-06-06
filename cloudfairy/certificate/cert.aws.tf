@@ -54,9 +54,7 @@ module "acm" {
     "${local.hostname}",
   ]
 
-  tags = {
-    Name                    = local.tags
-  }
+  tags                      = local.tags
 }
 
 output "cfout" {

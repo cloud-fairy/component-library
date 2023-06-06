@@ -141,11 +141,12 @@ metadata:
   labels:
     app: ${local.service_name}
   annotations:
-    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}]'
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
     external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
     alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
+    alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
 spec:
   ingressClassName: alb
   rules:
@@ -175,7 +176,7 @@ find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';
 output "cfout" {
   value = {
     service_hostname   = local.service_name
-    service_port       = 80
+    service_port       = local.container_port
     env_vars           = null_resource.env_vars
   }
 }
