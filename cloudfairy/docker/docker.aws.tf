@@ -41,28 +41,35 @@ locals {
   service_name         = var.properties.service_name
   dockerhub_image      = var.properties.dockerhub_image
   container_port       = var.properties.container_port
-  conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
+  conn_to_services     = try(var.connector.cloudfairy_service_to_dockerhub, [])
+
   inject_env_vars_kv   = toset(var.properties.env_vars)
+  env_vars             = flatten([
+                            for element in local.inject_env_vars_kv : {
+                              name             = split("=", element)[0]
+                              value            = split("=", element)[1]
+                            }
+                          ])
   # ["FOO=bar", "BAZ=foo"]
   # { name = "FOO" value="bar" },
   # { name = "BAZ" value="foo" },
 }
 
-resource "null_resource" "env_vars" {
-  for_each = toset(local.inject_env_vars_kv)
-  triggers = {
-    name = split("=", each.value)[0]
-    value = split("=", each.value)[1]
-  }
-}
+# resource "null_resource" "env_vars" {
+#   for_each = toset(local.inject_env_vars_kv)
+#   triggers = {
+#     name = split("=", each.value)[0]
+#     value = split("=", each.value)[1]
+#   }
+# }
 
-resource "null_resource" "env_vars_yaml" {
-  triggers = {
-    value = <<EOF
-          ${length(null_resource.env_vars) > 0 ? "${indent(12, yamlencode(null_resource.env_vars))}" : "[]" }
-EOF
-  }
-}
+# resource "null_resource" "env_vars_yaml" {
+#   triggers = {
+#     value = <<EOF
+#           ${length(null_resource.env_vars) > 0 ? "${indent(12, yamlencode(null_resource.env_vars))}" : "[]" }
+# EOF
+#   }
+# }
 
 
 resource "local_file" "deployment" {
@@ -95,6 +102,7 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.dockerhub_image}
+          ${length(local.env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.env_vars))}" : "env: []" }
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
@@ -104,7 +112,6 @@ spec:
               memory: "1Gi"
               cpu: "500m"
 EOF
-#          env: ${[for i in null_resource.env_vars_yaml : toset(i.triggers)]}
 }
 
 resource "local_file" "service" {
@@ -177,6 +184,6 @@ output "cfout" {
   value = {
     service_hostname   = local.service_name
     service_port       = local.container_port
-    env_vars           = null_resource.env_vars
+    env_vars           = local.env_vars
   }
 }
