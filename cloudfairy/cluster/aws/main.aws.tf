@@ -1,7 +1,7 @@
 locals {
-  subnets_count   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
-  create_cluster  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
-  cluster_name    =  "${var.properties.name}-${local.tags.Environment}-${local.tags.Project}-${local.tags.ProjectID}"
+  subnets_count                   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
+  create_cluster                  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
+  cluster_name                    =  "${var.properties.name}-${local.tags.Environment}-${local.tags.Project}-${local.tags.ProjectID}"
 
   tags = {
     Terraform                     = "true"
@@ -33,29 +33,29 @@ terraform {
 }
 
 data "aws_eks_cluster" "eks" {
-  name = local.cluster_name
+  name                            = local.cluster_name
 
-  depends_on = [
+  depends_on                      = [
     module.eks
   ]
 }
 
 data "aws_eks_cluster_auth" "eks" {
-  name = data.aws_eks_cluster.eks.name
+  name                            = data.aws_eks_cluster.eks.name
 
-  depends_on = [
+  depends_on                      = [
     module.eks
   ]
 }
 
 data "aws_subnets" "private" {
   filter {
-    name   = "vpc-id"
-    values = [var.dependency.network.id]
+    name                          = "vpc-id"
+    values                        = [var.dependency.network.id]
   }
   filter {
-    name   = "tag:type"
-    values = ["Private"]
+    name                          =  "tag:type"
+    values                        = ["Private"]
   }
 }
 
