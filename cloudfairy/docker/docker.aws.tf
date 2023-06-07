@@ -38,6 +38,7 @@ locals {
     ProjectID          = var.dependency.cloud_provider.projectId
   }
 
+  hostname             = "${local.service_name}-${local.tags.Environment}.${local.tags.Project}.tikalk.dev"
   service_name         = var.properties.service_name
   dockerhub_image      = var.properties.dockerhub_image
   container_port       = var.properties.container_port
@@ -54,23 +55,6 @@ locals {
   # { name = "FOO" value="bar" },
   # { name = "BAZ" value="foo" },
 }
-
-# resource "null_resource" "env_vars" {
-#   for_each = toset(local.inject_env_vars_kv)
-#   triggers = {
-#     name = split("=", each.value)[0]
-#     value = split("=", each.value)[1]
-#   }
-# }
-
-# resource "null_resource" "env_vars_yaml" {
-#   triggers = {
-#     value = <<EOF
-#           ${length(null_resource.env_vars) > 0 ? "${indent(12, yamlencode(null_resource.env_vars))}" : "[]" }
-# EOF
-#   }
-# }
-
 
 resource "local_file" "deployment" {
   filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
@@ -151,13 +135,13 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
+    external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
     alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
     alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
 spec:
   ingressClassName: alb
   rules:
-    - host: ${local.service_name}.${local.tags.Project}.tikalk.dev
+    - host: ${local.hostname}
       http:
         paths:
           - path: /
@@ -185,5 +169,6 @@ output "cfout" {
     service_hostname   = local.service_name
     service_port       = local.container_port
     env_vars           = local.env_vars
+    hostname           = local.hostname
   }
 }

@@ -36,6 +36,7 @@ locals {
     Project            = var.project.project_name
     ProjectID          = var.dependency.cloud_provider.projectId
   }
+  hostname             = "${local.service_name}-${local.tags.Environment}.${local.tags.Project}.tikalk.dev"
   docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   ecr_url              = aws_ecr_repository.docker.repository_url
   ecr_name             = "${local.service_name}-${local.tags.Project}-${local.tags.Environment}-${lower(local.tags.ProjectID)}"
@@ -156,13 +157,13 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    external-dns.alpha.kubernetes.io/hostname: ${local.service_name}.${local.tags.Project}.tikalk.dev
+    external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
     alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
     alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
 spec:
   ingressClassName: alb
   rules:
-    - host: ${local.service_name}.${local.tags.Project}.tikalk.dev
+    - host: ${local.hostname}
       http:
         paths:
           - path: /
@@ -192,6 +193,7 @@ output "cfout" {
     service_hostname   = local.service_name
     service_port       = local.container_port
     env_vars           = local.inject_env_vars
-    docker_tag         = local.docker_tag 
+    docker_tag         = local.docker_tag
+    hostname           = local.hostname
   }
 }
