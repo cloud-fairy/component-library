@@ -17,14 +17,15 @@ locals {
   # Removing trailing dot from domain - just to be sure :)
   domain_name               = trim(regex("[\\w]*\\.[\\w]*$", local.hostname), ".")
   hostname                  = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
+  project                   = var.project.project_name
 
   zone_id                   = try(data.aws_route53_zone.this[0].zone_id, aws_route53_zone.this[0].zone_id, null)
   tags                      = {
     Terraform               = "true"
     Environment             = var.project.environment_name
-    Project                 = var.project.project_name
+    Project                 = local.project
     ProjectID               = var.dependency.cloud_provider.projectId
-    Name                    = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
+    Name                    = var.properties.hostname != "" ? var.properties.hostname : "*.${local.project}.tikalk.dev"
   }
 }
 
