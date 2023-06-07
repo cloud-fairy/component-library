@@ -15,7 +15,7 @@ locals {
   use_existing_route53_zone = true
 
   # Removing trailing dot from domain - just to be sure :)
-  domain_name               = trim(regex("[\\w]+\\.[\\w]+$", local.hostname), ".")
+  domain_name               = join(".", slice(split(".",local.hostname), -2, -1)) # trim(regex("[\\w]+\\.[\\w]+$", local.hostname), ".")
   hostname                  = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
   project                   = var.project.project_name
 
@@ -25,7 +25,7 @@ locals {
     Environment             = var.project.environment_name
     Project                 = local.project
     ProjectID               = var.dependency.cloud_provider.projectId
-    Name                    = var.properties.hostname != "" ? var.properties.hostname : ".${local.project}.tikalk.dev"
+    Name                    = var.properties.hostname != "" ? var.properties.hostname : "${local.project}.tikalk.dev"
   }
 }
 
