@@ -24,7 +24,7 @@ locals {
     Environment             = var.project.environment_name
     Project                 = var.project.project_name
     ProjectID               = var.dependency.cloud_provider.projectId
-    Name                    = local.hostname
+    Name                    = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
   }
 }
 
