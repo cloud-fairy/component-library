@@ -49,9 +49,17 @@ module "vpc" {
   ]
   private_subnet_tags         = {
     type                      = "Private"
+    "kubernetes.io/role/internal-elb"  = "1"
+  }
+
+  public_subnets              = [
+    cidrsubnet(var.properties.cidr_block, 8, 9),
+    cidrsubnet(var.properties.cidr_block, 8, 11),
+  ]
+  public_subnet_tags          = {
+    type                      = "Public"
     "kubernetes.io/role/elb"  = "1"
   }
-  public_subnets              = var.properties.enable_public_access ? [cidrsubnet(var.properties.cidr_block, 8, 10)] : []
 
   enable_nat_gateway          = var.properties.enable_public_access
   single_nat_gateway          = var.properties.enable_public_access
