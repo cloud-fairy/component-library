@@ -43,6 +43,7 @@ locals {
   service_name         = var.properties.service_name
   dockerfile_path      = var.properties.dockerfile_path
   container_port       = var.properties.container_port
+  debug_port           = var.properties.debugger_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages     = try(var.connector.cloudfairy_service_to_storage, [])
   inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages])
@@ -131,11 +132,17 @@ metadata:
   labels:
     app: ${local.service_name}
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: ${local.container_port}
       targetPort: ${local.container_port}
       protocol: TCP
+${local.debug_port != "" ? <<DEBUG_PORT
+    - port: ${local.debug_port}
+      targetPort: ${local.debug_port}
+      protocol: TCP   
+DEBUG_PORT
+: ""}
   selector:
     app: ${local.service_name}
 EOF
@@ -157,9 +164,21 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
-    external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
-    alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
+    alb.ingress.kubernetes.io/actions.ssl-redirect: |-
+      {
+        "Type": "redirect",
+        "RedirectConfig": {
+          "Protocol": "HTTPS",
+          "Port": "443",
+          "StatusCode": "HTTP_301"
+        }
+      }
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/load-balancer-name: ${local.service_name}
+    alb.ingress.kubernetes.io/group.name: ${local.service_name}
     alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
+    external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
 spec:
   ingressClassName: alb
   rules:
@@ -195,5 +214,6 @@ output "cfout" {
     env_vars           = local.inject_env_vars
     docker_tag         = local.docker_tag
     hostname           = local.hostname
+    debug_port         = local.debug_port
   }
 }

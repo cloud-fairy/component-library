@@ -26,6 +26,10 @@ cloudfairy_module:
       displayName: "Container Port"
       type: string
       defaultValue: "8080"
+    - name: debugger_port
+      displayName: "Debugger Port (Leave empty to disable)"
+      type: string
+      defaultValue: ""
     - name: isexposed
       displayName: "Should the service be exposed externally?"
       type: boolean
