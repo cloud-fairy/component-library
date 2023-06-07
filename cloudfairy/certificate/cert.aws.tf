@@ -15,7 +15,7 @@ locals {
   use_existing_route53_zone = true
 
   # Removing trailing dot from domain - just to be sure :)
-  domain_name               = trim(regex("[\\w]*\\.[\\w]*$", var.properties.hostname), ".")
+  domain_name               = trim(regex("[\\w]*\\.[\\w]*$", local.hostname), ".")
   hostname                  = var.properties.hostname != "" ? var.properties.hostname : "*.${local.tags.Project}.tikalk.dev"
 
   zone_id                   = try(data.aws_route53_zone.this[0].zone_id, aws_route53_zone.this[0].zone_id, null)
