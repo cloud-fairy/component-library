@@ -11,8 +11,9 @@ variable "project" {
 }
 
 locals {
-  bucketName              = "${var.properties.bucketName}-${local.tags.Project}-${local.tags.Environment}"
-  
+  bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}"
+  zone_id                 = try(data.aws_route53_zone.this.zone_id, null)
+
   tags                    = {
     Terraform             = "true"
     Environment           = var.project.environment_name
@@ -72,11 +73,24 @@ module "s3_bucket" {
   tags                    = local.tags  
 }
 
+data "aws_route53_zone" "this" {
+  name                    = var.dependency.certificate.domain
+  private_zone            = false
+}
+
+resource "aws_route53_record" "bucket" {
+  zone_id                 = local.zone_id
+  name                    = "${local.bucketName}.${var.dependency.certificate.domain}"
+  type                    = "A"
+  ttl                     = 300
+  records                 = [module.s3_bucket.s3_bucket_website_endpoint]
+}
 
 output "cfout" {
   value                   = {
     storage_name          = local.bucketName
     policy_arn            = module.bucket_iam_policy.arn
+    url                   = "http://${aws_route53_record.bucket.name}"
     instructions          = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
   }
 }
