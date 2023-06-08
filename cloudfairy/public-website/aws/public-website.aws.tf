@@ -12,8 +12,6 @@ variable "project" {
 
 locals {
   bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}.${var.dependency.certificate.domain}"
-  zone_id                 = try(data.aws_route53_zone.this.zone_id, null)
-
   tags                    = {
     Terraform             = "true"
     Environment           = var.project.environment_name
@@ -66,22 +64,17 @@ module "s3_bucket" {
 }
   EOF
 
-  versioning              = {
-    enabled               = true
+  versioning               = {
+    enabled                = true
   }
 
-  tags                    = local.tags  
-}
-
-data "aws_route53_zone" "this" {
-  name                    = var.dependency.certificate.domain
-  private_zone            = false
+  tags                     = local.tags  
 }
 
 resource "aws_route53_record" "bucket" {
-  zone_id = local.zone_id
-  name    = local.bucketName
-  type    = "A"
+  zone_id                  = var.dependency.certificate.zone_id
+  name                     = local.bucketName
+  type                     = "A"
   alias {
     name                   = trim(split("${local.bucketName}", module.s3_bucket.s3_bucket_website_endpoint)[1], ".")
     zone_id                = module.s3_bucket.s3_bucket_hosted_zone_id
@@ -90,11 +83,12 @@ resource "aws_route53_record" "bucket" {
 }
 
 output "cfout" {
-  value                   = {
-    storage_name          = local.bucketName
-    policy_arn            = module.bucket_iam_policy.arn
-    url                   = "http://${aws_route53_record.bucket.name}"
-    website_endpoint      = module.s3_bucket.s3_bucket_website_endpoint
-    instructions          = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
+  value                    = {
+    storage_name           = local.bucketName
+    policy_arn             = module.bucket_iam_policy.arn
+    url                    = "http://${aws_route53_record.bucket.name}"
+    regional               = module.s3_bucket.s3_bucket_bucket_regional_domain_name
+    website_endpoint       = module.s3_bucket.s3_bucket_website_endpoint
+    instructions           = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
   }
 }
