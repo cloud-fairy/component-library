@@ -18,6 +18,7 @@ locals {
     Project               = var.project.project_name
     ProjectID             = var.dependency.cloud_provider.projectId
   }
+  cf_component_name       = try(var.properties.local_name, "Cloudfairy Public Website")
 }
 
 
@@ -90,5 +91,20 @@ output "cfout" {
     regional               = module.s3_bucket.s3_bucket_bucket_regional_domain_name
     website_endpoint       = module.s3_bucket.s3_bucket_website_endpoint
     instructions           = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
+    documentation = <<EOF
+# ${local.cf_component_name} (http://${aws_route53_record.bucket.name} Public website)
+
+Storage Name: ${local.bucketName}
+
+Public URL: http://${aws_route53_record.bucket.name}
+
+Website Endpoint: ${module.s3_bucket.s3_bucket_website_endpoint}
+
+## Deployment
+```bash
+aws s3 sync <Source Folder> s3://${local.bucketName}
+```
+
+EOF
   }
 }
