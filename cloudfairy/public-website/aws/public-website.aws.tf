@@ -11,7 +11,7 @@ variable "project" {
 }
 
 locals {
-  bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}"
+  bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}.${var.dependency.certificate.domain}"
   zone_id                 = try(data.aws_route53_zone.this.zone_id, null)
 
   tags                    = {
@@ -79,11 +79,14 @@ data "aws_route53_zone" "this" {
 }
 
 resource "aws_route53_record" "bucket" {
-  zone_id                 = local.zone_id
-  name                    = "${local.bucketName}.${var.dependency.certificate.domain}"
-  type                    = "A"
-  ttl                     = 300
-  records                 = [module.s3_bucket.s3_bucket_website_endpoint]
+  zone_id = local.zone_id
+  name    = local.bucketName
+  type    = "A"
+  alias {
+    name                   = trim(split("${local.bucketName}", module.s3_bucket.s3_bucket_website_endpoint)[1], ".")
+    zone_id                = module.s3_bucket.s3_bucket_hosted_zone_id
+    evaluate_target_health = true
+  }
 }
 
 output "cfout" {
@@ -91,6 +94,7 @@ output "cfout" {
     storage_name          = local.bucketName
     policy_arn            = module.bucket_iam_policy.arn
     url                   = "http://${aws_route53_record.bucket.name}"
+    website_endpoint      = module.s3_bucket.s3_bucket_website_endpoint
     instructions          = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
   }
 }
