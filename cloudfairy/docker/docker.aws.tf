@@ -135,8 +135,20 @@ metadata:
     alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/actions.ssl-redirect: |-
+      {
+        "Type": "redirect",
+        "RedirectConfig": {
+          "Protocol": "HTTPS",
+          "Port": "443",
+          "StatusCode": "HTTP_301"
+        }
+      }
+    alb.ingress.kubernetes.io/healthcheck-path: /
+    alb.ingress.kubernetes.io/ip-address-type: ipv4
+    alb.ingress.kubernetes.io/load-balancer-name: "${local.service_name}-${local.tags.Environment}"
+    alb.ingress.kubernetes.io/group.name: "${local.service_name}-${local.tags.Environment}"
     external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
-    alb.ingress.kubernetes.io/inbound-cidrs: "0.0.0.0/0, ::/0"
     alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
 spec:
   ingressClassName: alb
