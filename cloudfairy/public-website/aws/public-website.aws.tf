@@ -11,7 +11,7 @@ variable "project" {
 }
 
 locals {
-  bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}.${var.dependency.certificate.domain}"
+  bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}.${var.dependency.certificate.zone_name}"
   tags                    = {
     Terraform             = "true"
     Environment           = var.project.environment_name

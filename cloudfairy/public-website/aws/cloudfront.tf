@@ -3,7 +3,7 @@ locals {
 }
 
 resource "aws_cloudfront_origin_access_control" "bucket" {
-  name                              = module.s3_bucket.s3_bucket_website_endpoint
+  name                              = local.bucketName
   description                       = "Cloudfront Policy for ${local.bucketName}"
   origin_access_control_origin_type = "s3"
   signing_behavior                  = "always"

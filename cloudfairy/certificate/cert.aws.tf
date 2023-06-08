@@ -63,5 +63,6 @@ output "cfout" {
     arn                     =  module.acm[0].acm_certificate_arn
     status                  =  module.acm[0].acm_certificate_status
     zone_id                 =  local.zone_id
+    zone_name               =  local.zone_name
   }
 }
