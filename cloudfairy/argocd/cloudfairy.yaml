@@ -10,6 +10,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - cluster
+    - certificate
   entry:
     aws: aws
   properties:
@@ -17,10 +18,6 @@ cloudfairy_module:
       displayName: "ArgoCD ingress external hostname (leave blank for none)"
       type: string
       defaultValue: "argocd-fairy.group00.tikalk.dev"
-    - name: certificate_arn
-      displayName: "Certificate ARN"
-      type: string
-      defaultValue: ""
     - name: appname
       displayName: "App name to bootstrap the cluster (leave blank for none)"
       type: string

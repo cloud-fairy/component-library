@@ -76,7 +76,7 @@ locals {
           alb.ingress.kubernetes.io/scheme: internet-facing
           alb.ingress.kubernetes.io/load-balancer-name: "argocd-${local.tags.Project}-${local.tags.Environment}"
           alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
-          alb.ingress.kubernetes.io/certificate-arn: "${var.properties.certificate_arn}"
+          alb.ingress.kubernetes.io/certificate-arn: "${var.dependency.certificate.arn}"
           external-dns.alpha.kubernetes.io/hostname: "${var.properties.hostname}"
     EOF
     ]
