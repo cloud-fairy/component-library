@@ -47,6 +47,7 @@ locals {
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages     = try(var.connector.cloudfairy_service_to_storage, [])
   inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages])
+  cf_component_name    = try(var.properties.local_name, "Cloudfairy Service")
 }
 
 # Run the script to get the environment variables of interest.
@@ -58,6 +59,8 @@ data "external" "env" {
 resource "aws_ecr_repository" "docker" {
   name                 = local.ecr_name
   image_tag_mutability = "MUTABLE"
+
+  force_delete = true
 
   image_scanning_configuration {
     scan_on_push       = true
@@ -215,5 +218,19 @@ output "cfout" {
     docker_tag         = local.docker_tag
     hostname           = local.hostname
     debug_port         = local.debug_port
+    documentation      = <<EOF
+# ${local.cf_component_name} (${local.service_name} Service)
+Repository url: ${local.ecr_url}
+Service Port: ${local.container_port}
+Kubernetes DNS Hostname: ${local.service_name}
+
+To push a new container:
+```bash
+aws ecr get-login-password --region ${var.dependency.cloud_provider.region} | docker login --username AWS --password-stdin ${local.ecr_url}
+docker build -t ${local.ecr_url}:${local.docker_tag} ${local.dockerfile_path}
+docker push ${local.ecr_url}:${local.docker_tag}
+kubectl rollout restart deployment ${local.service_name}
+```
+EOF
   }
 }
