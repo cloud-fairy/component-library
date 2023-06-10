@@ -7,6 +7,7 @@ cloudfairy_module:
   interface:
     - db
     - managed_sql
+    - rds
   runtime: terraform
   dependencies:
     - "cloud_provider"
