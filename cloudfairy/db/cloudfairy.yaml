@@ -12,7 +12,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - base
-    - subnet
+    - network
     - sg
   entry:
     aws: aws

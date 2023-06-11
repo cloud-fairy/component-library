@@ -24,7 +24,7 @@ locals {
 data "aws_subnets" "private" {
   filter {
     name                              = "vpc-id"
-    values                            = [var.dependency.subnet.vpc_id]
+    values                            = [var.dependency.network.id]
   }
   filter {
     name                              = "tag:Environment"
@@ -39,8 +39,8 @@ data "aws_subnets" "private" {
     values                            = [var.dependency.cloud_provider.projectId]
   }
   filter {
-    name                              = "tag:Component"
-    values                            = ["subnet"]
+    name                              = "tag:type"
+    values                            = ["Private"]
   }
 }
 
