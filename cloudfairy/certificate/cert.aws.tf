@@ -10,10 +10,10 @@ variable "project" {
   type                      = any
 }
 
-provider "aws" {
-  alias                     = "us-east-1"
-  region                    = "us-east-1"
-}
+# provider "aws" {
+#   alias                     = "us-east-1"
+#   region                    = "us-east-1"
+# }
 
 locals {
   # Removing trailing dot from domain - just to be sure :)
@@ -42,9 +42,9 @@ module "acm" {
   source                    = "terraform-aws-modules/acm/aws"
   version                   = "4.3.2"
 
-  providers                 = {
-    aws                     = aws.us-east-1
-  }
+  # providers                 = {
+  #   aws                     = aws.us-east-1
+  # }
 
   domain_name               = local.domain_name
   zone_id                   = local.zone_id

@@ -90,8 +90,8 @@ module "db" {
 }
 
 resource "random_string" "psw" {
-  length                  = 16
-  special                 = false
+  length                              = 16
+  special                             = false
 }
 
 output "cfout" {

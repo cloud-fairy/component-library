@@ -6,7 +6,7 @@ cloudfairy_module:
   from: k8_deployment
   to: managed_sql
   entry:
-    gcp: k8pod-to-managed_sql.gcp.tf
+    aws: k8pod-to-managed_sql.gcp.tf
   properties:
     - name: username_env_var
       displayName: "Environment Variable Name for database username"

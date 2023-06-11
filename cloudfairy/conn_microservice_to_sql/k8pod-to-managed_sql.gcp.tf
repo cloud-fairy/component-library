@@ -27,8 +27,8 @@ output "cfout" {
     value = local.username
   },
   {
-    name  = var.properties.username_env_var
-    value = local.password_env_var
+    name  = var.properties.password_env_var
+    value = local.password
   },
   {
     name  = var.properties.hostname_env_var
