@@ -17,7 +17,7 @@ cloudfairy_module:
     - name: hostname
       displayName: "ArgoCD ingress external hostname (leave blank for none)"
       type: string
-      defaultValue: "argocd-fairy.group00.tikalk.dev"
+      defaultValue: ""
     - name: appname
       displayName: "App name to bootstrap the cluster (leave blank for none)"
       type: string

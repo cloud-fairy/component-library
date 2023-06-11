@@ -77,7 +77,7 @@ locals {
           alb.ingress.kubernetes.io/load-balancer-name: "argocd-${local.tags.Project}-${local.tags.Environment}"
           alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
           alb.ingress.kubernetes.io/certificate-arn: "${var.dependency.certificate.arn}"
-          external-dns.alpha.kubernetes.io/hostname: "${var.properties.hostname}"
+          external-dns.alpha.kubernetes.io/hostname: "${local.hostname}"
     EOF
     ]
     tags                     = {
@@ -86,6 +86,8 @@ locals {
       Project                = var.project.project_name
       ProjectID              = var.dependency.cloud_provider.projectId
     }
+
+    hostname                 = var.properties.hostname == "" ? "argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.tikalk.dev" : var.properties.hostname
 }
 
 module "argocd" {
@@ -105,7 +107,7 @@ module "argocd" {
         value = bcrypt_hash.argo.id
       }
     ]
-    values = var.properties.hostname != "" ? local.argocd_values : []    # No Ingress configuration if hostname is not set
+    values = local.hostname != "" ? local.argocd_values : []    # No Ingress configuration if hostname is not set
   }
 
   keda_helm_config         = {
