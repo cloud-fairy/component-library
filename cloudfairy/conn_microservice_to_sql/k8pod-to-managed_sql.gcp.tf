@@ -36,7 +36,7 @@ output "cfout" {
   },
   {
     name  = var.properties.port_env_var
-    value = local.port
+    value = tostring(local.port)
   }
   ]
 }
