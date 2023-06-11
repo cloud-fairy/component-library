@@ -74,6 +74,7 @@ locals {
         minReplicas: 1
       ingress:
         enabled: true
+        host: "${local.hostname}"
         extraPaths:
           - path: /
             pathType: Prefix
@@ -100,7 +101,7 @@ locals {
       ProjectID              = var.dependency.cloud_provider.projectId
     }
 
-    hostname                 = var.properties.hostname == "" ? "argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.tikalk.dev" : var.properties.hostname
+    hostname                 = "argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.tikalk.dev"
 }
 
 module "argocd" {

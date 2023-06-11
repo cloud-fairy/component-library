@@ -13,11 +13,7 @@ cloudfairy_module:
     - certificate
   entry:
     aws: aws
-  properties:
-    - name: hostname
-      displayName: "ArgoCD ingress external hostname (leave blank for none)"
-      type: string
-      defaultValue: ""
+  properties: 
     - name: appname
       displayName: "App name to bootstrap the cluster (leave blank for none)"
       type: string
