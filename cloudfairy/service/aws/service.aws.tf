@@ -138,11 +138,13 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - port: ${local.container_port}
+    - name: service-port
+      port: ${local.container_port}
       targetPort: ${local.container_port}
       protocol: TCP
 ${local.debug_port != "" ? <<DEBUG_PORT
-    - port: ${local.debug_port}
+    - name: debug-port
+      port: ${local.debug_port}
       targetPort: ${local.debug_port}
       protocol: TCP   
 DEBUG_PORT
