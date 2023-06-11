@@ -6,9 +6,9 @@ cloudfairy_module:
   entry:
     aws: "connector-svc-storage.tf"
   from:
-    - "storage"
-  to:
     - "k8_deployment"
+  to:
+    - "storage"
   properties:
     - name: "bucketname"
       type: string

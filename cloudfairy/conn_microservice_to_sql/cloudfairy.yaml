@@ -3,8 +3,8 @@ cloudfairy_module:
   name: k8_microservice_to_managed_sql
   displayName: "Managed SQL Connector for K8 Pods"
   vendor: cloudfairy
-  from: managed_sql
-  to: k8_deployment
+  from: k8_deployment
+  to: managed_sql
   entry:
     gcp: k8pod-to-managed_sql.gcp.tf
   properties:

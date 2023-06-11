@@ -6,6 +6,8 @@ cloudfairy_module:
   displayName: "Relational Database"
   interface:
     - db
+    - managed_sql
+    - rds
   runtime: terraform
   dependencies:
     - "cloud_provider"
