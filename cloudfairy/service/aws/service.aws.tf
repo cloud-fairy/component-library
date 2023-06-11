@@ -223,8 +223,11 @@ output "cfout" {
     debug_port         = local.debug_port
     documentation      = <<EOF
 # ${local.cf_component_name} (${local.service_name} Service)
+
 Repository url: ${local.ecr_url}
+
 Service Port: ${local.container_port}
+
 Kubernetes DNS Hostname: ${local.service_name}
 
 To push a new container:

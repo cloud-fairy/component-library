@@ -200,6 +200,12 @@ output "cfout" {
     chart                 = module.argocd.argocd.release_metadata[0].chart
     app_version           = module.argocd.argocd.release_metadata[0].app_version
     namespace             = module.argocd.argocd.release_metadata[0].namespace
-    showpassword_command  = "aws secretsmanager get-secret-value --secret-id ${aws_secretsmanager_secret.argocd.name} --region ${var.dependency.cloud_provider.region} | jq .SecretString"
+    hostname              = local.hostname
+    documentation  = <<EOF
+# ArgoCD Credentials
+```bash
+aws secretsmanager get-secret-value --secret-id ${aws_secretsmanager_secret.argocd.name} --region ${var.dependency.cloud_provider.region} | jq .SecretString
+```
+EOF
   }
 }
