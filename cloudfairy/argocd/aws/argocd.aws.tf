@@ -104,7 +104,8 @@ locals {
 }
 
 module "argocd" {
-  source                   = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons?ref=v4.32.1"
+  source                   = "github.com/aws-ia/terraform-aws-eks-blueprints//modules/kubernetes-addons?ref=v4.32.1"
+  #version                  = "~> 4.32.1"
 
   eks_cluster_id           = var.dependency.cluster.name
   eks_cluster_endpoint     = var.dependency.cluster.host

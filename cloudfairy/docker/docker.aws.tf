@@ -44,7 +44,7 @@ locals {
   container_port       = var.properties.container_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_dockerhub, [])
 
-  inject_env_vars_kv   = toset(var.properties.env_vars)
+  inject_env_vars_kv   = var.properties.env_vars != "" ? try(toset(var.properties.env_vars), toset([var.properties.env_vars])) : []
   env_vars             = flatten([
                             for element in local.inject_env_vars_kv : {
                               name             = split("=", element)[0]

@@ -16,10 +16,10 @@ cloudfairy_module:
       displayName: "Environment Variable Name for database password"
       type: string
       defaultValue: "DB_PASSWORD"
-    - name: connection_env_var
-      displayName: "Environment Variable Name for database connection string"
+    - name: port_env_var
+      displayName: "Environment Variable Name for database port"
       type: string
-      defaultValue: "DB_CONNECTION"
+      defaultValue: "DB_PORT"
     - name: hostname_env_var
       displayName: "Environment Variable Name for database hostname"
       type: string

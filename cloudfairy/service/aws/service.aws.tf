@@ -46,7 +46,8 @@ locals {
   debug_port           = var.properties.debugger_port
   conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages     = try(var.connector.cloudfairy_service_to_storage, [])
-  inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages])
+  conn_to_rds          = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
+  inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
   cf_component_name    = try(var.properties.local_name, "Cloudfairy Service")
 }
 
