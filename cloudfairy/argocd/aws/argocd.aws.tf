@@ -9,6 +9,14 @@ terraform {
       source               = "viktorradnai/bcrypt"
       version              = ">= 0.1.2"
     }
+    helm = {
+      source = "hashicorp/helm"
+      version = "2.9.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.20.0"
+    }
   }
 }
 
@@ -26,7 +34,12 @@ provider "helm" {
   kubernetes {
     host                   = var.dependency.cluster.host
     cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
-    token                  = var.dependency.cluster.token
+    
+    exec {
+      api_version            = "client.authentication.k8s.io/v1"
+      args                   = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
+      command                = "aws"
+    }
   }
 }
 
@@ -91,7 +104,7 @@ locals {
 }
 
 module "argocd" {
-  source                   = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons"
+  source                   = "github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons?ref=v4.32.1"
 
   eks_cluster_id           = var.dependency.cluster.name
   eks_cluster_endpoint     = var.dependency.cluster.host
