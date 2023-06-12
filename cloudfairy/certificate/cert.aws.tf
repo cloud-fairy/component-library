@@ -17,7 +17,7 @@ variable "project" {
 
 locals {
   # Removing trailing dot from domain - just to be sure :)
-  domain_name               = trim(regex("[\\w]+\\.[\\w]+\\.[\\w]+$", local.hostname), ".")
+  domain_name               = lower("${local.tags.Project}.tikalk.dev")
   zone_name                 = lower("${local.tags.Project}.tikalk.dev")
   hostname                  = lower("*.${local.tags.Project}.tikalk.dev")
   project                   = var.project.project_name
