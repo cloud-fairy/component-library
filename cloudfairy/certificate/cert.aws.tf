@@ -19,7 +19,7 @@ locals {
   # Removing trailing dot from domain - just to be sure :)
   domain_name               = trim(regex("[\\w]+\\.[\\w]+\\.[\\w]+$", local.hostname), ".")
   zone_name                 = regex("[\\w]+\\.[\\w]+\\.[\\w]+$", local.hostname)
-  hostname                  = "*.${local.tags.Project}.tikalk.dev"
+  hostname                  = tolower("*.${local.tags.Project}.tikalk.dev")
   project                   = var.project.project_name
 
   zone_id                   = try(data.aws_route53_zone.this.zone_id, null)
