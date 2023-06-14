@@ -26,5 +26,14 @@ cloudfairy_module:
       displayName: "Path"
       type: string
       defaultValue: ""
+    - name: repo_type
+      displayName: "Repository Type"
+      type: options
+      options:
+        - label: "Chart"
+          value: "chart"
+        - label: "Git"
+          value: "git"
+      defaultValue: "chart"
     
 
