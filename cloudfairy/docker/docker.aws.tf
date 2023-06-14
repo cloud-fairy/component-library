@@ -147,7 +147,7 @@ metadata:
       }
     alb.ingress.kubernetes.io/healthcheck-path: /
     alb.ingress.kubernetes.io/ip-address-type: ipv4
-    alb.ingress.kubernetes.io/load-balancer-name: "${local.service_name}-${local.tags.Environment}"
+    alb.ingress.kubernetes.io/load-balancer-name: ${lower("${local.tags.Project}-${local.tags.Environment}")}
     alb.ingress.kubernetes.io/group.name: ${lower("${local.tags.Project}-${local.tags.Environment}")}
     external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
     alb.ingress.kubernetes.io/certificate-arn: ${var.dependency.certificate.arn}
