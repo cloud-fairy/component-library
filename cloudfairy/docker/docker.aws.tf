@@ -38,7 +38,7 @@ locals {
     ProjectID          = var.dependency.cloud_provider.projectId
   }
 
-  hostname             = "${local.service_name}-${local.tags.Environment}.${local.tags.Project}.tikalk.dev"
+  hostname             = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.tikalk.dev")
   service_name         = var.properties.service_name
   dockerhub_image      = var.properties.dockerhub_image
   container_port       = var.properties.container_port
