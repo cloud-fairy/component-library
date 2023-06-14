@@ -15,12 +15,22 @@ cloudfairy_module:
       options: 
         - label: "eu-west-1"
           value: "eu-west-1"
+        - label: "eu-central-1"
+          value: "eu-central-1"
+        - label: "us-east-1"
+          value: "us-east-1"
+        - label: "us-west-2"
+          value: "us-west-2"
       defaultValue: "eu-west-1"
     - name: "remote_bucket"
       type: "string"
       defaultValue: ""
       displayName: "Remote S3 Bucket name for state (leave blank for local state)"
       global: true
+    - name: "hosted_zone"
+      type: "string"
+      defaultValue: ""
+      displayName: "Route53 Hosted zone name"
   locals:
     - filename: account.hcl
       value_from: account_id

@@ -17,9 +17,9 @@ variable "project" {
 
 locals {
   # Removing trailing dot from domain - just to be sure :)
-  domain_name               = lower("${local.tags.Project}.tikalk.dev")
-  zone_name                 = lower("${local.tags.Project}.tikalk.dev")
-  hostname                  = lower("*.${local.tags.Project}.tikalk.dev")
+  domain_name               = lower("${local.tags.Project}.${local.zone_name}")
+  zone_name                 = var.dependency.cloud_provider.hosted_zone
+  hostname                  = lower("*.${local.tags.Project}.${local.zone_name}")
   project                   = var.project.project_name
 
   zone_id                   = try(data.aws_route53_zone.this.zone_id, null)

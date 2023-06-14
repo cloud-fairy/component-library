@@ -36,7 +36,8 @@ locals {
     Project            = var.project.project_name
     ProjectID          = var.dependency.cloud_provider.projectId
   }
-  hostname             = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.tikalk.dev")
+  zone_name            = var.dependency.cloud_provider.hosted_zone
+  hostname             = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.${local.zone_name}")
   docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   ecr_url              = aws_ecr_repository.docker.repository_url
   ecr_name             = "${local.service_name}-${local.tags.Project}-${local.tags.Environment}-${lower(local.tags.ProjectID)}"
