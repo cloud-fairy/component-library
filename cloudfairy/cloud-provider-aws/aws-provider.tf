@@ -16,6 +16,7 @@ output "cfout" {
     projectId              = local.projectId
     region                 = var.properties.region
     type                   = "aws"
+    hosted_zone            = var.properties.hosted_zone
   }
 }
 
