@@ -89,7 +89,7 @@ locals {
           kubernetes.io/ingress.class: alb
           alb.ingress.kubernetes.io/target-type: ip
           alb.ingress.kubernetes.io/scheme: internet-facing
-          alb.ingress.kubernetes.io/load-balancer-name: "argocd-${local.tags.Project}-${local.tags.Environment}"
+          alb.ingress.kubernetes.io/load-balancer-name: ${lower("${local.tags.Project}-${local.tags.Environment}")}
           alb.ingress.kubernetes.io/group.name: ${lower("${local.tags.Project}-${local.tags.Environment}")}
           alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80},{"HTTPS": 443}]'
           alb.ingress.kubernetes.io/certificate-arn: "${var.dependency.certificate.arn}"
