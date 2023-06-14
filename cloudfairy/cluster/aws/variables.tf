@@ -27,3 +27,9 @@ variable "service_account" {
   type        = string
   default     = "cloudfairysa"
 }
+
+variable "instance_type" {
+  description = "Name of irsa role service account name"
+  type        = string
+  default     = "t3.large"
+}

@@ -75,10 +75,10 @@ module "eks" {
   iam_role_use_name_prefix        = false
 
   # EKS Addons
-  cluster_addons = {
-    coredns    = {}
-    kube-proxy = {}
-    vpc-cni    = {}
+  cluster_addons                  = {
+    coredns                       = {}
+    kube-proxy                    = {}
+    vpc-cni                       = {}
   }
 
   # Cloudwatch log group
@@ -90,7 +90,7 @@ module "eks" {
 
   eks_managed_node_groups = {
     "${var.properties.name}"                           = {
-      instance_types              = ["t3.large"]
+      instance_types              = [var.instance_type]
       #capacity_type               = "SPOT"
 
       min_size                    = 2
