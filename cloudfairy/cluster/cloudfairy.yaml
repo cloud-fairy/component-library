@@ -10,6 +10,7 @@ cloudfairy_module:
   entry:
     aws: aws
     gcp: gcp
+    az: az
   dependencies:
     - "cloud_provider"
     - base

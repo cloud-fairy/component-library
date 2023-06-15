@@ -1,5 +1,5 @@
 cloudfairy_module:
-  internal: true
+  internal: false
   type: component
   name: subnet
   vendor: cloudfairy
@@ -9,9 +9,10 @@ cloudfairy_module:
   runtime: terraform
   dependencies:
     - "cloud_provider"
-    - network
+    - "network"
   entry:
     aws: aws
+    az: az
   properties: 
     - name: subnet_name
       displayName: "Subnet Name"
@@ -24,6 +25,6 @@ cloudfairy_module:
       defaultValue: "7.0/24"
 
     - name: az
-      displayName: "At which AZ should the subnet be located?"
+      displayName: "Subnet location?"
       type: string
-      defaultValue: "eu-west-1a"
+      defaultValue: "us-west-2a"

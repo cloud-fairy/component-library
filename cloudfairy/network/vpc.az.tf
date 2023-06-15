@@ -10,23 +10,29 @@ variable "project" {
   type = any
 }
 
-module "network" {
-  source              = "Azure/vnet/azurerm"
-  version             =  "4.0.0"
-  resource_group_name = var.dependency.cloud_provider.resource_group_name
-  vnet_location       = var.dependency.cloud_provider.region
-  vnet_name           = var.properties.vpc_name
-  use_for_each        = var.use_for_each
-  # address_space       = var.properties.cidr_block
-  # subnet_prefixes     = var.properties.subnet_prefixes
-  # private_subnets     = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "9.0/24")] : []
-  # public_subnets      = var.properties.enable_public_access ? [replace(var.properties.cidr_block, "/0\\.0/16/", "10.0/24")] : []
-  # subnet_names        = var.properties.subnet_names
-  nsg_ids             = {}
 
-  tags = {
-    environment = var.project.environment_name
-  }
+
+resource "azurerm_virtual_network" "network" {
+  resource_group_name = var.dependency.cloud_provider.resource_group_name
+  location            = var.dependency.cloud_provider.region
+  name                = var.properties.vpc_name
+  address_space       = ["${var.properties.cidr_block}"]
+}
+
+locals {
+  cdir_oct1 = split(".", var.properties.cidr_block)[0]
+  cdir_oct2 = split(".", var.properties.cidr_block)[1]
+}
+
+resource "azurerm_subnet" "subnet" {
+  count = var.properties.subnets_count
+  resource_group_name  = var.dependency.cloud_provider.resource_group_name
+  virtual_network_name = var.properties.vpc_name
+  name                 = "subnet_${count.index}"
+  address_prefixes     = ["${local.cdir_oct1}.${local.cdir_oct2}.${count.index}.0/24"]
+  depends_on = [
+    azurerm_virtual_network.network
+  ]
 }
 
 variable "use_for_each" {
@@ -41,10 +47,9 @@ variable "name" {
 
 output "cfout" {
   value = {
-    network_name  = var.properties.vpc_name
-    # subnet_names  = var.dependency.subnet_names
-    /* cidr = {
-      apps        = var.properties.subnet_prefixes
-    } */
+    vnet_name       = var.properties.vpc_name
+    address_space   = ["${var.properties.cidr_block}"]
+    subnet_names    = [azurerm_subnet.subnet.*.name]
+    subnet_prefixes = [azurerm_subnet.subnet.*.address_prefixes]
   }
 }
