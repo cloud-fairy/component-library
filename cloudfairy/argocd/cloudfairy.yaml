@@ -20,7 +20,7 @@ cloudfairy_module:
       type: string
       defaultValue: ""
     - name: repo
-      displayName: "Repo url"
+      displayName: "Repo url (eg: https://gitlab.com/mygroup/repo.git)"
       type: string
       defaultValue: ""
     - name: path
@@ -36,5 +36,9 @@ cloudfairy_module:
         - label: "Git"
           value: "git"
       defaultValue: "chart"
+    - name: ssh_publickey
+      displayName: "ssh public key (eg: ssh-ed25519 AAAA........)"
+      type: string
+      defaultValue: ""
     
 

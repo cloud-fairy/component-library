@@ -1,61 +1,75 @@
 # Configuring required providers
 terraform {
   required_providers {
-    random = {
-      source               = "hashicorp/random"
-      version              = "3.3.2"
+    random                   = {
+      source                 = "hashicorp/random"
+      version                = "3.3.2"
     }
     bcrypt = {
-      source               = "viktorradnai/bcrypt"
-      version              = ">= 0.1.2"
+      source                 = "viktorradnai/bcrypt"
+      version                = ">= 0.1.2"
     }
-    helm = {
-      source = "hashicorp/helm"
-      version = "2.9.0"
+    helm                     = {
+      source                 = "hashicorp/helm"
+      version                = "2.9.0"
     }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.20.0"
+    kubernetes               = {
+      source                 = "hashicorp/kubernetes"
+      version                = "2.20.0"
+    }
+    kubectl                  = {
+      source                 = "gavinbunney/kubectl"
+      version                = "1.14.0"
     }
   }
 }
 
 provider "kubernetes" {
-  host                     = var.dependency.cluster.host
-  cluster_ca_certificate   = var.dependency.cluster.cluster_ca_certificate
+  host                       =  var.dependency.cluster.host
+  cluster_ca_certificate     = var.dependency.cluster.cluster_ca_certificate
   exec {
-    api_version            = "client.authentication.k8s.io/v1"
-    args                   = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
-    command                = "aws"
+    api_version              = "client.authentication.k8s.io/v1beta1"
+    args                     = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
+    command                  = "aws"
   }
 }
 
 provider "helm" {
   kubernetes {
-    host                   = var.dependency.cluster.host
-    cluster_ca_certificate = var.dependency.cluster.cluster_ca_certificate
+    host                     = var.dependency.cluster.host
+    cluster_ca_certificate   = var.dependency.cluster.cluster_ca_certificate
     
     exec {
-      api_version            = "client.authentication.k8s.io/v1"
+      api_version            = "client.authentication.k8s.io/v1beta1"
       args                   = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
       command                = "aws"
     }
   }
 }
 
+provider "kubectl" {
+  host                       = var.dependency.cluster.host
+  cluster_ca_certificate     = var.dependency.cluster.cluster_ca_certificate
+  exec {
+    api_version              = "client.authentication.k8s.io/v1beta1"
+    args                     = ["eks", "get-token", "--cluster-name", var.dependency.cluster.name]
+    command                  = "aws"
+  }
+}
+
 provider "bcrypt" {}
 
 locals {
-    argocd_values = [
+    argocd_values            = [
     <<-EOF
     configs:
       credentialTemplates:
         ssh-creds:
-          url: git@gitlab.tikalk.dev:tikalk/fuse/2023/group_template.git
+          url: "${local.ssh_repo_url}"
       knownHosts:
         data:
           ssh_known_hosts: |
-            gitlab.tikalk.dev ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQD9bMHGkhWxyd9uP5ZXtA4Uu+6+D7jsTGSpDwTudTiwpc/T4UYBZaJB6xVhpcdasmUJg3d7p81Hzyb0Mlg3cSYpiayN/mGzP9yqQMolVdPCY4e5Nkzp4z6dHaJwSFWTJwGQwnGd7MAZX7EAA8PgFpMAIThl5z9yacB/U6n7IX4tiUGWYNs3ILiJ11so5hTbZBhJ0c19I2vysBO9KST/2psfUObac60YFmQUudTJXI+fOJSSA4/ePRMC3Wii1AQvmMhSeBu0WugTCEUU5GRkv5xwjlERjBtxetH/AAxbl5Wl3c3j+uXmSYJP5NGycYM6H0dEB26R0kDQXVaRFmnMllxrG59+I9wss1TatDy5ZIHHsfOBVL4AQJCLiQz7zwLDGhsgm8maRqN9jFcXU2CN6Jhtub9wK6Cs+S6xTbGrBDWayx9XCqdTBnRImRf5TPhkTBg8Jya/kzEA6RhXlFGPGFDMHBO0dRFvNjlB3tJANo9RxeRuSSk0nxQssVEZBAHhajc=
+               "${local.repo_host} ${var.properties.ssh_publickey}" 
     controller:
       enableStatefulSet: true
     redis-ha:
@@ -102,6 +116,8 @@ locals {
       ProjectID              = var.dependency.cloud_provider.projectId
     }
 
+    ssh_repo_url             = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
+    repo_host                = join("", regex("(?:https:\\/\\/)([0-9A-Za-z_\\-(\\.)]+)(?:\\/)(?:.*)$", var.properties.repo))
     zone_name                = var.dependency.cloud_provider.hosted_zone
     hostname                 = lower("argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.${local.zone_name}")
 }
@@ -139,26 +155,10 @@ module "argocd" {
   argocd_applications        = var.properties.appname != "" ? {
     "${var.properties.appname}" = {
       path                   = var.properties.repo_type != "chart" ? var.properties.path : var.properties.repo_type
-      repo_url               = var.properties.repo
+      repo_url               = local.ssh_repo_url
       add_on_application     = true
     }
   } : {}
-
-  # Add-ons
-  # enable_amazon_eks_aws_ebs_csi_driver = true
-  # enable_aws_for_fluentbit             = true
-  # # Let fluentbit create the cw log group
-  # aws_for_fluentbit_create_cw_log_group = false
-  # enable_cert_manager                   = true
-  # enable_cluster_autoscaler             = true
-  # enable_karpenter                      = true
-  # enable_keda                           = true
-  # enable_metrics_server                 = true
-  # enable_prometheus                     = true
-  # enable_traefik                        = true
-  # enable_vpa                            = true
-  # enable_yunikorn                       = true
-  # enable_argo_rollouts                  = true
 
   tags                       = local.tags
 }
@@ -198,8 +198,17 @@ resource "aws_secretsmanager_secret_version" "argocd" {
   secret_string              = random_password.argocd.result
 }
 
+# Creating secret in order to be able to authenticate with repo server
+resource "kubectl_manifest" "ingress_argocd" {
+  yaml_body  = templatefile("${path.module}/repo_secret.yaml", { repo_url = "${local.ssh_repo_url}"})
+
+  depends_on = [
+          module.argocd
+  ]
+}
+
 output "cfout" {
-  value                      = {
+  value                      = { 
     chart                    = module.argocd.argocd.release_metadata[0].chart
     app_version              = module.argocd.argocd.release_metadata[0].app_version
     namespace                = module.argocd.argocd.release_metadata[0].namespace
