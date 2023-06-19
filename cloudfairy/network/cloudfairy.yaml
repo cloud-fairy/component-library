@@ -8,6 +8,7 @@ cloudfairy_module:
     - network
   runtime: terraform
   dependencies:
+    - base
     - "cloud_provider"
   entry:
     aws: vpc.aws.tf
@@ -18,10 +19,10 @@ cloudfairy_module:
       displayName: "Network Name"
       type: string
       defaultValue: "my-vpc"
-    - name: subnets_count
-      displayName: "Subnets Count"
-      type: string
-      defaultValue: 1
+    # - name: subnets_count
+    #   displayName: "Subnets Count"
+    #   type: string
+    #   defaultValue: 1
     - name: cidr_block
       displayName: "CIDR Block"
       type: options
@@ -31,10 +32,10 @@ cloudfairy_module:
         - label: "172.31.x.x"
           value: "172.31.0.0/16"
       defaultValue: "10.0.0.0/16"
-    - name: subnet_names
-      displayName: "Subnet Names"
-      type: string
-      defaultValue: "pub_subnet"
+    # - name: subnet_names
+    #   displayName: "Subnet Names"
+    #   type: string
+    #   defaultValue: "pub_subnet"
     - name: subnet_prefixes
       displayName: "Subnet Prefixes"
       type: string

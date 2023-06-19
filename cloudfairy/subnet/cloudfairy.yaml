@@ -12,7 +12,7 @@ cloudfairy_module:
     - "network"
   entry:
     aws: aws
-    az: az
+    az: subnet.az.tf
   properties: 
     - name: subnet_name
       displayName: "Subnet Name"

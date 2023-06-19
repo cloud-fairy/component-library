@@ -1,6 +1,6 @@
 cloudfairy_module:
   name: cluster
-  displayName: "K8S Cluster"
+  displayName: "Managed K8S Cluster"
   type: component
   interface:
     - cluster
@@ -9,21 +9,21 @@ cloudfairy_module:
   runtime: terraform
   entry:
     aws: aws
-    gcp: gcp
-    az: az
+    az: main.az.tf
   dependencies:
     - "cloud_provider"
-    - base
     - network
-  properties:
+    #- subnet
+  properties: 
     - name: name
       type: string
       displayName: "Cluster Name"
-      defaultValue: "k8s"
+      defaultValue: "eks_new"
+
     - name: k8s_version
       displayName: "Cluster Version"
       type: options
-      options:
+      options: 
         - label: "1.22"
           value: "1.22"
         - label: "1.23"
@@ -35,7 +35,17 @@ cloudfairy_module:
         - label: "1.26"
           value: "1.26"
       defaultValue: "1.24"
+
     - name: enable_public_access
-      type: boolean
+      type: bool
       displayName: enable_public_access
       defaultValue: true
+      
+    # - name: ssh_key_secret_arn
+    #   type: string
+    #   displayName: ssh_key_secret_arn
+    #   defaultValue: ""
+    # - name: cluster_additional_security_group_ids
+    #   type: string
+    #   displayName: additional security groups
+    #   defaultValue: "[]"

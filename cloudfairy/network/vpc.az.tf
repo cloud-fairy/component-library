@@ -10,13 +10,22 @@ variable "project" {
   type = any
 }
 
+locals {
+  vpc_suffix                  = "${var.project.project_name}-${var.project.environment_name}-${var.dependency.cloud_provider.projectId}"
+  vpc_prefix                  = var.properties.vpc_name != "" ? var.properties.vpc_name : "vpc"
+  vpc_name                    = "${local.vpc_prefix}-${local.vpc_suffix}"
 
+  tags = {
+    Vnet_Name                 = local.vpc_name
+  }
+}
 
 resource "azurerm_virtual_network" "network" {
   resource_group_name = var.dependency.cloud_provider.resource_group_name
   location            = var.dependency.cloud_provider.region
-  name                = var.properties.vpc_name
+  name                = local.vpc_name
   address_space       = ["${var.properties.cidr_block}"]
+  tags                = "${merge(var.dependency.base.tags, local.tags)}"
 }
 
 locals {
@@ -25,11 +34,10 @@ locals {
 }
 
 resource "azurerm_subnet" "subnet" {
-  count = var.properties.subnets_count
   resource_group_name  = var.dependency.cloud_provider.resource_group_name
-  virtual_network_name = var.properties.vpc_name
-  name                 = "subnet_${count.index}"
-  address_prefixes     = ["${local.cdir_oct1}.${local.cdir_oct2}.${count.index}.0/24"]
+  virtual_network_name = local.vpc_name
+  name                 = "${local.vpc_name}-subnet"
+  address_prefixes     = [cidrsubnet(var.properties.cidr_block, 8, 6)]
   depends_on = [
     azurerm_virtual_network.network
   ]
@@ -47,9 +55,11 @@ variable "name" {
 
 output "cfout" {
   value = {
-    vnet_name       = var.properties.vpc_name
+    vnet_id         = azurerm_virtual_network.network.id
+    vnet_name       = local.vpc_name
     address_space   = ["${var.properties.cidr_block}"]
-    subnet_names    = [azurerm_subnet.subnet.*.name]
-    subnet_prefixes = [azurerm_subnet.subnet.*.address_prefixes]
+    cidr            = var.properties.cidr_block
+    subnet_name     = azurerm_subnet.subnet.name
+    subnet_prefixes = [azurerm_subnet.subnet.address_prefixes]
   }
 }
