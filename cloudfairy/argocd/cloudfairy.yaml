@@ -39,7 +39,7 @@ cloudfairy_module:
           value: "chart"
         - label: "Git"
           value: "git"
-      defaultValue: "chart"
+      defaultValue: "git"
     - name: ssh_publickey
       displayName: "ssh public key (eg: ssh-ed25519 AAAA........)"
       type: string

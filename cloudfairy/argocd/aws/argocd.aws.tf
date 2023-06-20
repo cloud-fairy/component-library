@@ -119,8 +119,6 @@ locals {
     ssh_repo_url_postfix     = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]
     ssh_repo_url_full        = "${local.ssh_repo_url}${local.ssh_repo_url_postfix}"
     repo_host                = join("", regex("(?:https:\\/\\/)([0-9A-Za-z_\\-(\\.)]+)(?:\\/)(?:.*)$", var.properties.repo))
-    cert_subtype             = split(" ", var.properties.ssh_publickey)[0]
-    cert_data                = split(" ", var.properties.ssh_publickey)[1]
     
     zone_name                = var.dependency.cloud_provider.hosted_zone
     hostname                 = lower("argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.${local.zone_name}")
@@ -195,6 +193,7 @@ resource "random_string" "suffix" {
   special                    = false
 }
 
+# Create new credentials in AWS Secrets Manager
 resource "aws_secretsmanager_secret" "argocd" {
   name                       = format("argocd-%s-%s-%s", var.project.project_name, var.project.environment_name, random_string.suffix.result)
   description                = format("ArgoCD Admin Secret for %s in %s environment", var.project.project_name, var.project.environment_name)
@@ -203,11 +202,13 @@ resource "aws_secretsmanager_secret" "argocd" {
   depends_on                 = [ module.argocd ]
 }
 
+# Save ArgoCD admin password in Secrets Manager
 resource "aws_secretsmanager_secret_version" "argocd" {
   secret_id                  = aws_secretsmanager_secret.argocd.id
   secret_string              = random_password.argocd.result
 }
 
+# Retreive pre-created git repository private key
 data "aws_secretsmanager_secret" "by-name" {
   name                       = "private_key-${local.tags.Project}-${local.tags.Environment}"
 }
@@ -220,6 +221,7 @@ data "aws_secretsmanager_secret_version" "current" {
 
 output "cfout" {
   value                      = {
+    admin_secret_arn         = aws_secretsmanager_secret.argocd.id
     chart                    = module.argocd.argocd.release_metadata[0].chart
     app_version              = module.argocd.argocd.release_metadata[0].app_version
     namespace                = module.argocd.argocd.release_metadata[0].namespace
