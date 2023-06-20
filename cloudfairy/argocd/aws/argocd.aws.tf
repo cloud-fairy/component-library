@@ -21,6 +21,10 @@ terraform {
       source                 = "gavinbunney/kubectl"
       version                = "1.14.0"
     }
+    argocd                   = {
+      source                 = "oboukili/argocd"
+      version                = "5.5.0"
+    }
   }
 }
 
@@ -59,17 +63,23 @@ provider "kubectl" {
 
 provider "bcrypt" {}
 
+provider "argocd" {
+  username                    = "admin"
+  password                    = random_password.argocd.result
+  server_addr                 = local.hostname
+}
+
+
 locals {
     argocd_values            = [
     <<-EOF
     configs:
-      credentialTemplates:
-        ssh-creds:
-          url: "${local.ssh_repo_url}"
       knownHosts:
         data:
-          ssh_known_hosts: |
-               "${local.repo_host} ${var.properties.ssh_publickey}" 
+          ssh_known_hosts: ${local.repo_host} ${var.properties.ssh_publickey}
+      credentialTemplates:
+        ssh-creds:
+          url: ${local.ssh_repo_url}
     controller:
       enableStatefulSet: true
     redis-ha:
@@ -116,8 +126,13 @@ locals {
       ProjectID              = var.dependency.cloud_provider.projectId
     }
 
-    ssh_repo_url             = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
+    ssh_repo_url             = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
+    ssh_repo_url_postfix     = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]
+    ssh_repo_url_full        = "${local.ssh_repo_url}${local.ssh_repo_url_postfix}"
     repo_host                = join("", regex("(?:https:\\/\\/)([0-9A-Za-z_\\-(\\.)]+)(?:\\/)(?:.*)$", var.properties.repo))
+    cert_subtype             = split(" ", var.properties.ssh_publickey)[0]
+    cert_data                = split(" ", var.properties.ssh_publickey)[1]
+    
     zone_name                = var.dependency.cloud_provider.hosted_zone
     hostname                 = lower("argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.${local.zone_name}")
 }
@@ -137,9 +152,14 @@ module "argocd" {
       {
         name  = "configs.secret.argocdServerAdminPassword"
         value = bcrypt_hash.argo.id
+      },
+      {
+        name  = "configs.credentialTemplates.ssh-creds.sshPrivateKey"
+        value = data.aws_secretsmanager_secret_version.current.secret_string
       }
     ]
     values = local.hostname != "" ? local.argocd_values : []    # No Ingress configuration if hostname is not set
+    version                  = "5.36.2"
   }
 
   keda_helm_config           = {
@@ -155,7 +175,8 @@ module "argocd" {
   argocd_applications        = var.properties.appname != "" ? {
     "${var.properties.appname}" = {
       path                   = var.properties.repo_type != "chart" ? var.properties.path : var.properties.repo_type
-      repo_url               = local.ssh_repo_url
+      repo_url               = local.ssh_repo_url_full
+      target_revision        = var.properties.branch
       add_on_application     = true
     }
   } : {}
@@ -198,17 +219,31 @@ resource "aws_secretsmanager_secret_version" "argocd" {
   secret_string              = random_password.argocd.result
 }
 
-# Creating secret in order to be able to authenticate with repo server
-resource "kubectl_manifest" "ingress_argocd" {
-  yaml_body  = templatefile("${path.module}/repo_secret.yaml", { repo_url = "${local.ssh_repo_url}"})
-
-  depends_on = [
-          module.argocd
-  ]
+data "aws_secretsmanager_secret" "by-name" {
+  name                       = "private_key-${local.tags.Project}-${local.tags.Environment}"
 }
+
+data "aws_secretsmanager_secret_version" "current" {
+  secret_id                  = data.aws_secretsmanager_secret.by-name.id
+
+  depends_on                 = [ data.aws_secretsmanager_secret.by-name ]
+}
+
+# resource "argocd_repository_certificate" "argocd_ssh" {
+#   ssh {
+#     server_name              = local.repo_host
+#     cert_subtype             = local.cert_subtype
+#     cert_data                = local.cert_data 
+#   }
+
+#   depends_on                 = [ module.argocd ]
+# }
 
 output "cfout" {
   value                      = { 
+    cert_subtype             = local.cert_subtype
+    cert_data                = local.cert_data
+    server_name              = local.repo_host
     chart                    = module.argocd.argocd.release_metadata[0].chart
     app_version              = module.argocd.argocd.release_metadata[0].app_version
     namespace                = module.argocd.argocd.release_metadata[0].namespace

@@ -27,6 +27,10 @@ cloudfairy_module:
       displayName: "Path"
       type: string
       defaultValue: ""
+    - name: branch
+      displayName: "Repo Branch"
+      type: string
+      defaultValue: "HEAD"
     - name: repo_type
       displayName: "Repository Type"
       type: options
