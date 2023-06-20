@@ -1,22 +1,20 @@
 cloudfairy_module:
   internal: false
   type: component
-  name: argocd
+  name: argocd-app
   vendor: cloudfairy
-  displayName: "ArgoCD"
+  displayName: "ArgoCD Application"
   interface:
-    - argocd
+    - argocd-app
   runtime: terraform
   dependencies:
     - "cloud_provider"
-    - cluster
-    - controller
-    - certificate
+    - argocd
   entry:
     aws: aws
   properties: 
     - name: appname
-      displayName: "App name to bootstrap the cluster (leave blank for none)"
+      displayName: "ArgoCD App name"
       type: string
       defaultValue: ""
     - name: repo
@@ -40,9 +38,3 @@ cloudfairy_module:
         - label: "Git"
           value: "git"
       defaultValue: "git"
-    - name: ssh_publickey
-      displayName: "ssh public key (eg: ssh-ed25519 AAAA........)"
-      type: string
-      defaultValue: ""
-    
-
