@@ -219,10 +219,7 @@ data "aws_secretsmanager_secret_version" "current" {
 }
 
 output "cfout" {
-  value                      = { 
-    cert_subtype             = local.cert_subtype
-    cert_data                = local.cert_data
-    server_name              = local.repo_host
+  value                      = {
     chart                    = module.argocd.argocd.release_metadata[0].chart
     app_version              = module.argocd.argocd.release_metadata[0].app_version
     namespace                = module.argocd.argocd.release_metadata[0].namespace
