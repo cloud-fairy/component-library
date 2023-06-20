@@ -21,10 +21,6 @@ terraform {
       source                 = "gavinbunney/kubectl"
       version                = "1.14.0"
     }
-    argocd                   = {
-      source                 = "oboukili/argocd"
-      version                = "5.5.0"
-    }
   }
 }
 
@@ -62,13 +58,6 @@ provider "kubectl" {
 }
 
 provider "bcrypt" {}
-
-provider "argocd" {
-  username                    = "admin"
-  password                    = random_password.argocd.result
-  server_addr                 = local.hostname
-}
-
 
 locals {
     argocd_values            = [
@@ -228,16 +217,6 @@ data "aws_secretsmanager_secret_version" "current" {
 
   depends_on                 = [ data.aws_secretsmanager_secret.by-name ]
 }
-
-# resource "argocd_repository_certificate" "argocd_ssh" {
-#   ssh {
-#     server_name              = local.repo_host
-#     cert_subtype             = local.cert_subtype
-#     cert_data                = local.cert_data 
-#   }
-
-#   depends_on                 = [ module.argocd ]
-# }
 
 output "cfout" {
   value                      = { 
