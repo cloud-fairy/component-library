@@ -8,7 +8,7 @@ terraform {
 }
 
 provider "argocd" {
-  server_addr               = trim("${local.hostname}:443", ":")
+  server_addr               = "${local.hostname}:443"
   username                  = "admin"
   password                  = data.aws_secretsmanager_secret_version.argocd_admin.secret_string
 }
@@ -17,7 +17,7 @@ locals {
   ssh_repo_url              = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
   ssh_repo_url_postfix      = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]
   ssh_repo_url_full         = "${local.ssh_repo_url}${local.ssh_repo_url_postfix}"
-  hostname                  = regex("(?:https:\\/\\/).*", var.dependency.argocd.url)
+  hostname                  = regex("(?:https:\\/\\/)(.*)", var.dependency.argocd.url)[0]
 }
 
 data "aws_secretsmanager_secret" "argocd_admin" {
@@ -40,7 +40,7 @@ resource "argocd_application" "git" {
   }
 
   cascade                   = false # disable cascading deletion
-  wait                      = true
+  wait                      = false
 
   spec {
     project                 = "default"
@@ -72,5 +72,11 @@ resource "argocd_application" "git" {
         }
       }
     }
+  }
+}
+
+output "cfout" {
+  value                      = {
+    server_addr              = local.hostname
   }
 }
