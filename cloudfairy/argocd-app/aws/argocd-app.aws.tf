@@ -32,7 +32,7 @@ data "aws_secretsmanager_secret_version" "argocd_admin" {
 
 # Git Application
 resource "argocd_application" "git" {
-  count                     = var.properties.repo_type == "git" ? 1 : 0
+  count                     = var.properties.app_type == "git" ? 1 : 0
   metadata {
     name                    = var.properties.appname
     namespace               = "argocd"
@@ -57,7 +57,6 @@ resource "argocd_application" "git" {
       path                  = var.properties.path
       target_revision       = var.properties.branch
     }
-
     sync_policy {
       automated {
         prune               = true
@@ -79,7 +78,7 @@ resource "argocd_application" "git" {
 
 # Helm application
 resource "argocd_application" "helm" {
-  count                     = var.properties.repo_type == "chart" ? 1 : 0
+  count                     = var.properties.app_type == "chart" ? 1 : 0
 
   metadata {
     name                    = var.properties.appname
@@ -109,7 +108,7 @@ resource "argocd_application" "helm" {
           name              = "someotherparameter"
           value             = "true"
         }
-        value_files         = ["values-test.yml"]
+        value_files         = ["values.yml"]
         values              = yamlencode({
           someparameter     = {
             enabled         = true
