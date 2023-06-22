@@ -17,6 +17,15 @@ cloudfairy_module:
       displayName: "ArgoCD App name"
       type: string
       defaultValue: ""
+    - name: repo_type
+      displayName: "Repository Type"
+      type: options
+      options:
+        - label: "Chart"
+          value: "chart"
+        - label: "Git"
+          value: "git"
+      defaultValue: "git"
     - name: repo
       displayName: "Repo url (eg: https://gitlab.com/mygroup/repo.git)"
       type: string
@@ -29,12 +38,8 @@ cloudfairy_module:
       displayName: "Repo Branch"
       type: string
       defaultValue: "HEAD"
-    - name: repo_type
-      displayName: "Repository Type"
-      type: options
-      options:
-        - label: "Chart"
-          value: "chart"
-        - label: "Git"
-          value: "git"
-      defaultValue: "git"
+    - name: ns
+      displayName: "Target Namespace"
+      type: string
+      defaultValue: "default"
+    

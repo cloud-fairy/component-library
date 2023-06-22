@@ -30,7 +30,9 @@ data "aws_secretsmanager_secret_version" "argocd_admin" {
   depends_on                = [ data.aws_secretsmanager_secret.argocd_admin ]
 }
 
+# Git Application
 resource "argocd_application" "git" {
+  count                     = var.properties.repo_type == "git" ? 1 : 0
   metadata {
     name                    = var.properties.appname
     namespace               = "argocd"
@@ -47,7 +49,7 @@ resource "argocd_application" "git" {
 
     destination {
       server                = "https://kubernetes.default.svc"
-      namespace             = "default"
+      namespace             = var.properties.ns
     }
 
     source {
@@ -58,25 +60,70 @@ resource "argocd_application" "git" {
 
     sync_policy {
       automated {
-        prune       = true
-        self_heal   = true
-        allow_empty = true
+        prune               = true
+        self_heal           = true
+        allow_empty         = true
       }
 
       retry {
-        limit = "5"
+        limit               = "5"
         backoff {
-          duration     = "30s"
-          max_duration = "2m"
-          factor       = "2"
+          duration          = "30s"
+          max_duration      = "2m"
+          factor            = "2"
         }
       }
     }
   }
 }
 
+# Helm application
+resource "argocd_application" "helm" {
+  count                     = var.properties.repo_type == "chart" ? 1 : 0
+
+  metadata {
+    name                    = var.properties.appname
+    namespace               = "argocd"
+    labels                  = {
+      #test                 = "true"
+    }
+  }
+
+  spec {
+    destination {
+      server                = "https://kubernetes.default.svc"
+      namespace             = var.properties.ns
+    }
+
+    source {
+      repo_url              = local.ssh_repo_url_full
+      chart                 = var.properties.appname
+      #target_revision       = "1.2.3"
+      helm {
+        release_name        = "testing"
+        parameter {
+          name              = "image.tag"
+          value             = "1.2.3"
+        }
+        parameter {
+          name              = "someotherparameter"
+          value             = "true"
+        }
+        value_files         = ["values-test.yml"]
+        values              = yamlencode({
+          someparameter     = {
+            enabled         = true
+            someArray       = ["foo", "bar"]
+          }
+        })
+      }
+    }
+  }
+}
+
 output "cfout" {
-  value                      = {
-    server_addr              = local.hostname
+  value                     = {
+    server_addr             = local.hostname
+    appname                 = var.properties.appname
   }
 }
