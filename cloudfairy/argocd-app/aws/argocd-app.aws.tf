@@ -100,7 +100,7 @@ resource "argocd_application" "helm" {
       chart                 = var.properties.appname
       #target_revision       = "1.2.3"
       helm {
-        release_name        = "testing"
+        release_name        = var.properties.appname
         parameter {
           name              = "image.tag"
           value             = "1.2.3"
