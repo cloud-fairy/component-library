@@ -12,4 +12,5 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - cluster
+    - base
   properties: []

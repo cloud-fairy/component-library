@@ -1,12 +1,7 @@
 locals {
   cluster                            = var.dependency.cluster
 
-  tags = {
-    Terraform                        = "true"
-    Environment                      = var.project.environment_name
-    Project                          = var.project.project_name
-    ProjectID                        = var.dependency.cloud_provider.projectId
-  }
+  tags                               = var.dependency.base.tags
 }
 
 provider "kubernetes" {
