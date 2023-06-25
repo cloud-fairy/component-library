@@ -10,6 +10,10 @@ variable "project" {
   type                  = any
 }
 
+locals {
+  tags                  = var.dependency.base.tags
+}
+
 module "security_group" {
   source                = "terraform-aws-modules/security-group/aws"
   version               = "4.17.1"
@@ -22,12 +26,7 @@ module "security_group" {
 
   egress_rules          = [ "all-all" ]
 
-  tags                  = {
-    Terraform           = "true"
-    Environment         = var.project.environment_name
-    Project             = var.project.project_name
-    ProjectID           = var.dependency.cloud_provider.projectId
-  }
+  tags                  = local.tags
 }
 
 output "cfout" {

@@ -10,6 +10,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - network
+    - base
   entry:
     aws: sg.aws.tf
   properties: 
