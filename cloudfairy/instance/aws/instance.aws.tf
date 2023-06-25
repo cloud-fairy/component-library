@@ -11,12 +11,7 @@ variable "project" {
 }
 
 locals {
-  tags = {
-    Terraform            = "true"
-    Environment          = var.project.environment_name
-    Project              = var.project.project_name
-    ProjectID            = var.dependency.cloud_provider.projectId
-  }
+  tags                   = var.dependency.base.tags
 }
 
 data "aws_ami" "aws_linux" {
