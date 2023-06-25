@@ -15,13 +15,7 @@ locals {
   vpc_prefix                  = var.properties.vpc_name != "" ? var.properties.vpc_name : "vpc"
   vpc_name                    = "${local.vpc_prefix}-${local.vpc_suffix}"
 
-  tags = {
-    Name                      = local.vpc_name
-    Terraform                 = "true"
-    Environment               = var.project.environment_name
-    Project                   = var.project.project_name
-    ProjectID                 = var.dependency.cloud_provider.projectId
-  }
+  tags                        = var.dependency.base.tags
 }
 
 data "aws_availability_zones" "available" {}
