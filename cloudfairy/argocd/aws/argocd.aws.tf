@@ -108,12 +108,7 @@ locals {
           external-dns.alpha.kubernetes.io/hostname: "${local.hostname}"
     EOF
     ]
-    tags                     = {
-      Terraform              = "true"
-      Environment            = var.project.environment_name
-      Project                = var.project.project_name
-      ProjectID              = var.dependency.cloud_provider.projectId
-    }
+    tags                     = var.dependency.base.tags
 
     ssh_repo_url             = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
     ssh_repo_url_postfix     = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]

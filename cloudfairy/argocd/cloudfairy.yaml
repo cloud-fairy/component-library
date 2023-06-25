@@ -12,6 +12,7 @@ cloudfairy_module:
     - cluster
     - controller
     - certificate
+    - base
   entry:
     aws: aws
   properties: 
