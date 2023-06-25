@@ -12,12 +12,7 @@ variable "project" {
 
 locals {
   bucketName        = "${var.properties.storage_name}-${local.tags.Project}-${local.tags.Environment}"
-  tags = {
-    Terraform       = "true"
-    Environment     = var.project.environment_name
-    Project         = var.project.project_name
-    ProjectID       = var.dependency.cloud_provider.projectId
-  }
+  tags              = var.dependency.base.tags
 }
 
 
