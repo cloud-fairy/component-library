@@ -14,9 +14,9 @@ provider "argocd" {
 }
 
 locals {
-  ssh_repo_url              = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
-  ssh_repo_url_postfix      = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]
-  ssh_repo_url_full         = "${local.ssh_repo_url}${local.ssh_repo_url_postfix}"
+  ssh_repo_url              = length(regexall("https://", var.properties.repo)) > 0 ? format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":")) : ""
+  ssh_repo_url_postfix      = length(regexall("https://", var.properties.repo)) > 0  ? regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0] : ""
+  ssh_repo_url_full         = length(regexall("https://", var.properties.repo)) > 0  ? "${local.ssh_repo_url}${local.ssh_repo_url_postfix}" : var.properties.repo
   hostname                  = regex("(?:https:\\/\\/)(.*)", var.dependency.argocd.url)[0]
 }
 
@@ -95,26 +95,13 @@ resource "argocd_application" "helm" {
     }
 
     source {
-      repo_url              = local.ssh_repo_url_full
+      repo_url              = var.properties.repo
       chart                 = var.properties.appname
-      #target_revision       = "1.2.3"
+      target_revision       = var.properties.branch
+      
       helm {
         release_name        = var.properties.appname
-        parameter {
-          name              = "image.tag"
-          value             = "1.2.3"
-        }
-        parameter {
-          name              = "someotherparameter"
-          value             = "true"
-        }
         value_files         = ["values.yml"]
-        values              = yamlencode({
-          someparameter     = {
-            enabled         = true
-            someArray       = ["foo", "bar"]
-          }
-        })
       }
     }
   }

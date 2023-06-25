@@ -18,7 +18,7 @@ cloudfairy_module:
       type: string
       defaultValue: ""
     - name: app_type
-      displayName: "Application Type"
+      displayName: "Repository Type"
       type: options
       options:
         - label: "Chart"
@@ -31,11 +31,11 @@ cloudfairy_module:
       type: string
       defaultValue: ""
     - name: path
-      displayName: "Path"
+      displayName: "Path (git repos only)"
       type: string
       defaultValue: ""
     - name: branch
-      displayName: "Repo Branch"
+      displayName: "Repo branch or chart version"
       type: string
       defaultValue: "HEAD"
     - name: ns
