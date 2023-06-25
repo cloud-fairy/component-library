@@ -8,6 +8,7 @@ cloudfairy_module:
     - cluster
     - controller
     - certificate
+    - base
   builder: terraform
   entry:
     aws: aws

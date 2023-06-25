@@ -30,12 +30,7 @@ terraform {
 }
 
 locals {
-  tags = {
-    Terraform          = "true"
-    Environment        = var.project.environment_name
-    Project            = var.project.project_name
-    ProjectID          = var.dependency.cloud_provider.projectId
-  }
+  tags                 = var.dependency.base.tags
   zone_name            = var.dependency.cloud_provider.hosted_zone
   hostname             = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.${local.zone_name}")
   docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
