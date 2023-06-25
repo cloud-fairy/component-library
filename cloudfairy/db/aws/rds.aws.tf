@@ -9,12 +9,7 @@ locals {
     postgres                          =  var.postgresql_version
     mariadb                           =  var.mariadb_version
   }
-  tags = {
-    Terraform                         = "true"
-    Environment                       = var.project.environment_name
-    Project                           = var.project.project_name
-    ProjectID                         = var.dependency.cloud_provider.projectId
-  }
+  tags                                =  var.dependency.base.tags 
 
   major_version   = join("", local.engine != "postgres" ? [
                       join("", regex("^(\\d{1,2})(\\.)(\\d{1,2})", local.engine_version[local.engine])) ] :  [            
@@ -28,15 +23,15 @@ data "aws_subnets" "public" {
   }
   filter {
     name                              = "tag:Environment"
-    values                            = [var.project.environment_name]
+    values                            = [local.tags.environment_name]
   }
   filter {
     name                              = "tag:Project"
-    values                            = [var.project.project_name]
+    values                            = [local.tags.project_name]
   }
   filter {
     name                              = "tag:ProjectID"
-    values                            = [var.dependency.cloud_provider.projectId]
+    values                            = [local.tags.projectId]
   }
   filter {
     name                              = "tag:type"
