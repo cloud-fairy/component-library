@@ -31,5 +31,5 @@ variable "service_account" {
 variable "instance_type" {
   description = "Name of irsa role service account name"
   type        = string
-  default     = "t3.large"
+  default     = "t3.medium"
 }
