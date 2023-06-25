@@ -70,7 +70,6 @@ module "external_secrets" {
   cluster_name                       = local.cluster.name
   cluster_identity_oidc_issuer       = local.cluster.cluster_oidc_issuer_url
   cluster_identity_oidc_issuer_arn   = local.cluster.oidc_provider_arn
-  secrets_aws_region                 = var.dependency.cloud_provider.region
 }
 
 output "cfout" {
