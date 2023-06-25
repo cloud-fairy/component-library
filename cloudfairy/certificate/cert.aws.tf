@@ -23,12 +23,7 @@ locals {
   project                   = var.project.project_name
 
   zone_id                   = try(data.aws_route53_zone.this.zone_id, null)
-  tags                      = {
-    Terraform               = "true"
-    Environment             = var.project.environment_name
-    Project                 = local.project
-    ProjectID               = var.dependency.cloud_provider.projectId
-  }
+  tags                      = var.dependency.base.tags
 }
 
 data "aws_route53_zone" "this" {

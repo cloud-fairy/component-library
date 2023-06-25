@@ -11,6 +11,7 @@ cloudfairy_module:
     aws: cert.aws.tf
   dependencies:
     - "cloud_provider"
+    - base
   properties: 
     - name: hostname
       type: string
