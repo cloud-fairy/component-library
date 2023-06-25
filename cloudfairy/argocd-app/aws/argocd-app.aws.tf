@@ -101,7 +101,23 @@ resource "argocd_application" "helm" {
       
       helm {
         release_name        = var.properties.appname
-        value_files         = ["values.yml"]
+      }
+    }
+
+    sync_policy {
+      automated {
+        prune               = true
+        self_heal           = true
+        allow_empty         = true
+      }
+
+      retry {
+        limit               = "5"
+        backoff {
+          duration          = "30s"
+          max_duration      = "2m"
+          factor            = "2"
+        }
       }
     }
   }
