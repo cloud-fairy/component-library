@@ -12,12 +12,7 @@ variable "project" {
 
 locals {
   bucketName              = "${var.properties.bucketName}-${local.tags.Environment}.${local.tags.Project}.${var.dependency.certificate.zone_name}"
-  tags                    = {
-    Terraform             = "true"
-    Environment           = var.project.environment_name
-    Project               = var.project.project_name
-    ProjectID             = var.dependency.cloud_provider.projectId
-  }
+  tags                    = var.dependency.base.tags
   cf_component_name       = try(var.properties.local_name, "Cloudfairy Public Website")
 }
 
