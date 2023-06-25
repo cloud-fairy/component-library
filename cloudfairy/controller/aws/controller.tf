@@ -28,7 +28,7 @@ provider "helm" {
 }
 
 module "load_balancer_controller" {
-  count                              =  1 
+  count                              = var.enable_load_balancer ? 1 : 0
 
   source                             = "DNXLabs/eks-lb-controller/aws"
   version                            = "0.7.0"
@@ -37,8 +37,8 @@ module "load_balancer_controller" {
   cluster_name                       = local.cluster.name
 }
 
-module "eks-external-dns" {
-  count                              =  1
+module "eks_external_dns" {
+  count                              = var.enable_external_dns ? 1 : 0
 
   source                             = "lablabs/eks-external-dns/aws"
   version                            = "1.1.1"
@@ -51,8 +51,8 @@ module "eks-external-dns" {
   }
 }
 
-module "cert-manager" {
-  count                              =  0
+module "cert_manager" {
+  count                              = var.enable_cert_manager ? 1 : 0
 
   source                             = "terraform-iaac/cert-manager/kubernetes"
   version                            = "2.5.1"
@@ -60,8 +60,21 @@ module "cert-manager" {
   cluster_issuer_email               = ""
 }
 
+module "external_secrets" {
+  count                              = var.enable_external_secrets ? 1 : 0
+
+  source                             = "git::https://github.com/DNXLabs/terraform-aws-eks-external-secrets.git?ref=2.1.0"
+
+  enabled                            = true
+
+  cluster_name                       = local.cluster.name
+  cluster_identity_oidc_issuer       = local.cluster.cluster_oidc_issuer_url
+  cluster_identity_oidc_issuer_arn   = local.cluster.oidc_provider_arn
+  secrets_aws_region                 = var.dependency.cloud_provider.region
+}
+
 output "cfout" {
   value                              = {
-    Installed_Operators              = "[ load_balancer_controller , eks-external-dns ]"
+    Installed_Operators              = "[ load_balancer_controller , eks_external_dns , external_secrets ]"
   }
 }
