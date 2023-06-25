@@ -63,5 +63,6 @@ output "cfout" {
   value                    = {
     role_arn               = module.admin_role.iam_role_arn
     role_name              = local.role_name
+    tags                   = local.tags
   }
 }
