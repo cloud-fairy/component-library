@@ -1,6 +1,6 @@
 # Configuring policy document with permissions for all CloudFairy components
 locals {
-  policy_name              = "${var.properties.storage_name}-policy"
+  policy_name              = "${var.properties.storage_name}-${local.tags.Project}-${local.tags.Environment}"
 }
 
 data "aws_iam_policy_document" "bucket" {
