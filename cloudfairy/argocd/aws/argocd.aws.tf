@@ -110,10 +110,10 @@ locals {
     ]
     tags                     = var.dependency.base.tags
 
-    ssh_repo_url             = format("git@%s", replace(regex("(?:https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)\\/([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
-    ssh_repo_url_postfix     = regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0]
-    ssh_repo_url_full        = "${local.ssh_repo_url}${local.ssh_repo_url_postfix}"
-    repo_host                = join("", regex("(?:https:\\/\\/)([0-9A-Za-z_\\-(\\.)]+)(?:\\/)(?:.*)$", var.properties.repo))
+    ssh_repo_url             = format("git@%s", replace(regex("^(?:git@|https:\\/\\/)(([0-9A-Za-z_\\-(\\.)]+)([\\/:])([0-9A-Za-z_\\-(\\.)]+))(?:.*)$", var.properties.repo)[0], "/", ":"))
+    ssh_repo_url_postfix     = length(regexall("https://", var.properties.repo)) > 0 ? regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0] : ""
+    ssh_repo_url_full        = length(regexall("https://", var.properties.repo)) > 0 ? "${local.ssh_repo_url}${local.ssh_repo_url_postfix}" : var.properties.repo
+    repo_host                = var.properties.repo != "" ? regex("^(?:git@|https:\\/\\/)([0-9A-Za-z_\\-(\\.)]+)(?:[\\/:])(?:.*)$", var.properties.repo)[0] : ""
     
     zone_name                = var.dependency.cloud_provider.hosted_zone
     hostname                 = lower("argocd-${local.tags.Environment}-${local.tags.ProjectID}.${local.tags.Project}.${local.zone_name}")
