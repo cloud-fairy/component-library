@@ -10,6 +10,7 @@ cloudfairy_module:
   dependencies:
     - "cloud_provider"
     - argocd
+    - base
   entry:
     aws: aws
   properties: 

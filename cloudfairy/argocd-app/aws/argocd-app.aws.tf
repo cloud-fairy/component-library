@@ -18,6 +18,8 @@ locals {
   ssh_repo_url_postfix      = length(regexall("https://", var.properties.repo)) > 0  ? regex("(?:https:\\/\\/)(?:[0-9A-Za-z_\\-(\\.)]+)\\/(?:[0-9A-Za-z_\\-(\\.)]+)(.*)$", var.properties.repo)[0] : ""
   ssh_repo_url_full         = length(regexall("https://", var.properties.repo)) > 0  ? "${local.ssh_repo_url}${local.ssh_repo_url_postfix}" : var.properties.repo
   hostname                  = regex("(?:https:\\/\\/)(.*)", var.dependency.argocd.url)[0]
+  
+  tags                      = var.dependency.base.tags
 }
 
 data "aws_secretsmanager_secret" "argocd_admin" {
@@ -34,7 +36,7 @@ data "aws_secretsmanager_secret_version" "argocd_admin" {
 resource "argocd_application" "git" {
   count                     = var.properties.app_type == "git" ? 1 : 0
   metadata {
-    name                    = var.properties.appname
+    name                    = "${var.properties.appname}-${local.tags.Environment}"
     namespace               = "argocd"
     labels                  = {
       #test = "true"
@@ -81,7 +83,7 @@ resource "argocd_application" "helm" {
   count                     = var.properties.app_type == "chart" ? 1 : 0
 
   metadata {
-    name                    = var.properties.appname
+    name                    = "${var.properties.appname}-${local.tags.Environment}"
     namespace               = "argocd"
     labels                  = {
       #test                 = "true"
