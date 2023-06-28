@@ -23,15 +23,15 @@ data "aws_subnets" "public" {
   }
   filter {
     name                              = "tag:Environment"
-    values                            = [local.tags.environment_name]
+    values                            = [local.tags.Environment]
   }
   filter {
     name                              = "tag:Project"
-    values                            = [local.tags.project_name]
+    values                            = [local.tags.Project]
   }
   filter {
     name                              = "tag:ProjectID"
-    values                            = [local.tags.projectId]
+    values                            = [local.tags.ProjectID]
   }
   filter {
     name                              = "tag:type"
