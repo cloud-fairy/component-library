@@ -10,17 +10,16 @@ variable "project" {
   type                      = any
 }
 
-# provider "aws" {
-#   alias                     = "us-east-1"
-#   region                    = "us-east-1"
-# }
+provider "aws" {
+  alias                     = "acm"
+  region                    = var.dependency.cloud_provider.region != var.properties.region ? var.properties.region : var.dependency.cloud_provider.region
+}
 
 locals {
   # Removing trailing dot from domain - just to be sure :)
   domain_name               = lower("${local.tags.Project}.${local.zone_name}")
   zone_name                 = var.dependency.cloud_provider.hosted_zone
   hostname                  = lower("*.${local.tags.Project}.${local.zone_name}")
-  project                   = var.project.project_name
 
   zone_id                   = try(data.aws_route53_zone.this.zone_id, null)
   tags                      = var.dependency.base.tags
@@ -37,9 +36,9 @@ module "acm" {
   source                    = "terraform-aws-modules/acm/aws"
   version                   = "4.3.2"
 
-  # providers                 = {
-  #   aws                     = aws.us-east-1
-  # }
+  providers                 = {
+    aws                     = aws.acm
+  }
 
   domain_name               = local.domain_name
   zone_id                   = local.zone_id

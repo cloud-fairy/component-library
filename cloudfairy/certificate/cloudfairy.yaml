@@ -17,3 +17,7 @@ cloudfairy_module:
       type: string
       displayName: "Certificate Host Name"
       defaultValue: ""
+    - name: region
+      type: string
+      displayName: "Certificate Region"
+      defaultValue: "eu-west-1"
