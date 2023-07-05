@@ -61,7 +61,6 @@ Public URL: http://${aws_route53_record.bucket.name}
 ```bash
 aws s3 sync <Source Folder> s3://${local.bucketName}
 ```
-
 EOF
 
   }
