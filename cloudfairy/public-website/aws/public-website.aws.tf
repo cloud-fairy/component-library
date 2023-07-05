@@ -16,16 +16,13 @@ locals {
   cf_component_name       = try(var.properties.local_name, "Cloudfairy Public Website")
 }
 
-
+# Creating the bucket to host the website files
 module "s3_bucket" {
   source                  = "terraform-aws-modules/s3-bucket/aws"
   version                 = "3.10.1"
 
   bucket                  = local.bucketName
-  block_public_acls       = true
-  restrict_public_buckets = true
-  block_public_policy     = true
-  attach_public_policy    = false
+  acl                     = "private"
 
   versioning               = {
     enabled                = true
@@ -34,6 +31,7 @@ module "s3_bucket" {
   tags                     = local.tags  
 }
 
+# Redirecting Alias record from Bucket name to Cloudfront
 resource "aws_route53_record" "bucket" {
   zone_id                  = var.dependency.certificate.zone_id
   name                     = local.bucketName
@@ -51,7 +49,6 @@ output "cfout" {
     policy_arn             = module.bucket_iam_policy.arn
     url                    = "http://${aws_route53_record.bucket.name}"
     regional               = module.s3_bucket.s3_bucket_bucket_regional_domain_name
-    website_endpoint       = module.s3_bucket.s3_bucket_website_endpoint
     instructions           = "deployment: aws s3 sync <Source Folder> s3://${local.bucketName}/path-to-folder/"
     documentation = <<EOF
 # ${local.cf_component_name} (http://${aws_route53_record.bucket.name} Public website)
