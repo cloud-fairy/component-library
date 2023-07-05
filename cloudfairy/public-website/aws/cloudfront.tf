@@ -1,73 +1,31 @@
 locals {
-  s3_origin_id                      = local.bucketName
-}
-
-###################################
-# IAM Policy Document
-###################################
-data "aws_iam_policy_document" "read_bucket" {
-  statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${module.s3_bucket.s3_bucket_arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.bucket.iam_arn]
-    }
-  }
-
-  statement {
-    actions   = ["s3:ListBucket"]
-    resources = [module.s3_bucket.s3_bucket_arn]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.bucket.iam_arn]
-    }
-  }
-}
-###################################
-# S3 Bucket Policy
-###################################
-resource "aws_s3_bucket_policy" "read_gitbook" {
-  bucket                            = module.s3_bucket.s3_bucket_id
-  policy                            = data.aws_iam_policy_document.read_bucket.json
-}
-
-resource "aws_cloudfront_origin_access_control" "bucket" {
-  name                              = local.bucketName
-  description                       = "Cloudfront Policy for ${local.bucketName}"
-  origin_access_control_origin_type = "s3"
-  signing_behavior                  = "always"
-  signing_protocol                  = "sigv4"
-}
-
-resource "aws_cloudfront_origin_access_identity" "bucket" {
-  comment                           = local.bucketName
+  s3_origin_id                      = "S3-${local.bucketName}"
 }
 
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name                     = module.s3_bucket.s3_bucket_bucket_regional_domain_name
-    #origin_access_control_id        = aws_cloudfront_origin_access_control.bucket.id
     origin_id                       = local.s3_origin_id
 
-    s3_origin_config {
-      origin_access_identity        = aws_cloudfront_origin_access_identity.bucket.cloudfront_access_identity_path
+    custom_origin_config {
+      http_port              = "80"
+      https_port             = "443"
+      origin_protocol_policy = "http-only"
+      origin_ssl_protocols   = ["TLSv1.2"]
     }
   }
 
   enabled                           = true
   is_ipv6_enabled                   = true
   comment                           = "Cloudfront distribution for ${local.bucketName}"
-  default_root_object               = "index.html"
+  default_root_object               = var.properties.indexPage
 
   aliases                           = [local.bucketName]
 
   default_cache_behavior {
-    allowed_methods                 = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
+    allowed_methods                 = ["GET", "HEAD", "OPTIONS"]
     cached_methods                  = ["GET", "HEAD"]
-    target_origin_id                = local.bucketName
+    target_origin_id                = local.s3_origin_id
 
     forwarded_values {
       query_string                  = false
@@ -85,19 +43,26 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "blacklist"
-      locations        = ["DE"]
+      restriction_type             = "none"
     }
   }
 
-  price_class                      = "PriceClass_200"
+  price_class                      = "PriceClass_100"
 
   tags                             = local.tags
+
+  custom_error_response {
+    error_code                     = 404
+    error_caching_min_ttl          = 0
+    response_code                  = 404
+    response_page_path             = "/${var.properties.errorPage}"
+  }
+
 
   viewer_certificate {
     cloudfront_default_certificate = false
     acm_certificate_arn            = var.dependency.certificate.arn
     ssl_support_method             = "sni-only"
-    #minimum_protocol_version = "TLSv1.2_2018"
+    minimum_protocol_version       = "TLSv1.2_2018"
   }
 }

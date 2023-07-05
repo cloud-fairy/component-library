@@ -22,43 +22,10 @@ module "s3_bucket" {
   version                 = "3.10.1"
 
   bucket                  = local.bucketName
-  block_public_acls       = false
-  restrict_public_buckets = false
-  block_public_policy     = false
-  attach_public_policy    = true
-
-  website = {
-
-    index_document        = var.properties.indexPage
-    error_document        = var.properties.errorPage
-    # routing_rules   = [{
-    #   condition = {
-    #     key_prefix_equals = "docs/"
-    #   },
-    #   redirect = {
-    #     replace_key_prefix_with = "documents/"
-    #   }
-    # }]
-  }
-  attach_policy           = true
-  policy                  =     <<EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "PublicReadGetObject",
-            "Effect": "Allow",
-            "Principal": "*",
-            "Action": [
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::${local.bucketName}/*"
-            ]
-        }
-    ]
-}
-  EOF
+  block_public_acls       = true
+  restrict_public_buckets = true
+  block_public_policy     = true
+  attach_public_policy    = false
 
   versioning               = {
     enabled                = true
@@ -72,8 +39,8 @@ resource "aws_route53_record" "bucket" {
   name                     = local.bucketName
   type                     = "A"
   alias {
-    name                   = trim(split("${local.bucketName}", module.s3_bucket.s3_bucket_website_endpoint)[1], ".")
-    zone_id                = module.s3_bucket.s3_bucket_hosted_zone_id
+    name                   = aws_cloudfront_distribution.s3_distribution.domain_name
+    zone_id                = aws_cloudfront_distribution.s3_distribution.hosted_zone_id
     evaluate_target_health = true
   }
 }
@@ -93,13 +60,12 @@ Storage Name: ${local.bucketName}
 
 Public URL: http://${aws_route53_record.bucket.name}
 
-Website Endpoint: ${module.s3_bucket.s3_bucket_website_endpoint}
-
 ## Deployment
 ```bash
 aws s3 sync <Source Folder> s3://${local.bucketName}
 ```
 
 EOF
+
   }
 }
