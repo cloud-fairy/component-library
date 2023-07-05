@@ -28,11 +28,6 @@ resource "azurerm_virtual_network" "network" {
   tags                = "${merge(var.dependency.base.tags, local.tags)}"
 }
 
-locals {
-  cdir_oct1 = split(".", var.properties.cidr_block)[0]
-  cdir_oct2 = split(".", var.properties.cidr_block)[1]
-}
-
 resource "azurerm_subnet" "subnet" {
   resource_group_name  = var.dependency.cloud_provider.resource_group_name
   virtual_network_name = local.vpc_name
@@ -60,6 +55,7 @@ output "cfout" {
     address_space   = ["${var.properties.cidr_block}"]
     cidr            = var.properties.cidr_block
     subnet_name     = azurerm_subnet.subnet.name
+    subnet_id       = azurerm_subnet.subnet.id
     subnet_prefixes = [azurerm_subnet.subnet.address_prefixes]
   }
 }

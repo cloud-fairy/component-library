@@ -1,15 +1,28 @@
 cloudfairy_module:
   name: controller
-  displayName: "Auxiliary"
+  displayName: "Controller"
   type: component
   interface:
     - controller
-  internal: true
+  internal: false
   vendor: cloudfairy
   runtime: terraform
   entry:
     aws: aws
+    az: az
   dependencies:
+    - base
     - "cloud_provider"
     - cluster
-  properties: []
+  properties: 
+    - name: name
+      displayName: "Cluster Controller"
+      type: options
+      options: 
+        - label: "Externel DNS"
+          value: "external-dns"
+        - label: "Load balancer"
+          value: "load-balancer"
+        - label: "Cert Manager"
+          value: "cert-manager"
+      defaultValue: ""

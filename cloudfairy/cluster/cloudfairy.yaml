@@ -9,11 +9,12 @@ cloudfairy_module:
   runtime: terraform
   entry:
     aws: aws
-    az: main.az.tf
+    az: k8s.az.tf
   dependencies:
+    - base
     - "cloud_provider"
     - network
-    #- subnet
+    - subnet
   properties: 
     - name: name
       type: string

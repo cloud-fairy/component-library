@@ -15,6 +15,7 @@ output "cfout" {
   value = {
     projectId = local.projectId
     tenant_id = var.properties.tenant_id
+    subscription_id = var.properties.subscription_id
     client_id = var.properties.client_id
     client_secret = var.properties.client_secret
     region    = var.properties.region

@@ -35,6 +35,8 @@ variable "name" {
 output "cfout" {
   value = {
     subnet_name      = azurerm_subnet.subnet.name
+    subnet_id        = azurerm_subnet.subnet.id
     address_prefixes = [azurerm_subnet.subnet.address_prefixes]
+    azurerm_subnet   = [azurerm_subnet.subnet]
   }
 }

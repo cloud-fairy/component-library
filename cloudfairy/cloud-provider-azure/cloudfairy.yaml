@@ -43,3 +43,5 @@ cloudfairy_module:
       options:
         - label: "West Europe"
           value: "West Europe"
+        - label: "East US"
+          value: "East US"
