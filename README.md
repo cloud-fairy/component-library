@@ -123,8 +123,8 @@ variable "dependency" {
   type = any
 }
 ```
-## Components
-# network
+# Components
+## network
 
 This component creates vpc with two AZ's in two regions as default. It also creates two private subnets and two public subnets.
 If asked to have it publicly accessible a NAT gateway will also be created.
@@ -134,7 +134,7 @@ vpc_name             - The name of newly created VPC.
 cidr_block           - The IP CIDR block for the entire VPC. Two options are available to choose from: '10.0.0.0/16' or '172.31.0.0/16'.
 enable_public_access - Does the VPC need to be available externally. If true creates NAT Gateway attached to Elastic IP.
 
-# Subnet
+## Subnet
 
 This component creates a single subnet in a chosen region.
 
@@ -144,7 +144,7 @@ cidr        - The part of the CIDR network specific to this subnet. This argumen
               So our network cidr block is 172.31.0.0 and the subnet cidr is 7.0/24 then the final subnet cidr will be 172.31.7.0/24 .
 az          - The name of the Availability zone in which to create the subnet.
 
-# Storage
+## Storage
 
 This component creates a bucket on the cloud provider.
 
@@ -152,14 +152,67 @@ arguments:
 storage_name - The name of the bucket to be created.
 acl          - The Access-Level attached to the bucket. There are six options: private, public-read, public-read-write, authenticated-read, aws-exec-read, log-delivery-write.
 
-# Cluster
+## Cluster
 
 This component creates a managed Kubernetes cluster.
 
 arguments:
-name                 - The name of the cluster. The created cluster will have the following name structure: Cluster_name-Environment-Project-ProjectID.
+name                 - The name of the cluster. The created cluster will have the following name structure: <Cluster_name>-<Environment>-<Project>-<ProjectID>.
 k8s_version          - K8S version number. There are five options to choose from v1.22 to v1.26.
-enable_public_access - boolean argument whether this managed cluster needs to be publicly accessible.
+enable_public_access - boolean argument whether this managed cluster needs to be publicly accessible. If true it creates public endpoint for the cluster. (default: true)
+
+## DB
+
+This component creates a managed Relational Database in the cloud.
+
+arguments:
+name            - The name of the DB to be created.
+engine          - choose which type of managed DB you want to use. There are three options: MySQL, PostgreSQL, MariaDB.
+size            - What is the size of the DB in GB. (defualt: 5)
+
+## Certificate
+
+This component creates a managed certificate.
+Note: In order for other resources to use this certificate you must make sure it is created in the same region as the resource using it. 
+      For example: a Load-Balancer created in the Service component.
+
+arguments:
+hostname      - The hostname we ask to protect with this certificate. The default is *.<Project>.<hosted_zone>
+region        - The region where to create the certificate.
+
+## Instance
+
+A Linux compute instance to create. 
+
+arguments:
+instance_name  - The name of the server we want to create.
+
+## Security Group
+
+A security group to permit only specific type of protocol. The entire list of rules that can be chosen is available here: https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md .
+
+arguments:
+sg_name      - The name of the security group.
+rule         - what type of rule we want to enforce in the Security Group. (default: "all-all")
+block        - To which IP range will this security group be applied. (default: "0.0.0.0/0")
+
+## Service
+
+This component asks a path to a Dockerfile and creates a number of kuberenets object: ServiceAccount, Deployment, Service.
+In case we need our service to be available externally an Ingress will be created too and as a result so will an Application Load Balancer.
+In the end of the run two scripts will be created: 
+- <service_name>.docker-build.ci.sh which can be used to build the docker image.
+- <service_name>.cloudfairy-lifecycle.sh which can be used to run the build script and apply all created yaml files.
+
+arguments:
+service_name     - The name of the service and the deployment.
+dockerfile_path  - a relative path from our project file where the Dockerfile of our application is located.
+container_port   - in which port does our container exposed. (dedault: "8080")
+debugger_port    - which port will be used for debugging. 
+isexposed        - whether our service component will be externally available. (default: "True")
+
+
+
 
 # Onboarding as user
 
