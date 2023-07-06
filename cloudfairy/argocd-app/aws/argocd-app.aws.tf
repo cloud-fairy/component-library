@@ -34,7 +34,7 @@ data "aws_secretsmanager_secret_version" "argocd_admin" {
 
 # Git Application
 resource "argocd_application" "git" {
-  count                     = var.properties.app_type == "git" ? 1 : 0
+  count                     = var.properties.repo_type == "git" ? 1 : 0
   metadata {
     name                    = "${var.properties.appname}-${local.tags.Environment}"
     namespace               = "argocd"
@@ -80,7 +80,7 @@ resource "argocd_application" "git" {
 
 # Helm application
 resource "argocd_application" "helm" {
-  count                     = var.properties.app_type == "chart" ? 1 : 0
+  count                     = var.properties.repo_type == "chart" ? 1 : 0
 
   metadata {
     name                    = "${var.properties.appname}-${local.tags.Environment}"

@@ -18,7 +18,7 @@ cloudfairy_module:
       displayName: "ArgoCD App name"
       type: string
       defaultValue: ""
-    - name: app_type
+    - name: repo_type
       displayName: "Repository Type"
       type: options
       options:
