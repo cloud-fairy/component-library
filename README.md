@@ -189,7 +189,8 @@ instance_name  - The name of the server we want to create.
 
 ## Security Group
 
-A security group to permit only specific type of protocol. The entire list of rules that can be chosen is available here: https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md .
+A security group to permit only specific type of protocol. 
+The entire list of rules that can be chosen is available here: https://github.com/terraform-aws-modules/terraform-aws-security-group/blob/master/modules/README.md .
 
 arguments:
 sg_name      - The name of the security group.
@@ -211,8 +212,51 @@ container_port   - in which port does our container exposed. (dedault: "8080")
 debugger_port    - which port will be used for debugging. 
 isexposed        - whether our service component will be externally available. (default: "True")
 
+## Docker
 
+This component works similary to the service component but instead of asking for a Dockerfile it asks for a ready docker image from Dockerhub.
 
+arguments:
+service_name     - The name of the service and the deployment.
+dockerhub_image  - a Docker image from Dockerhub to be used as the application.
+container_port   - in which port does our container exposed. (dedault: "8080")
+env_vars         - What environment variables we want to expose to our deployment.
+isexposed        - whether our service component will be externally available. (default: "True")
+
+## ArgoCD
+
+This component installs ArgoCD in it's own namespace in a previously created kubernetes cluster.
+Before we must create a cluster and certificate in the same region as our cluster.
+
+arguments:
+appname        - a name for ArgoCD application to deploy immediatly after ArgoCD is installed. By default no app will be created (default: "")
+repo           - Repository URL in which our application files are located.
+path           - a relative path in the repository for our application files.
+branch         - in which branch our application files are located. (default: "HEAD")
+repo_type      - whether this is a Helm repository or Git repository. In case of Helm the path argument will be ignored.
+ssh_publickey  - the public key used to authenticate with the Git repository in SSH. For example: 'ssh-ed25519 AAAA........' .
+In order for it to work we must also create a secret with our private key in the following form:  "private_key-<Project>-<Environment>".
+
+## ArgoCD Application
+
+This component is used to install a single ArgoCD application. It could be located in Helm repository or Git repository.
+
+arguments:
+appname        - a name for ArgoCD application to deploy. (default: "")
+repo           - Repository URL in which our application files are located.
+path           - a relative path in the repository for our application files.
+branch         - in which branch our application files are located. (default: "HEAD")
+repo_type      - whether this is a Helm repository or Git repository. In case of Helm the path argument will be ignored.
+ns             - in which namespace we want to deploy our application.
+
+## Public Website
+
+This component creates a bucket with CDN distribution to expose it via https. It redirects http traffic to https.
+After the creation instructions would show how to upload files to our bucket and those will be used as the static files in our website.
+
+bucketName      - the name of the bucket. The website name will be in the form of: <bucketName>-<Environment>.<Project>.<hosted_zone>
+indexPage       - file name of the primary file to be presented by the website. (default: index.html)
+errorPage       - file name to be presented in case of an error during browsing. (default: error.html)
 
 # Onboarding as user
 
