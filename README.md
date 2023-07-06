@@ -123,6 +123,43 @@ variable "dependency" {
   type = any
 }
 ```
+## Components
+# network
+
+This component creates vpc with two AZ's in two regions as default. It also creates two private subnets and two public subnets.
+If asked to have it publicly accessible a NAT gateway will also be created.
+
+arguments:
+vpc_name             - The name of newly created VPC.
+cidr_block           - The IP CIDR block for the entire VPC. Two options are available to choose from: '10.0.0.0/16' or '172.31.0.0/16'.
+enable_public_access - Does the VPC need to be available externally. If true creates NAT Gateway attached to Elastic IP.
+
+# Subnet
+
+This component creates a single subnet in a chosen region.
+
+arguments:
+subnet_name - The name of the subnet to be created.
+cidr        - The part of the CIDR network specific to this subnet. This argument depends on the CIDR block we chose in the network section.
+              So our network cidr block is 172.31.0.0 and the subnet cidr is 7.0/24 then the final subnet cidr will be 172.31.7.0/24 .
+az          - The name of the Availability zone in which to create the subnet.
+
+# Storage
+
+This component creates a bucket on the cloud provider.
+
+arguments:
+storage_name - The name of the bucket to be created.
+acl          - The Access-Level attached to the bucket. There are six options: private, public-read, public-read-write, authenticated-read, aws-exec-read, log-delivery-write.
+
+# Cluster
+
+This component creates a managed Kubernetes cluster.
+
+arguments:
+name                 - The name of the cluster. The created cluster will have the following name structure: Cluster_name-Environment-Project-ProjectID.
+k8s_version          - K8S version number. There are five options to choose from v1.22 to v1.26.
+enable_public_access - boolean argument whether this managed cluster needs to be publicly accessible.
 
 # Onboarding as user
 
