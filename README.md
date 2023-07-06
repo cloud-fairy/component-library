@@ -124,7 +124,7 @@ variable "dependency" {
 }
 ```
 # Components
-## network
+## Network
 
 This component creates vpc with two AZ's in two regions as default. It also creates two private subnets and two public subnets.
 If asked to have it publicly accessible a NAT gateway will also be created.
