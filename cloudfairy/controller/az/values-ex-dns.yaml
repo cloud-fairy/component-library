@@ -1,0 +1,12 @@
+
+# extraArgs:
+# - --publish-service=default/nginx-ingress-controller-svc
+
+extraVolumeMounts:
+  - name: "azure-config-file"
+    mountPath: "/etc/kubernetes"
+    readOnly: true
+extraVolumes:
+  - name: "azure-config-file"
+    secret:
+      secretName: "azure-config-file"

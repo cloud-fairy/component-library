@@ -57,12 +57,9 @@ resource "azurerm_kubernetes_cluster" "aks" {
     client_id     = var.dependency.cloud_provider.client_id
     client_secret = var.dependency.cloud_provider.client_secret
   }
-
-  /* role_based_access_control {
-    enabled = true
-  } */
-
-  #  depends_on = [azurerm_public_ip.pub_ip]
+  lifecycle {
+    ignore_changes = [private_cluster_public_fqdn_enabled]
+  }
 }
 
 resource "azurerm_public_ip" "pub_ip" {
@@ -107,10 +104,10 @@ resource "azurerm_nat_gateway_public_ip_association" "pub_ip_assoc" {
   public_ip_address_id = azurerm_public_ip.pub_ip.id
 }
 
-/* resource "azurerm_private_dns_zone" "prv_dns_zone" {
+resource "azurerm_private_dns_zone" "prv_dns_zone" {
   name                = "tikal.org"
   resource_group_name = var.dependency.cloud_provider.resource_group_name
-} */
+}
 
 resource "azurerm_dns_zone" "pub_dns_zone" {
   name                = "${local.tags.Environment}.${local.tags.Project}.tikalk.dev"
@@ -173,12 +170,12 @@ output "cfout" {
     gateway_ips                         = azurerm_public_ip_prefix.nat_prefix.ip_prefix
     pub_ip                              = azurerm_public_ip.pub_ip.ip_address
     tags                                = local.tags
-    dns_name                            = azurerm_dns_zone.pub_dns_zone.name
     enable_public_access                = var.properties.enable_public_access
     private_cluster_enabled             = azurerm_kubernetes_cluster.aks.private_cluster_enabled
     private_cluster_public_fqdn_enabled = azurerm_kubernetes_cluster.aks.private_cluster_public_fqdn_enabled
-    # priv_dns_zone_name                = azurerm_private_dns_zone.prv_dns_zone.name
-    # priv_dns_zone_id                  = azurerm_private_dns_zone.prv_dns_zone.id
+    public_dns_zone_name                = azurerm_dns_zone.pub_dns_zone.name
+    private_dns_zone_name               = azurerm_private_dns_zone.prv_dns_zone.name
+    # private_dns_zone_id                  = azurerm_private_dns_zone.prv_dns_zone.id
     # aks_piblic_ip                     = azurerm_kubernetes_cluster.aks.network_profile[*]
     # aks                               = azurerm_kubernetes_cluster.aks.*
     # aks_mc                            = data.azurerm_resources.resources.*
