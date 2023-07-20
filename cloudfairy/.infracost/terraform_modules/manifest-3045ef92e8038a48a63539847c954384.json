@@ -1,1 +1,0 @@
-{"Path":"/Users/natanb/.cloudfairy/libraries/cloudfairy/cloudfairy/cluster/gcp","Version":"2.0","Modules":[{"Key":"gke_auth","Source":"registry.terraform.io/terraform-google-modules/kubernetes-engine/google//modules/auth","Version":"24.1.0","Dir":".infracost/terraform_modules/63ec9c0b1b4dd919d43d696bc2f8080c/modules/auth"}]}

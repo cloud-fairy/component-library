@@ -1,1 +1,0 @@
-{"Path":"/Users/natanb/.cloudfairy/libraries/cloudfairy/cloudfairy/argocd/aws","Version":"2.0","Modules":[{"Key":"argocd","Source":"github.com/aws-ia/terraform-aws-eks-blueprints/modules/kubernetes-addons","Dir":".infracost/terraform_modules/f3898f39ae406e13c708cf067939e2de"}]}
