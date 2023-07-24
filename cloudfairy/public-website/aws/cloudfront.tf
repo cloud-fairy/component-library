@@ -83,24 +83,24 @@ resource "aws_s3_bucket_policy" "cdn-cf-policy" {
 
 data "aws_iam_policy_document" "website" {
   statement {
-    sid = "AllowCloudFrontServicePrincipal"
+    sid                            = "AllowCloudFrontServicePrincipal"
     principals {
-      type        = "Service"
-      identifiers = ["cloudfront.amazonaws.com"]
+      type                         = "Service"
+      identifiers                  = ["cloudfront.amazonaws.com"]
     }
 
-    actions = [
+    actions                        = [
       "s3:GetObject"
     ]
 
-    resources = [
+    resources                      = [
       "${module.s3_bucket.s3_bucket_arn}/*"
     ]
 
     condition {
-      test     = "ForAnyValue:StringEquals"
-      variable = "AWS:SourceArn"
-      values   = [aws_cloudfront_distribution.s3_distribution.arn]
+      test                         = "ForAnyValue:StringEquals"
+      variable                     = "AWS:SourceArn"
+      values                       = [aws_cloudfront_distribution.s3_distribution.arn]
     }
   }
 }
