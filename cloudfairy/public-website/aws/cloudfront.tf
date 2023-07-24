@@ -2,17 +2,26 @@ locals {
   s3_origin_id                      = "S3-${local.bucketName}"
 }
 
+resource "aws_cloudfront_origin_access_control" "default" {
+  name                              = "Public Website"
+  description                       = "Public Website Policy"
+  origin_access_control_origin_type = "s3"
+  signing_behavior                  = "always"
+  signing_protocol                  = "sigv4"
+}
+
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
     domain_name                     = module.s3_bucket.s3_bucket_bucket_regional_domain_name
     origin_id                       = local.s3_origin_id
-
-    custom_origin_config {
-      http_port              = "80"
-      https_port             = "443"
-      origin_protocol_policy = "http-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
-    }
+    origin_access_control_id        = aws_cloudfront_origin_access_control.default.id
+  
+    # custom_origin_config {
+    #   http_port              = "80"
+    #   https_port             = "443"
+    #   origin_protocol_policy = "http-only"
+    #   origin_ssl_protocols   = ["TLSv1.2"]
+    # }
   }
 
   enabled                           = true
@@ -64,5 +73,34 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
     acm_certificate_arn            = var.dependency.certificate.arn
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2018"
+  }
+}
+
+resource "aws_s3_bucket_policy" "cdn-cf-policy" {
+  bucket                           = module.s3_bucket.s3_bucket_id
+  policy                           = data.aws_iam_policy_document.website.json
+}
+
+data "aws_iam_policy_document" "website" {
+  statement {
+    sid = "AllowCloudFrontServicePrincipal"
+    principals {
+      type        = "Service"
+      identifiers = ["cloudfront.amazonaws.com"]
+    }
+
+    actions = [
+      "s3:GetObject"
+    ]
+
+    resources = [
+      "${module.s3_bucket.s3_bucket_arn}/*"
+    ]
+
+    condition {
+      test     = "ForAnyValue:StringEquals"
+      variable = "AWS:SourceArn"
+      values   = [aws_cloudfront_distribution.s3_distribution.arn]
+    }
   }
 }

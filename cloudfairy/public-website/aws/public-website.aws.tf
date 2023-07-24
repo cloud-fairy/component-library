@@ -22,7 +22,6 @@ module "s3_bucket" {
   version                 = "3.10.1"
 
   bucket                  = local.bucketName
-  acl                     = "private"
 
   versioning               = {
     enabled                = true
