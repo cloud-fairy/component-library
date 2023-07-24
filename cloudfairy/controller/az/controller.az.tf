@@ -46,12 +46,12 @@ resource "helm_release" "ex-dns" {
 
   set {
     name  = "domainFilters[0]"
-    value = var.dependency.cluster.public_dns_zone_name
+    value = var.dependency.cluster.private_dns ? var.dependency.cluster.private_dns_zone_name : var.dependency.cluster.public_dns_zone_name
   }
-  set {
+  /* set {
     name  = "domainFilters[1]"
     value = var.dependency.cluster.private_dns_zone_name
-  }
+  } */
   set {
     name  = "cluster.enabled"
     value = "true"
@@ -65,19 +65,20 @@ resource "helm_release" "ex-dns" {
     value = "9127"
     type  = "string"
   }
-  set {
+  /* set {
     name  = "service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
     value = var.dependency.cluster.public_dns_zone_name
     type  = "string"
-  }
-  set {
+  } */
+  
+  /* set {
     name  = "service.annotations.external-dns\\.alpha\\.kubernetes\\.io/ttl"
     value = "5"
     type  = "string"
-  }
+  } */
   set {
     name  = "provider"
-    value = "azure"
+    value = var.dependency.cluster.private_dns ? "azure-private-dns" : "azure"
   }
   set {
     name  = "policy"

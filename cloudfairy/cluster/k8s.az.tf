@@ -8,6 +8,10 @@ variable "dependency" {
 variable "project" {
   type = any
 }
+variable "private_dns" {
+  type    = any
+  default = "true"
+}
 
 terraform {
   required_providers {
@@ -104,85 +108,49 @@ resource "azurerm_nat_gateway_public_ip_association" "pub_ip_assoc" {
   public_ip_address_id = azurerm_public_ip.pub_ip.id
 }
 
-resource "azurerm_private_dns_zone" "prv_dns_zone" {
-  name                = "tikal.org"
-  resource_group_name = var.dependency.cloud_provider.resource_group_name
-}
-
 resource "azurerm_dns_zone" "pub_dns_zone" {
-  name                = "${local.tags.Environment}.${local.tags.Project}.tikalk.dev"
+  count               = var.private_dns == "false" ? 1 : 0
+  name                = "${local.tags.Environment}.${local.tags.Project}"
+  resource_group_name = var.dependency.cloud_provider.resource_group_name
+}
+resource "azurerm_private_dns_zone" "prv_dns_zone" {
+  count               = var.private_dns == "true" ? 1 : 0
+  name                = "${local.tags.Environment}.${local.tags.Project}"
   resource_group_name = var.dependency.cloud_provider.resource_group_name
 }
 
-/* resource "azurerm_private_dns_zone_virtual_network_link" "priv_dns_link" {
+data "azurerm_resources" "aks_vnet" {
+  resource_group_name = "MC_${var.dependency.cloud_provider.resource_group_name}_${azurerm_kubernetes_cluster.aks.name}_${azurerm_kubernetes_cluster.aks.location}"
+  type                = "Microsoft.Network/virtualNetworks"
+  depends_on          = [azurerm_kubernetes_cluster.aks]
+}
+resource "azurerm_private_dns_zone_virtual_network_link" "priv_dns_link" {
+  count               = var.private_dns == "true" ? 1 : 0
   name                = "priv-zone-vnet-link"
   resource_group_name = var.dependency.cloud_provider.resource_group_name
-  # private_dns_zone_id = azurerm_private_dns_zone.prv_dns_zone.id
-  private_dns_zone_name = azurerm_private_dns_zone.prv_dns_zone.name
-  virtual_network_id    = var.dependency.network.vnet_id
-} */
-
-/* provider "helm" {
-  kubernetes {
-    host                             = data.aws_eks_cluster.eks.endpoint
-    cluster_ca_certificate           = base64decode(data.azurerm_kubernetes_cluster.eks.certificate_authority.0.data)
-    exec {
-      api_version = "client.authentication.k8s.io/v1"
-      args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
-      command     = "aws"
-    }
-  }
+  private_dns_zone_name = azurerm_private_dns_zone.prv_dns_zone[count.index].name
+  registration_enabled = true
+  # virtual_network_id   = "/subscriptions/40a800ae-b686-43e3-8599-61b3dbbf57d9/resourceGroups/MC_tikal-rg_aks_eastus/providers/Microsoft.Network/virtualNetworks/aks-vnet-78383438"
+  virtual_network_id    = data.azurerm_resources.aks_vnet.resources[0].id
 }
 
-provider "kubectl" {
-  host                              = data.aws_eks_cluster.eks.endpoint
-  cluster_ca_certificate            = base64decode(data.aws_eks_cluster.eks.certificate_authority.0.data)
-  exec {
-    api_version = "client.authentication.k8s.io/v1"
-    args        = ["eks", "get-token", "--cluster-name", local.cluster_name]
-    command     = "aws"
-  }
-}
-
-resource "null_resource" "kubectl" {
-    triggers = {
-      always_run = timestamp()
-    }
-    provisioner "local-exec" {
-        command = "aws eks --region ${var.dependency.cloud_provider.region} update-kubeconfig --name ${data.aws_eks_cluster.eks.name}"
-    }
-} */
-
-/* data "azurerm_resources" "resources" {
-  resource_group_name = "MC_tikal-rg_aks_eastus"
-} */
-
-/* data "azurerm_resource_group" "aks_mc_rg" {
-  depends_on = [azurerm_kubernetes_cluster.aks]
-  name = azurerm_kubernetes_cluster.aks.node_resource_group
-} */
 
 output "cfout" {
   value = {
     aks_name                            = var.properties.name
     env                                 = var.project.environment_name
     region                              = var.dependency.cloud_provider.region
+    location                            = azurerm_kubernetes_cluster.aks.location
     gateway_ips                         = azurerm_public_ip_prefix.nat_prefix.ip_prefix
     pub_ip                              = azurerm_public_ip.pub_ip.ip_address
-    tags                                = local.tags
     enable_public_access                = var.properties.enable_public_access
     private_cluster_enabled             = azurerm_kubernetes_cluster.aks.private_cluster_enabled
     private_cluster_public_fqdn_enabled = azurerm_kubernetes_cluster.aks.private_cluster_public_fqdn_enabled
-    public_dns_zone_name                = azurerm_dns_zone.pub_dns_zone.name
-    private_dns_zone_name               = azurerm_private_dns_zone.prv_dns_zone.name
-    # private_dns_zone_id                  = azurerm_private_dns_zone.prv_dns_zone.id
-    # aks_piblic_ip                     = azurerm_kubernetes_cluster.aks.network_profile[*]
-    # aks                               = azurerm_kubernetes_cluster.aks.*
-    # aks_mc                            = data.azurerm_resources.resources.*
-    # aks_mc                            = azurerm_resource_group.aks_mc_rg
+    public_dns_zone_name                = var.private_dns == "false" ? azurerm_dns_zone.pub_dns_zone[0].name : null
+    private_dns_zone_name               = var.private_dns == "true" ? azurerm_private_dns_zone.prv_dns_zone[0].name : null
+    private_dns                         = var.private_dns
+    MC_aks                              = [data.azurerm_resources.aks_vnet]
+    MC_vnet_id                          = data.azurerm_resources.aks_vnet.resources[0].id
+    tags                                = local.tags
   }
 }
-
-/* output "aks_piblic_ip" {
-  value = azurerm_kubernetes_cluster.aks.*
-} */

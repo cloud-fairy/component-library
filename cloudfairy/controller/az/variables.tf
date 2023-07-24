@@ -14,8 +14,4 @@ variable "connector" {
   type        = any
 }
 
-/* variable "enable_external_dns" {
-  description = "Should External-DNS operator be enabled"
-  type        = bool
-  default     = true
-} */
+
