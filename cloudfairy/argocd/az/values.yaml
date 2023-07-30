@@ -1,0 +1,15 @@
+# Enable exec pod
+configs:
+  cm:
+    exec.enabled: true
+  rbac:
+    policy.csv: p, role:myrole, exec, create, */*, allow
+
+repoServer:
+  rbac:
+    - apiGroups:
+      - ""
+      resources:
+      - pods/exec
+      verbs:
+      - create

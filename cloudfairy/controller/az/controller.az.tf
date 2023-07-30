@@ -6,11 +6,6 @@ locals {
   tags         = var.dependency.base.tags
 }
 
-data "azurerm_kubernetes_cluster" "credentials" {
-  name                = var.dependency.cluster.aks_name
-  resource_group_name = var.dependency.cloud_provider.resource_group_name
-}
-
 ### External-DNS
 resource "kubernetes_namespace" "ex-dns" {
   metadata {
@@ -65,17 +60,6 @@ resource "helm_release" "ex-dns" {
     value = "9127"
     type  = "string"
   }
-  /* set {
-    name  = "service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
-    value = var.dependency.cluster.public_dns_zone_name
-    type  = "string"
-  } */
-  
-  /* set {
-    name  = "service.annotations.external-dns\\.alpha\\.kubernetes\\.io/ttl"
-    value = "5"
-    type  = "string"
-  } */
   set {
     name  = "provider"
     value = var.dependency.cluster.private_dns ? "azure-private-dns" : "azure"

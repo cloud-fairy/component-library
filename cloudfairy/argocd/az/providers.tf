@@ -2,6 +2,7 @@ data "azurerm_kubernetes_cluster" "credentials" {
   name                = var.dependency.cluster.aks_name
   resource_group_name = var.dependency.cloud_provider.resource_group_name
 }
+
 provider "helm" {
   kubernetes {
     host                   = data.azurerm_kubernetes_cluster.credentials.kube_config.0.host
