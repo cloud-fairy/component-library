@@ -1,7 +1,4 @@
-
-# extraArgs:
-# - --publish-service=default/nginx-ingress-controller-svc
-
+# Mount creds 
 extraVolumeMounts:
   - name: "azure-config-file"
     mountPath: "/etc/kubernetes"

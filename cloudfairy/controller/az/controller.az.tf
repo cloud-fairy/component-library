@@ -1,7 +1,5 @@
 data "azurerm_client_config" "current" {}
 locals {
-  # subnets_count                   =  length(split(",", (jsonencode(data.aws_subnets.private.*.ids[0][*]))))
-  # create_cluster                  =  local.subnets_count > 1 ? true : false    # Two subnets required to create EKS Cluster
   cluster_name = var.dependency.cluster.aks_name
   tags         = var.dependency.base.tags
 }
@@ -87,9 +85,27 @@ resource "helm_release" "ingress" {
   chart      = "ingress-nginx"
   namespace  = kubernetes_namespace.ing-nginx.metadata[0].name
   version    = "4.7.1"
+  # If private DNS, use internal LB set in values-ingress.yaml
+  # values = var.dependency.cluster.private_dns ? [file("${path.module}/values-ingress.yaml")] : []
 }
+
+resource "kubernetes_namespace" "ex-secrets" {
+  metadata {
+    name = "ex-secrets"
+  }
+}
+resource "helm_release" "ex-secrets" {
+  name       = "external-secrets"
+  repository = "https://charts.external-secrets.io"
+  chart      = "external-secrets"
+  namespace  = kubernetes_namespace.ex-secrets.metadata[0].name
+  version    = "0.9.1"
+}
+
 output "cfout" {
   value = {
-    Installed_Operators = "[ external_dns, ingress_nginx ]"
+    external-dns-version = helm_release.ex-dns.version
+    ingress-nginx-version = helm_release.ingress.version
+    external-secrets-version = helm_release.ex-secrets.version
   }
 }

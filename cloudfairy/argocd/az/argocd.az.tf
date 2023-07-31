@@ -12,7 +12,7 @@ resource "kubernetes_namespace" "argocd" {
 }
 
 resource "helm_release" "argo-cd" {
-  name       = "argo-cd"
+  name       = "argocd"
   repository = "https://argoproj.github.io/argo-helm"
   chart      = "argo-cd"
   namespace  = kubernetes_namespace.argocd.metadata[0].name
@@ -24,6 +24,6 @@ resource "helm_release" "argo-cd" {
 
 output "cfout" {
   value = {
-    Installed_Operators = "[ argocd ]"
+    argo-cd-version = helm_release.argo-cd.version
   }
 }

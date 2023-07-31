@@ -8,9 +8,10 @@ variable "dependency" {
 variable "project" {
   type = any
 }
+# Private DNS is optional, not fully implemented
 variable "private_dns" {
   type    = any
-  default = "true"
+  default = "false"
 }
 
 terraform {
@@ -109,6 +110,7 @@ resource "azurerm_nat_gateway_public_ip_association" "pub_ip_assoc" {
 }
 
 resource "azurerm_dns_zone" "pub_dns_zone" {
+  # count               = var.virtual_network_id    = data.azurerm_resources.aks_vnet.resources[0].idvnetrivate_dns == "false" ? 1 : 0
   count               = var.private_dns == "false" ? 1 : 0
   name                = "${local.tags.Environment}.${local.tags.Project}"
   resource_group_name = var.dependency.cloud_provider.resource_group_name
@@ -130,8 +132,8 @@ resource "azurerm_private_dns_zone_virtual_network_link" "priv_dns_link" {
   resource_group_name = var.dependency.cloud_provider.resource_group_name
   private_dns_zone_name = azurerm_private_dns_zone.prv_dns_zone[count.index].name
   registration_enabled = true
-  # virtual_network_id   = "/subscriptions/40a800ae-b686-43e3-8599-61b3dbbf57d9/resourceGroups/MC_tikal-rg_aks_eastus/providers/Microsoft.Network/virtualNetworks/aks-vnet-78383438"
-  virtual_network_id    = data.azurerm_resources.aks_vnet.resources[0].id
+  # virtual_network_id    = data.azurerm_resources.aks_vnet.resources[0].id
+  virtual_network_id    = var.dependency.network.vnet_id
 }
 
 
