@@ -14,7 +14,8 @@ cloudfairy_module:
     aws: vpc.aws.tf
     gcp: vpc.gcp.tf
     az: vpc.az.tf
-  properties: 
+    local: vpc.local.tf
+  properties:
     - name: vpc_name
       displayName: "Network Name"
       type: string
@@ -22,7 +23,7 @@ cloudfairy_module:
     - name: cidr_block
       displayName: "CIDR Block"
       type: options
-      options: 
+      options:
         - label: "10.0.x.x"
           value: "10.0.0.0/16"
         - label: "172.31.x.x"

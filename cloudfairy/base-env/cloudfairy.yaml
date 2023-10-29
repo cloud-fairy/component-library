@@ -11,6 +11,7 @@ cloudfairy_module:
     aws: base.aws.tf
     az: base.az.tf
     gcp: base.gcp.tf
+    local: base.local.tf
   interface:
     - base
   properties: []

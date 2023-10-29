@@ -9,10 +9,11 @@ cloudfairy_module:
   runtime: terraform
   entry:
     aws: cert.aws.tf
+    local: cert.local.tf
   dependencies:
     - "cloud_provider"
     - base
-  properties: 
+  properties:
     - name: hostname
       type: string
       displayName: "Certificate Host Name"

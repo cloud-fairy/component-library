@@ -10,6 +10,7 @@ cloudfairy_module:
   entry:
     aws: aws
     gcp: gcp
+    local: cluster.local.tf
   dependencies:
     - "cloud_provider"
     - base

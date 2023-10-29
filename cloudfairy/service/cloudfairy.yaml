@@ -12,6 +12,7 @@ cloudfairy_module:
   builder: terraform
   entry:
     aws: aws
+    local: local
   interface:
     - k8_deployment
   properties:

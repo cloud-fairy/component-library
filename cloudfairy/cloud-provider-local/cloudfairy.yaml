@@ -1,0 +1,11 @@
+cloudfairy_module:
+  interface: "cloud_provider"
+  type: "cloud-provider"
+  vendor: "cloudfairy"
+  name: "cloud-provider-local"
+  displayName: "Google Cloud Platform"
+  annotations:
+    "cloudfairy.dev/cloud-provider-type": "local"
+  runtime: "terraform"
+  entry: "k3d-provider.tf"
+  properties: []
