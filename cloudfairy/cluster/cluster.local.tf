@@ -27,9 +27,10 @@ resource "k3d_registry" "registry" {
 }
 
 resource "k3d_cluster" "mycluster" {
-  name    = local.cluster_name
-  servers = 1
-  agents  = 1
+  depends_on = [k3d_registry.registry]
+  name       = local.cluster_name
+  servers    = 1
+  agents     = 1
 
   kube_api {
     host      = "localhost"

@@ -80,7 +80,7 @@ spec:
       serviceAccountName: ${var.dependency.cluster.service_account}
       containers:
         - name: ${local.service_name}
-          image: k3d-newinfra-registry:5000/${local.service_name}:${local.docker_tag}
+          image: k3d-${local.tags.Project}-registry:5000/${local.service_name}:${local.docker_tag}
           ${length(local.inject_env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []"}
           imagePullPolicy: Always
           ports:
