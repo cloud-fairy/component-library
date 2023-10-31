@@ -47,8 +47,9 @@ resource "local_file" "docker_build" {
 #!/usr/bin/env sh
 
 set -x
-docker build -t http://localhost:5000/${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
-docker push http://localhost:5000/${local.service_name}:${local.docker_tag}
+docker build -t ${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
+docker tag ${local.service_name}:${local.docker_tag} localhost:5001/${local.service_name}:${local.docker_tag}
+docker push localhost:5001/${local.service_name}:${local.docker_tag}
   EOF
 }
 
@@ -126,44 +127,40 @@ resource "local_file" "ingress" {
 
   filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
   content  = <<EOF
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: ${local.service_name}-path-prefix
+  namespace: default
+spec:
+  stripPrefix:
+    prefixes:
+      - /${local.service_name}
+---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ${local.service_name}
-  namespace: default
   labels:
     app: ${local.service_name}
-  # annotations:
-  #   alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": ${local.container_port}},{"HTTPS": 443}]'
-  #   alb.ingress.kubernetes.io/scheme: internet-facing
-  #   alb.ingress.kubernetes.io/target-type: ip
-  #   alb.ingress.kubernetes.io/actions.ssl-redirect: |-
-  #     {
-  #       "Type": "redirect",
-  #       "RedirectConfig": {
-  #         "Protocol": "HTTPS",
-  #         "Port": "443",
-  #         "StatusCode": "HTTP_301"
-  #       }
-  #     }
-  #   alb.ingress.kubernetes.io/healthcheck-path: /
-  #   alb.ingress.kubernetes.io/ip-address-type: ipv4
-  #   alb.ingress.kubernetes.io/group.name: ${lower("${local.tags.Project}-${local.tags.Environment}")}
-  #   external-dns.alpha.kubernetes.io/hostname: ${local.hostname}
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+    traefik.ingress.kubernetes.io/router.middlewares: default-app-svc-path-prefix@kubernetescrd
 spec:
-  ingressClassName: alb
   rules:
-    - host: ${local.hostname}
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /${local.service_name}
             pathType: Prefix
             backend:
               service:
                 name: ${local.service_name}
                 port:
                   number: ${local.container_port}
-  EOF
+---
+EOF
 }
 
 resource "local_file" "lifecycle" {
@@ -197,8 +194,9 @@ Kubernetes DNS Hostname: ${local.service_name}
 
 To rollout a new container:
 ```bash
-docker build -t http://localhost:5000/${local.service_name}:${local.docker_tag} ${local.dockerfile_path}
-docker push http://localhost:5000/${local.service_name}:${local.docker_tag}
+docker build -t ${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
+docker tag ${local.service_name}:${local.docker_tag} localhost:5001/${local.service_name}:${local.docker_tag}
+docker push localhost:5001/${local.service_name}:${local.docker_tag}
 kubectl rollout restart deployment ${local.service_name}
 ```
 EOF

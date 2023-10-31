@@ -29,7 +29,7 @@ resource "k3d_registry" "registry" {
 resource "k3d_cluster" "mycluster" {
   name    = local.cluster_name
   servers = 1
-  agents  = 2
+  agents  = 1
 
   kube_api {
     host      = "localhost"
@@ -48,6 +48,14 @@ resource "k3d_cluster" "mycluster" {
     #         - "https://registry-1.docker.io"
 
     # EOF
+  }
+
+  port {
+    host_port      = 8080
+    container_port = 80
+    node_filters = [
+      "loadbalancer"
+    ]
   }
 
   k3d {
