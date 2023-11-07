@@ -10,6 +10,7 @@ cloudfairy_module:
     - certificate
   runtime: "terraform"
   entry:
+    local: static-site.local.tf
     gcp: public-bucket.gcp.tf
     aws: aws
   properties:

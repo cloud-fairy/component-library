@@ -1,56 +1,57 @@
 variable "properties" {
   # service_name
   # repo_url
-  type                 = any
+  type = any
 }
 
 variable "project" {
   # environment_name
-  type                 = any
+  type = any
 }
 
 variable "dependency" {
   # cloud_provider
   # cluster
-  type                 = any
+  type = any
 }
 
 variable "connector" {
   # cloudfairy_k8_microservice_to_managed_sql : any[]
-  type                 = any
+  type = any
 }
 
 terraform {
   required_providers {
     external = {
-      source = "hashicorp/external"
+      source  = "hashicorp/external"
       version = "2.3.1"
     }
   }
 }
 
 locals {
-  tags                 = var.dependency.base.tags
-  zone_name            = var.dependency.cloud_provider.hosted_zone
-  hostname             = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.${local.zone_name}")
-  docker_tag           = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
-  ecr_url              = aws_ecr_repository.docker.repository_url
-  ecr_name             = "${local.service_name}-${local.tags.Project}-${local.tags.Environment}-${lower(local.tags.ProjectID)}"
-  service_name         = var.properties.service_name
-  dockerfile_path      = var.properties.dockerfile_path
-  container_port       = var.properties.container_port
-  debug_port           = var.properties.debugger_port
-  conn_to_services     = try(var.connector.cloudfairy_service_to_service, [])
-  conn_to_storages     = try(var.connector.cloudfairy_service_to_storage, [])
-  conn_to_rds          = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars      = flatten([local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
-  cf_component_name    = try(var.properties.local_name, "Cloudfairy Service")
+  tags              = var.dependency.base.tags
+  zone_name         = var.dependency.cloud_provider.hosted_zone
+  hostname          = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.${local.zone_name}")
+  docker_tag        = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
+  ecr_url           = aws_ecr_repository.docker.repository_url
+  ecr_name          = "${local.service_name}-${local.tags.Project}-${local.tags.Environment}-${lower(local.tags.ProjectID)}"
+  service_name      = var.properties.service_name
+  dockerfile_path   = var.properties.dockerfile_path
+  container_port    = var.properties.container_port
+  debug_port        = var.properties.debugger_port
+  conn_to_dockers   = try(var.connector.cloudfairy_service_to_dockerhub, [])
+  conn_to_services  = try(var.connector.cloudfairy_service_to_service, [])
+  conn_to_storages  = try(var.connector.cloudfairy_service_to_storage, [])
+  conn_to_rds       = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
+  inject_env_vars   = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  cf_component_name = try(var.properties.local_name, "Cloudfairy Service")
 }
 
 # Run the script to get the environment variables of interest.
 # This is a data source, so it will run at plan time.
 data "external" "env" {
-  program              = ["bash", "${path.module}/env.bash"]
+  program = ["bash", "${path.module}/env.bash"]
 }
 
 resource "aws_ecr_repository" "docker" {
@@ -60,15 +61,15 @@ resource "aws_ecr_repository" "docker" {
   force_delete = true
 
   image_scanning_configuration {
-    scan_on_push       = true
+    scan_on_push = true
   }
-  tags                 = local.tags
+  tags = local.tags
 }
 
 resource "local_file" "docker_build" {
-  count                = local.dockerfile_path != "" ? 1 : 0
-  filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
-  content              = <<EOF
+  count    = local.dockerfile_path != "" ? 1 : 0
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
+  content  = <<EOF
 #!/usr/bin/env sh
 
 set -x
@@ -81,7 +82,7 @@ docker push ${local.ecr_url}:${local.docker_tag}
 
 resource "local_file" "deployment" {
   filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
-  content = <<EOF
+  content  = <<EOF
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -109,7 +110,7 @@ spec:
       containers:
         - name: ${local.service_name}
           image: ${local.ecr_url}:${local.docker_tag}
-          ${length(local.inject_env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []" }
+          ${length(local.inject_env_vars) > 0 ? "env:\n            ${indent(12, yamlencode(local.inject_env_vars))}" : "env: []"}
           imagePullPolicy: Always
           ports:
             - containerPort: ${local.container_port}
@@ -151,10 +152,10 @@ EOF
 }
 
 resource "local_file" "ingress" {
-  count         = var.properties.isexposed ? 1 : 0
-  
-  filename      = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
-  content       = <<EOF
+  count = var.properties.isexposed ? 1 : 0
+
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  content  = <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -197,8 +198,8 @@ spec:
 }
 
 resource "local_file" "lifecycle" {
-  filename             = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.cloudfairy-lifecycle.sh"
-  content              = <<EOF
+  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.cloudfairy-lifecycle.sh"
+  content  = <<EOF
 #!/usr/bin/env sh
 
 set -x
@@ -209,14 +210,14 @@ find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';
 
 output "cfout" {
   value = {
-    repository_url     = local.ecr_url
-    service_hostname   = local.service_name
-    service_port       = local.container_port
-    env_vars           = local.inject_env_vars
-    docker_tag         = local.docker_tag
-    hostname           = local.hostname
-    debug_port         = local.debug_port
-    documentation      = <<EOF
+    repository_url   = local.ecr_url
+    service_hostname = local.service_name
+    service_port     = local.container_port
+    env_vars         = local.inject_env_vars
+    docker_tag       = local.docker_tag
+    hostname         = local.hostname
+    debug_port       = local.debug_port
+    documentation    = <<EOF
 # ${local.cf_component_name} (${local.service_name} Service)
 
 Repository url: ${local.ecr_url}
@@ -231,6 +232,9 @@ aws ecr get-login-password --region ${var.dependency.cloud_provider.region} | do
 docker build -t ${local.ecr_url}:${local.docker_tag} ${local.dockerfile_path}
 docker push ${local.ecr_url}:${local.docker_tag}
 kubectl rollout restart deployment ${local.service_name}
+
+TEST TEST TEST
+${local.conn_to_dockers}
 ```
 EOF
   }

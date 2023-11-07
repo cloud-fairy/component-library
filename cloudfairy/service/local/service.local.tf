@@ -27,10 +27,11 @@ locals {
   service_name      = var.properties.service_name
   hostname          = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.local")
   docker_tag        = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
+  conn_to_dockers   = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services  = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages  = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds       = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars   = flatten([local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  inject_env_vars   = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
   container_port    = var.properties.container_port
   debug_port        = var.properties.debugger_port
   cf_component_name = try(var.properties.local_name, "Cloudfairy Service")
@@ -127,16 +128,6 @@ resource "local_file" "ingress" {
 
   filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
   content  = <<EOF
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: ${local.service_name}-path-prefix
-  namespace: default
-spec:
-  stripPrefix:
-    prefixes:
-      - /${local.service_name}
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -146,20 +137,19 @@ metadata:
   namespace: default
   annotations:
     kubernetes.io/ingress.class: traefik
-    traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: default-app-svc-path-prefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
   rules:
-    - http:
+    - host: ${local.service_name}.localhost
+      http:
         paths:
-          - path: /${local.service_name}
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: ${local.service_name}
                 port:
                   number: ${local.container_port}
----
 EOF
 }
 
@@ -194,7 +184,7 @@ Kubernetes DNS Hostname: ${local.service_name}
 
 To rollout a new container:
 ```bash
-docker build -t ${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
+docker build -t ${local.service_name}:${local.docker_tag} ./${local.dockerfile_path}
 docker tag ${local.service_name}:${local.docker_tag} localhost:5001/${local.service_name}:${local.docker_tag}
 docker push localhost:5001/${local.service_name}:${local.docker_tag}
 kubectl rollout restart deployment ${local.service_name}

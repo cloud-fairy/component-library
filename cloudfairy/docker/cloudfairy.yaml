@@ -12,6 +12,7 @@ cloudfairy_module:
   builder: terraform
   entry:
     aws: docker.aws.tf
+    local: docker.local.tf
   interface:
     - k8_deployment_dockerhub
   properties:

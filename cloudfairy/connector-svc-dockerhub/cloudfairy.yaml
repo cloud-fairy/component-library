@@ -5,6 +5,7 @@ cloudfairy_module:
   builder_runtime: "terraform"
   entry:
     aws: "connector-extract-svc-host.tf"
+    local: "connector-extract-svc-host.tf"
   from:
     - "k8_deployment"
   to:
@@ -14,3 +15,7 @@ cloudfairy_module:
       type: string
       defaultValue: "SVC_HOST"
       displayName: "Service Hostname"
+    - name: "port"
+      type: string
+      defaultValue: "SVC_PORT"
+      displayName: "Service Port"

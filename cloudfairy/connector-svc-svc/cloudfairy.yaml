@@ -5,6 +5,7 @@ cloudfairy_module:
   builder_runtime: "terraform"
   entry:
     aws: "connector-svc-svc.tf"
+    local: "connector-svc-svc.tf"
   from:
     - "k8_deployment"
   to:
