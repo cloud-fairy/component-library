@@ -27,3 +27,7 @@ cloudfairy_module:
       displayName: "Error (404) Page"
       defaultValue: "error.html"
       type: "string"
+    - name: "monorepo_path"
+      defaultValue: ""
+      dispalyName: "Monorepo artifact path (optional)"
+      type: string

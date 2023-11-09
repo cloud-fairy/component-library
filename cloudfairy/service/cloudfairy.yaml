@@ -20,6 +20,10 @@ cloudfairy_module:
       displayName: "Service/Deployment name"
       type: string
       defaultValue: "dbservice"
+    - name: "monorepo_path"
+      defaultValue: ""
+      dispalyName: "Monorepo artifact path (optional)"
+      type: string
     - name: dockerfile_path
       displayName: "Relative path for Dockerfile (eg: ./packages/app1)"
       type: string

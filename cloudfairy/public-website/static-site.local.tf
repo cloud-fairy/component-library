@@ -17,14 +17,18 @@ variable "dependency" {
 
 
 locals {
-  name           = var.properties.bucketName
-  hostname       = lower("${local.name}.localhost")
-  container_port = 80
-  app_name       = "${local.name}-static"
+  name              = var.properties.bucketName
+  env_name          = var.project.environment_name
+  hostname          = lower("${local.name}.localhost")
+  container_port    = 80
+  app_name          = "${local.name}-static"
+  cf_component_name = try(var.properties.local_name, "Cloudfairy Service")
+  monorepo_path     = try(var.properties.monorepo_path, "")
+  ci_cd_path        = try(var.project.ci_cd_path, "${path.module}/../../../../../../../.cloudfairy.build/ci-cd/${local.env_name}")
 }
 
 resource "local_file" "static_site" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.name}-static-site.yaml"
+  filename = "${local.ci_cd_path}/${local.name}-static-site.yaml"
   content  = <<EOF
 apiVersion: apps/v1
 kind: Deployment
@@ -87,9 +91,9 @@ metadata:
     app: ${local.app_name}
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
+  ingressClassName: traefik
   rules:
     - host: ${local.name}.localhost
       http:
@@ -107,5 +111,32 @@ EOF
 
 output "cfout" {
   value = {
+    documentation = <<EOF
+# ${local.cf_component_name} (Static website)
+Hostname: ${local.name}.localhost:8080
+
+Create the static website serving on local cloud:
+```sh
+cd ${local.monorepo_path != "" ? local.monorepo_path : ".cloudfairy.build/ci-cd/${local.env_name}"}
+kubectl apply -f "${local.name}-static-site.yaml"
+```
+
+Check the pod's health, wait until ready.
+```sh
+export POD_NAME=$(kubectl get pods | grep ${local.app_name} | awk '{ print $1}')
+kubectl wait --for=condition=Ready pod/$POD_NAME
+```
+
+
+Deploy files to static site on local cloud:
+```sh
+${local.monorepo_path != "" ? "cd ${local.monorepo_path}" : "cd <artifact_path>"}
+export POD_NAME=$(kubectl get pods | grep ${local.app_name} | awk '{ print $1}')
+foreach filename in .; do
+  kubectl cp $filename $POD_NAME:/usr/share/nginx/html
+done
+```
+
+EOF
   }
 }

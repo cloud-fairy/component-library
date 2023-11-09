@@ -46,6 +46,8 @@ locals {
   conn_to_rds       = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
   inject_env_vars   = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
   cf_component_name = try(var.properties.local_name, "Cloudfairy Service")
+  env_name          = var.project.environment_name
+  ci_cd_path        = try(var.project.ci_cd_path, "${path.module}/../../../../../../../.cloudfairy.build/ci-cd/${local.env_name}")
 }
 
 # Run the script to get the environment variables of interest.
@@ -68,7 +70,7 @@ resource "aws_ecr_repository" "docker" {
 
 resource "local_file" "docker_build" {
   count    = local.dockerfile_path != "" ? 1 : 0
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
+  filename = "${local.ci_cd_path}/${local.service_name}.docker-build.ci.sh"
   content  = <<EOF
 #!/usr/bin/env sh
 
@@ -81,7 +83,7 @@ docker push ${local.ecr_url}:${local.docker_tag}
 }
 
 resource "local_file" "deployment" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.deployment.yaml"
   content  = <<EOF
 apiVersion: v1
 kind: ServiceAccount
@@ -123,7 +125,7 @@ EOF
 }
 
 resource "local_file" "service" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.service.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.service.yaml"
   content = <<EOF
 apiVersion: v1
 kind: Service
@@ -154,7 +156,7 @@ EOF
 resource "local_file" "ingress" {
   count = var.properties.isexposed ? 1 : 0
 
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.ingress.yaml"
   content  = <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -198,7 +200,7 @@ spec:
 }
 
 resource "local_file" "lifecycle" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.cloudfairy-lifecycle.sh"
+  filename = "${local.ci_cd_path}/${local.service_name}.cloudfairy-lifecycle.sh"
   content  = <<EOF
 #!/usr/bin/env sh
 

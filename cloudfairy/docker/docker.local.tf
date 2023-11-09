@@ -26,7 +26,10 @@ provider "external" {}
 locals {
   tags = var.dependency.base.tags
 
-  service_name     = var.properties.service_name
+  service_name = var.properties.service_name
+  env_name     = var.project.environment_name
+  ci_cd_path   = try(var.project.ci_cd_path, "${path.module}/../../../../../../../.cloudfairy.build/ci-cd/${local.env_name}")
+
   hostname         = lower("${local.service_name}")
   dockerhub_image  = var.properties.dockerhub_image
   container_port   = var.properties.container_port
@@ -45,7 +48,7 @@ locals {
 }
 
 resource "local_file" "deployment" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.deployment.yaml"
   content  = <<EOF
 apiVersion: v1
 kind: ServiceAccount
@@ -85,7 +88,7 @@ EOF
 }
 
 resource "local_file" "service" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.service.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.service.yaml"
   content  = <<EOF
 apiVersion: v1
 kind: Service
@@ -107,18 +110,8 @@ EOF
 
 resource "local_file" "ingress" {
   count    = var.properties.isexposed ? 1 : 0
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.ingress.yaml"
   content  = <<EOF
-apiVersion: traefik.containo.us/v1alpha1
-kind: Middleware
-metadata:
-  name: ${local.service_name}-path-prefix
-  namespace: default
-spec:
-  stripPrefix:
-    prefixes:
-      - /${local.service_name}
----
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -129,19 +122,18 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web
-    traefik.ingress.kubernetes.io/router.middlewares: default-app-svc-path-prefix@kubernetescrd
 spec:
   rules:
-    - http:
+    - host: ${local.service_name}.localhost
+      http:
         paths:
-          - path: /${local.service_name}
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: ${local.service_name}
                 port:
                   number: ${local.container_port}
----
 EOF
 }
 
@@ -151,5 +143,23 @@ output "cfout" {
     service_port     = local.container_port
     env_vars         = local.env_vars
     hostname         = local.hostname
+    documentation    = <<EOF
+# ${local.service_name} (Service from dockerhub)
+
+${var.properties.isexposed ? "Hostname: ${local.hostname}.localhost:8080\n" : ""}
+Deploy the service on local cloud
+
+```sh
+cd ${local.ci_cd_path}
+find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';'
+```
+
+Check the pod's health, wait until ready.
+```sh
+export POD_NAME=$(kubectl get pods | grep ${local.service_name} | awk '{ print $1}')
+kubectl wait --for=condition=Ready pod/$POD_NAME
+```
+
+EOF
   }
 }

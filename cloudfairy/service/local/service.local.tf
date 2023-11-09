@@ -24,6 +24,7 @@ variable "connector" {
 locals {
   tags              = var.dependency.base.tags
   dockerfile_path   = var.properties.dockerfile_path
+  env_name          = var.project.environment_name
   service_name      = var.properties.service_name
   hostname          = lower("${local.service_name}-${local.tags.Environment}.${local.tags.Project}.local")
   docker_tag        = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
@@ -35,6 +36,8 @@ locals {
   container_port    = var.properties.container_port
   debug_port        = var.properties.debugger_port
   cf_component_name = try(var.properties.local_name, "Cloudfairy Service")
+  src_path          = try(var.properties.monorepo_path, "")
+  ci_cd_path        = try(var.project.ci_cd_path, "${path.module}/../../../../../../../.cloudfairy.build/ci-cd/${local.env_name}")
 }
 
 data "external" "env" {
@@ -43,19 +46,19 @@ data "external" "env" {
 
 resource "local_file" "docker_build" {
   count    = local.dockerfile_path != "" ? 1 : 0
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.docker-build.ci.sh"
+  filename = "${local.ci_cd_path}/${local.service_name}.docker-build.ci.sh"
   content  = <<EOF
 #!/usr/bin/env sh
 
 set -x
-docker build -t ${local.service_name}:${local.docker_tag} ../../${local.dockerfile_path}
+docker build -t ${local.service_name}:${local.docker_tag} -f ../../${local.dockerfile_path} ../../${local.src_path}
 docker tag ${local.service_name}:${local.docker_tag} localhost:5001/${local.service_name}:${local.docker_tag}
 docker push localhost:5001/${local.service_name}:${local.docker_tag}
-  EOF
+EOF
 }
 
 resource "local_file" "deployment" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.deployment.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.deployment.yaml"
   content  = <<EOF
 apiVersion: v1
 kind: ServiceAccount
@@ -95,7 +98,7 @@ EOF
 }
 
 resource "local_file" "service" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.service.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.service.yaml"
   content = <<EOF
 apiVersion: v1
 kind: Service
@@ -126,7 +129,7 @@ EOF
 resource "local_file" "ingress" {
   count = var.properties.isexposed ? 1 : 0
 
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.ingress.yaml"
+  filename = "${local.ci_cd_path}/${local.service_name}.ingress.yaml"
   content  = <<EOF
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -154,7 +157,7 @@ EOF
 }
 
 resource "local_file" "lifecycle" {
-  filename = "${path.module}/../../../../../../../.cloudfairy/ci-cd/${local.service_name}.cloudfairy-lifecycle.sh"
+  filename = "${local.ci_cd_path}//${local.service_name}.cloudfairy-lifecycle.sh"
   content  = <<EOF
 #!/usr/bin/env sh
 
@@ -182,13 +185,25 @@ Service Port: ${local.container_port}
 
 Kubernetes DNS Hostname: ${local.service_name}
 
-To rollout a new container:
+To build and push artifact on local cloud:
 ```bash
-docker build -t ${local.service_name}:${local.docker_tag} ./${local.dockerfile_path}
+cd ${local.src_path != "" ? local.src_path : "<path to Dockerfile>"}
+docker build -t ${local.service_name}:${local.docker_tag} ./${local.src_path}
 docker tag ${local.service_name}:${local.docker_tag} localhost:5001/${local.service_name}:${local.docker_tag}
 docker push localhost:5001/${local.service_name}:${local.docker_tag}
+```
+
+First time deployment to local cloud:
+```sh
+cd ${local.ci_cd_path}
+find . -type f -name '${local.service_name}.*.yaml' -exec kubectl apply -f {} ';'
+```
+
+Rollout versions after build
+```sh
 kubectl rollout restart deployment ${local.service_name}
 ```
+
 EOF
   }
 }
