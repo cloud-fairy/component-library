@@ -6,9 +6,9 @@ cloudfairy_module:
   entry:
     local: connector.tf
   from:
-    - "eavichay/application"
+    - "cloudfairy/application"
   to:
-    - "eavichay/docker"
+    - "cloudfairy/docker"
   properties:
     - name: "hostname"
       type: string

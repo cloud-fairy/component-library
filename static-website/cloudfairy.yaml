@@ -4,7 +4,7 @@ cloudfairy_module:
   name: "public-website"
   vendor: "eavichay"
   displayName: "Public Website"
-  dependencies: ["eavichay/cluster"]
+  dependencies: ["cloudfairy/cluster"]
   runtime: "terraform"
   entry:
     local: local

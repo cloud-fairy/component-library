@@ -22,7 +22,7 @@ variable "connector" {
 
 provider "kubernetes" {
   insecure    = true
-  config_path = var.dependency.eavichay_cluster.kubeconfig_path # "~/.kube/config"
+  config_path = var.dependency.cloudfairy_cluster.kubeconfig_path # "~/.kube/config"
 }
 
 locals {
@@ -59,7 +59,7 @@ resource "kubernetes_deployment" "deployment" {
         }
       }
       spec {
-        service_account_name = var.dependency.eavichay_cluster.service_account
+        service_account_name = var.dependency.cloudfairy_cluster.service_account
         container {
           name              = local.service_name
           image             = var.properties.dockerhub_image

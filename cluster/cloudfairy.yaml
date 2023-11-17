@@ -20,5 +20,5 @@ cloudfairy_module:
       displayName: Loadbalancer port
       defaultValue: "8000"
   dependencies:
-    - eavichay/role
+    - cloudfairy/role
     - cloud_provider

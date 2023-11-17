@@ -2,9 +2,9 @@ cloudfairy_module:
   type: component
   name: docker
   displayName: "Docker from DockerHub"
-  vendor: "eavichay"
+  vendor: "cloudfairy"
   dependencies:
-    - eavichay/cluster
+    - cloudfairy/cluster
   builder: terraform
   entry:
     local: dockerimage.local.tf

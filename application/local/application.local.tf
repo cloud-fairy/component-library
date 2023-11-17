@@ -16,8 +16,8 @@ variable "connector" {
 
 variable "dependency" {
   type = object({
-    eavichay_role    = any
-    eavichay_cluster = any
+    cloudfairy_role    = any
+    cloudfairy_cluster = any
   })
 }
 
@@ -29,7 +29,7 @@ provider "external" {}
 
 provider "kubernetes" {
   insecure    = true
-  config_path = var.dependency.eavichay_cluster.kubeconfig_path # "~/.kube/config"
+  config_path = var.dependency.cloudfairy_cluster.kubeconfig_path # "~/.kube/config"
 }
 
 
@@ -37,7 +37,7 @@ locals {
   env_name         = var.project.environment_name
   service_name     = var.properties.local_name
   docker_tag       = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
-  conn_to_dockers  = try(var.connector.eavichay_service_to_dockerhub, [])
+  conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
@@ -70,7 +70,7 @@ resource "kubernetes_deployment_v1" "app" {
         }
       }
       spec {
-        service_account_name = var.dependency.eavichay_cluster.service_account
+        service_account_name = var.dependency.cloudfairy_cluster.service_account
         volume {
           name = "root-volume-claim"
           persistent_volume_claim {
@@ -86,7 +86,7 @@ resource "kubernetes_deployment_v1" "app" {
           image_pull_policy = "Always"
           volume_mount {
             name       = "root-volume-claim"
-            mount_path = var.dependency.eavichay_cluster.volume_path
+            mount_path = var.dependency.cloudfairy_cluster.volume_path
           }
           dynamic "env" {
             for_each = flatten(local.conn_to_dockers)

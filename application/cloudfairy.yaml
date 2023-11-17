@@ -33,5 +33,5 @@ cloudfairy_module:
       type: string
       defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
   dependencies:
-    - eavichay/role
-    - eavichay/cluster
+    - cloudfairy/role
+    - cloudfairy/cluster
