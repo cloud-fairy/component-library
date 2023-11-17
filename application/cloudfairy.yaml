@@ -1,0 +1,37 @@
+cloudfairy_module:
+  name: application
+  vendor: cloudfairy
+  displayName: Application or Service
+  type: component
+  interface: []
+  entry:
+    local: "local"
+  properties:
+    - name: pod_count
+      displayName: Number of instances
+      type: number
+      defaultValue: 1
+    - name: has_ingress
+      displayName: Expose to internet access
+      type: options
+      options:
+        - label: "Yes"
+          value: 1
+        - label: "No"
+          value: 0
+      defaultValue: 0
+    - name: container_port
+      displayName: Container port
+      type: string
+      defaultValue: "3000"
+    - name: debug_port
+      type: string
+      displayName: "Debugging port (-1 for disabled)"
+      defaultValue: "-1"
+    - name: env_vars
+      displayName: "Add environment variables (comma seperated)"
+      type: string
+      defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
+  dependencies:
+    - eavichay/role
+    - eavichay/cluster

@@ -1,0 +1,24 @@
+cloudfairy_module:
+  name: cluster
+  vendor: cloudfairy
+  displayName: Container Cluster
+  internal: true
+  type: component
+  interface: []
+  entry:
+    local: k3d
+  properties:
+    - name: node_count
+      displayName: Number of nodes
+      type: number
+      defaultValue: 2
+    - name: api_port
+      displayName: Cluster API port
+      defaultValue: 6445
+      type: number
+    - name: port
+      displayName: Loadbalancer port
+      defaultValue: "8000"
+  dependencies:
+    - eavichay/role
+    - cloud_provider

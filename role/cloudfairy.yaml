@@ -1,0 +1,11 @@
+cloudfairy_module:
+  name: role
+  vendor: cloudfairy
+  displayName: Access Management Role
+  type: component
+  internal: true
+  interface: []
+  entry:
+    local: role.local.tf
+  properties: []
+  dependencies: []

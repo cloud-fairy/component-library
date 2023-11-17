@@ -1,0 +1,20 @@
+cloudfairy_module:
+  type: connector
+  vendor: cloudfairy
+  name: "service_to_dockerhub"
+  builder_runtime: "terraform"
+  entry:
+    local: connector.tf
+  from:
+    - "eavichay/application"
+  to:
+    - "eavichay/docker"
+  properties:
+    - name: "hostname"
+      type: string
+      defaultValue: "SVC_HOST"
+      displayName: "Service Hostname"
+    - name: "port"
+      type: string
+      defaultValue: "SVC_PORT"
+      displayName: "Service Port"

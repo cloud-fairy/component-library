@@ -1,0 +1,28 @@
+cloudfairy_module:
+  type: "component"
+  subtype: "storage"
+  name: "public-website"
+  vendor: "eavichay"
+  displayName: "Public Website"
+  dependencies: ["eavichay/cluster"]
+  runtime: "terraform"
+  entry:
+    local: local
+  properties:
+    - name: "bucketName"
+      displayName: "Storage name (Applicable only on cloud)"
+      defaultValue: "my-website"
+      highlighted: true
+      type: "string"
+    - name: "indexPage"
+      type: "string"
+      displayName: "Index Page"
+      defaultValue: "index.html"
+    - name: "errorPage"
+      displayName: "Error (404) Page"
+      defaultValue: "error.html"
+      type: "string"
+    - name: "monorepo_path"
+      defaultValue: ""
+      dispalyName: "Monorepo artifact path (optional) - local deployment"
+      type: string
