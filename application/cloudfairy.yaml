@@ -6,6 +6,7 @@ cloudfairy_module:
   interface: []
   entry:
     local: "local"
+    gcp: "gcp"
   properties:
     - name: pod_count
       displayName: Number of instances

@@ -29,6 +29,8 @@ locals {
 
 resource "google_container_cluster" "this" {
   deletion_protection      = false
+  network                  = local.network.id
+  subnetwork               = local.subnet.name
   name                     = local.cluster_name
   location                 = data.google_compute_zones.available.names[0]
   remove_default_node_pool = true

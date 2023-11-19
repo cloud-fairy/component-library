@@ -81,7 +81,7 @@ resource "kubernetes_deployment" "deployment" {
           resources {
             limits = {
               memory = "1Gi"
-              cpu    = "500m"
+              cpu    = "250m"
             }
           }
           dynamic "env" {
@@ -153,8 +153,9 @@ resource "kubernetes_ingress_v1" "ingress" {
 
 output "cfout" {
   value = {
-    hostname = local.cluster.hostname
-    port     = var.properties.container_port
-    env_vars = local.env_vars
+    hostname     = local.cluster.hostname
+    port         = var.properties.container_port
+    env_vars     = local.env_vars
+    service_name = local.service_name
   }
 }

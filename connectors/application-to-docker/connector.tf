@@ -18,7 +18,7 @@ output "cfout" {
   value = [
     {
       name  = var.properties.hostname
-      value = var.dependency.from_module.hostname
+      value = var.dependency.from_module.service_name
     },
     {
       name  = var.properties.port

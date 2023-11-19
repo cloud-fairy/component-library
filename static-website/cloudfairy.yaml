@@ -2,12 +2,13 @@ cloudfairy_module:
   type: "component"
   subtype: "storage"
   name: "public-website"
-  vendor: "eavichay"
+  vendor: "cloudfairy"
   displayName: "Public Website"
   dependencies: ["cloudfairy/cluster"]
   runtime: "terraform"
   entry:
     local: local
+    gcp: gcp
   properties:
     - name: "bucketName"
       displayName: "Storage name (Applicable only on cloud)"

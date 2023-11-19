@@ -106,13 +106,15 @@ resource "kubernetes_service" "app" {
     labels = {
       "app" = local.service_name
     }
+    annotations = {
+      "cloud.google.com/neg" = "{\"ingress\": true,\"exposed_ports\":{\"${var.properties.container_port}\":{}}}"
+    }
   }
   spec {
-    type = "ClusterIP"
+    type = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? "LoadBalancer" : "NodePort"
     port {
-      port        = var.properties.container_port
+      port        = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? 80 : var.properties.container_port
       target_port = var.properties.container_port
-      protocol    = "TCP"
     }
     selector = {
       "app" = local.service_name
@@ -124,7 +126,6 @@ resource "kubernetes_service" "app" {
         name        = "debug-port"
         port        = var.properties.debug_port
         target_port = var.properties.debug_port
-        protocol    = "TCP"
       }
     }
   }
@@ -141,13 +142,17 @@ resource "kubernetes_ingress_v1" "app" {
     }
     namespace = "default"
     annotations = {
+      # "nginx.ingress.kubernetes.io/use-regex"      = "true"
+      "kubernetes.io/ingress.class" : "nginx"
+      "nginx.ingress.kubernetes.io/rewrite-target" = "/$1"
     }
   }
   spec {
+    # ingress_class_name = "nginx"
     rule {
       http {
         path {
-          path      = "/${local.service_name}/"
+          path      = "/${local.service_name}/*"
           path_type = "Prefix"
           backend {
             service {
