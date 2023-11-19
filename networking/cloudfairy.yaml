@@ -1,12 +1,13 @@
 cloudfairy_module:
-  name: role
+  name: networking
   vendor: cloudfairy
-  displayName: Access Management Role
-  type: component
+  displayName: Virtual Network
   internal: true
+  type: component
   interface: []
   entry:
     local: k3d
     gcp: gcp
   properties: []
-  dependencies: []
+  dependencies:
+    - cloud_provider

@@ -5,8 +5,10 @@ cloudfairy_module:
   builder_runtime: "terraform"
   entry:
     local: connector.tf
+    gcp: connector.tf
   from:
     - "cloudfairy/application"
+    - "cloudfairy/docker"
   to:
     - "cloudfairy/docker"
   properties:

@@ -21,4 +21,5 @@ cloudfairy_module:
       defaultValue: "8000"
   dependencies:
     - cloudfairy/role
+    - cloudfairy/networking
     - cloud_provider

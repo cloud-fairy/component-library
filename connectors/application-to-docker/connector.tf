@@ -6,6 +6,12 @@ variable "dependency" {
   type = object({
     from_module = any
   })
+  default = {
+    from_module = {
+      hostname = ""
+      port     = ""
+    }
+  }
 }
 
 output "cfout" {

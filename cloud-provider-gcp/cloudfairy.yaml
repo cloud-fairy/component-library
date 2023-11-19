@@ -6,20 +6,6 @@ cloudfairy_module:
   displayName: "Google Cloud Platform"
   annotations:
     "cloudfairy.dev/cloud-provider-type": "gcp"
-  outputs:
-    - "type"
-    - "projectId"
-    - "region"
   runtime: "terraform"
   entry: "gcp-provider.tf"
-  properties:
-    - name: "projectId"
-      displayName: "GCP Project ID"
-      type: "string"
-      defaultValue: ""
-    - name: "region"
-      displayName: "Region"
-      type: "options"
-      options:
-        - label: "US Central 1"
-          value: "us-central1"
+  properties: []
