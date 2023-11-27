@@ -4,7 +4,10 @@ cloudfairy_module:
   name: "public-website"
   vendor: "cloudfairy"
   displayName: "Public Website"
-  dependencies: ["cloudfairy/cluster"]
+  dependencies:
+    aws: []
+    gcp: []
+    local: ["cloudfairy/cluster"]
   runtime: "terraform"
   entry:
     local: local

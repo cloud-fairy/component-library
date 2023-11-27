@@ -144,8 +144,9 @@ resource "kubernetes_ingress_v1" "ingress" {
 
 output "cfout" {
   value = {
-    hostname = local.service_name
-    port     = var.properties.container_port
-    env_vars = local.env_vars
+    hostname     = local.service_name
+    service_name = local.service_name
+    port         = var.properties.container_port
+    env_vars     = local.env_vars
   }
 }

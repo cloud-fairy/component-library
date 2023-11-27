@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=../../../descriptor.schema.json
 cloudfairy_module:
   name: application
   vendor: cloudfairy
