@@ -28,5 +28,5 @@ cloudfairy_module:
       type: "string"
     - name: "monorepo_path"
       defaultValue: ""
-      dispalyName: "Monorepo artifact path (optional) - local deployment"
+      displayName: "Monorepo artifact path (optional) - local deployment"
       type: string

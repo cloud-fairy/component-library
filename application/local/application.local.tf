@@ -39,9 +39,10 @@ locals {
   docker_tag       = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
+  conn_to_pg_pods  = try(var.connector.cloudfairy_service_to_pod_in_cluster, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars  = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  inject_env_vars  = flatten([local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
 }
 
 
@@ -89,7 +90,7 @@ resource "kubernetes_deployment_v1" "app" {
             mount_path = var.dependency.cloudfairy_cluster.volume_path
           }
           dynamic "env" {
-            for_each = flatten(local.conn_to_dockers)
+            for_each = flatten(local.inject_env_vars)
             content {
               name  = env.value.name
               value = env.value.value

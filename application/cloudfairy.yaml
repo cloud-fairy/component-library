@@ -32,7 +32,7 @@ cloudfairy_module:
       defaultValue: "-1"
     - name: env_vars
       displayName: "Add environment variables (comma seperated)"
-      type: string
+      type: keyvalue
       defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
   dependencies:
     - cloudfairy/role

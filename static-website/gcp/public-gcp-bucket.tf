@@ -9,12 +9,6 @@ variable "project" {
   type = any
 }
 
-variable "dependency" {
-  # cloud_provider
-  # cluster
-  type = any
-}
-
 variable "connector" {
   type    = any
   default = []

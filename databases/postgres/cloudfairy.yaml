@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=./../../../../descriptor.schema.json
+cloudfairy_module:
+  vendor: cloudfairy
+  name: postgres_pod
+  displayName: "Postgress (In-Cluster)"
+  type: component
+  interface: []
+  dependencies:
+      - cloudfairy/cluster
+  entry:
+      local: k3d
+      gcp: gcp
+  properties:
+    - name: pod_admin_username
+      type: string
+      defaultValue: "admin"
+      displayName: "Database root username"
+    - name: pod_admin_password
+      type: password
+      defaultValue: ""
+      displayName: "Optional password, keep empty for random"
+    - name: pod_databases
+      type: string
+      defaultValue: "data"
+      displayName: "Databases names, comma-seperated (i.e. data,users,...)"
