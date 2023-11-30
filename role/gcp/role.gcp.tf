@@ -19,9 +19,10 @@ variable "project" {
 
 locals {
   gcp_project          = var.project.PROJECT_ID
+  project_name         = var.project.project_name
   env_name             = var.project.environment_name
   service_account_name = try(var.properties.service_account_name, "cloudfairy-default")
-  sa_fullname          = "${local.env_name}-${local.service_account_name}"
+  sa_fullname          = "${local.project_name}-${local.env_name}-${local.service_account_name}"
   all_service_account_roles = [
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
@@ -33,7 +34,7 @@ locals {
 
 resource "google_service_account" "service_account" {
   project      = local.gcp_project
-  account_id   = local.service_account_name
+  account_id   = local.sa_fullname
   display_name = "Cloudfairy Managed Service Account - ${local.env_name}"
 }
 
