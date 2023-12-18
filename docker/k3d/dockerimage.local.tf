@@ -30,13 +30,19 @@ locals {
   service_name       = var.properties.local_name
   hostname           = lower(local.service_name)
   conn_to_services   = try(var.connector.cloudfairy_application_to_docker, [])
-  inject_env_vars_kv = var.properties.env_vars != "" ? try(toset(var.properties.env_vars), toset([var.properties.env_vars])) : []
+  inject_env_vars_kv = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
   env_vars = flatten([
     for element in local.inject_env_vars_kv : {
       name  = split("=", element)[0]
       value = split("=", element)[1]
     }
   ])
+}
+
+output "debug" {
+  value = {
+    kv = local.inject_env_vars_kv
+  }
 }
 
 resource "kubernetes_deployment" "deployment" {
@@ -147,6 +153,6 @@ output "cfout" {
     hostname     = local.service_name
     service_name = local.service_name
     port         = var.properties.container_port
-    env_vars     = local.env_vars
+    # env_vars     = local.env_vars
   }
 }

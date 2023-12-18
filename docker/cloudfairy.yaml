@@ -26,4 +26,4 @@ cloudfairy_module:
     - name: env_vars
       displayName: "Environment variables, comma separated (i.e. FOO=bar,BAZ=foo)"
       defaultValue: "CLOUDFAIRY=true"
-      type: keyvalue
+      type: string

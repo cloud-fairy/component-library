@@ -1,12 +1,5 @@
 variable "properties" {
-  type = object({
-    pod_count      = number
-    has_ingress    = number
-    container_port = string
-    debug_port     = string
-    env_vars       = list(string)
-    local_name     = string
-  })
+  type = any
 }
 
 variable "connector" {
@@ -42,7 +35,18 @@ locals {
   conn_to_pg_pods  = try(var.connector.cloudfairy_service_to_pod_in_cluster, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars  = flatten([local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  raw_env_vars     = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
+  inject_env_vars_kv = flatten([
+    for element in local.raw_env_vars : {
+      name  = split("=", element)[0]
+      value = split("=", element)[1]
+    }
+  ])
+  inject_env_vars = flatten([local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
+}
+
+output "debug" {
+  value = local.inject_env_vars_kv
 }
 
 
@@ -121,7 +125,7 @@ resource "kubernetes_service" "app" {
     }
   }
   spec {
-    type = "ClusterIP"
+    type = "NodePort"
     port {
       port        = var.properties.container_port
       target_port = var.properties.container_port
@@ -157,6 +161,7 @@ resource "kubernetes_ingress_v1" "app" {
     }
   }
   spec {
+    ingress_class_name = "traefik"
     rule {
       host = "${local.service_name}.localhost"
       http {

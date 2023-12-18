@@ -28,7 +28,7 @@ locals {
   env_name           = var.project.environment_name
   service_name       = var.properties.local_name
   conn_to_services   = try(var.connector.cloudfairy_application_to_docker, [])
-  inject_env_vars_kv = var.properties.env_vars != "" ? try(toset(var.properties.env_vars), toset([var.properties.env_vars])) : []
+  inject_env_vars_kv = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
   env_vars = flatten([
     for element in local.inject_env_vars_kv : {
       name  = split("=", element)[0]
