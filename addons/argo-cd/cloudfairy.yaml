@@ -1,0 +1,17 @@
+cloudfairy_module:
+  type: "addon"
+  name: "argocd_addon"
+  vendor: "cloudfairy"
+  displayName: "ArgoCD Addon for Kubernetes"
+  to:
+    - "cloudfairy/cluster"
+  runtime: "terraform"
+  properties: []
+  interface: []
+  dependencies:
+    - cloudfairy/cluster
+  entry: 
+    gcp: addon.argocd.tf
+    local: local
+    az: addon.argocd.tf
+    aws: addon.argocd.tf
