@@ -1,0 +1,12 @@
+cloudfairy_module:
+  name: argo-app
+  type: component
+  displayName: ArgoCD Application
+  builder: "plugin:@cloudfairy/builder-argocd-app"
+  dependencies: []
+  entry: {}
+  properties: []
+  vendor: cloudfairy
+  annotations: {}
+  interface: []
+  internal: false

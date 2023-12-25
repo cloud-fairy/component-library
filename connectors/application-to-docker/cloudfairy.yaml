@@ -6,6 +6,7 @@ cloudfairy_module:
   entry:
     local: connector.tf
     gcp: connector.tf
+    az: connector.tf
   from:
     - "cloudfairy/application"
     - "cloudfairy/docker"

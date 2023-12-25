@@ -9,6 +9,7 @@ cloudfairy_module:
   entry:
     local: k3d
     gcp: gcp
+    az: az
   interface: []
   properties:
     - name: dockerhub_image

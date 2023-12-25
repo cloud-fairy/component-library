@@ -8,6 +8,7 @@ cloudfairy_module:
   entry:
     local: k3d
     gcp: gcp
+    az: az
   properties:
     - name: node_count
       displayName: Number of nodes
@@ -21,6 +22,13 @@ cloudfairy_module:
       displayName: Loadbalancer port
       defaultValue: "8000"
   dependencies:
-    - cloudfairy/role
-    - cloudfairy/networking
-    - cloud_provider
+    az:
+      - cloud_provider
+    local:
+      - cloudfairy/role
+      - cloudfairy/networking
+      - cloud_provider
+    gcp:
+      - cloudfairy/role
+      - cloudfairy/networking
+      - cloud_provider

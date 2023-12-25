@@ -8,6 +8,7 @@ cloudfairy_module:
   entry:
     local: "local"
     gcp: "gcp"
+    az: "az"
   properties:
     - name: pod_count
       displayName: Number of instances
@@ -35,5 +36,11 @@ cloudfairy_module:
       type: keyvalue
       defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
   dependencies:
-    - cloudfairy/role
-    - cloudfairy/cluster
+    az:
+      - cloudfairy/cluster
+    local:
+      - cloudfairy/role
+      - cloudfairy/cluster
+    gcp:
+      - cloudfairy/role
+      - cloudfairy/cluster

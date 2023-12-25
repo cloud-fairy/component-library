@@ -7,10 +7,13 @@ cloudfairy_module:
   dependencies:
     aws: []
     gcp: []
+    az:
+      - cloud_provider
     local: ["cloudfairy/cluster"]
   runtime: "terraform"
   entry:
     local: local
+    az: az
     gcp: gcp
   properties:
     - name: "bucketName"
