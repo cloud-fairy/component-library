@@ -1,0 +1,11 @@
+cloudfairy_module:
+  interface: "cloud_provider"
+  type: "cloud-provider"
+  vendor: "cloudfairy"
+  name: "cloud-provider-digitalocean"
+  displayName: "Digital Ocean"
+  annotations:
+    "cloudfairy.dev/cloud-provider-type": "digitalocean"
+  runtime: "terraform"
+  entry: do-provider.tf
+  properties: []

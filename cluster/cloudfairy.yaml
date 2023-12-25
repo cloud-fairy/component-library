@@ -9,17 +9,18 @@ cloudfairy_module:
     local: k3d
     gcp: gcp
     az: az
+    digitalocean: digitalocean
   properties:
     - name: node_count
       displayName: Number of nodes
       type: number
       defaultValue: 2
     - name: api_port
-      displayName: Cluster API port
+      displayName: Cluster API port (local development only)
       defaultValue: 6445
       type: number
     - name: port
-      displayName: Loadbalancer port
+      displayName: Loadbalancer port (local development only)
       defaultValue: "8000"
   dependencies:
     az:
@@ -27,6 +28,8 @@ cloudfairy_module:
     local:
       - cloudfairy/role
       - cloudfairy/networking
+      - cloud_provider
+    digitalocean:
       - cloud_provider
     gcp:
       - cloudfairy/role

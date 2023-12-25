@@ -1,9 +1,3 @@
-/**
-
-This is a no-op terraform for local cloudfairy environment.
-
-*/
-
 variable "properties" {
   type = any
 }
