@@ -9,6 +9,7 @@ cloudfairy_module:
     local: "local"
     gcp: "gcp"
     az: "az"
+    digitalocean: "digitalocean"
   properties:
     - name: pod_count
       displayName: Number of instances
@@ -36,6 +37,8 @@ cloudfairy_module:
       type: keyvalue
       defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
   dependencies:
+    digitalocean:
+      - cloudfairy/cluster
     az:
       - cloudfairy/cluster
     local:
