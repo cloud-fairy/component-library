@@ -30,6 +30,7 @@ locals {
   service_name       = var.properties.local_name
   hostname           = lower(local.service_name)
   conn_to_services   = try(var.connector.cloudfairy_application_to_docker, [])
+  conn_to_dockers    = try(var.connector.cloudfairy_service_to_dockerhub, [])
   inject_env_vars_kv = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
   env_vars = flatten([
     for element in local.inject_env_vars_kv : {
@@ -37,6 +38,7 @@ locals {
       value = split("=", element)[1]
     }
   ])
+  all_env_vars = flatten([local.conn_to_services, local.conn_to_dockers, local.env_vars])
 }
 
 output "debug" {
@@ -81,7 +83,7 @@ resource "kubernetes_deployment" "deployment" {
             }
           }
           dynamic "env" {
-            for_each = local.env_vars
+            for_each = local.all_env_vars
             content {
               name  = env.value.name
               value = env.value.value
