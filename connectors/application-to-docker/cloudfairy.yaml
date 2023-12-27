@@ -12,6 +12,7 @@ cloudfairy_module:
     - "cloudfairy/docker"
   to:
     - "cloudfairy/docker"
+    - "cloudfairy/application"
   properties:
     - name: "hostname"
       type: string
