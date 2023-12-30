@@ -1,0 +1,31 @@
+cloudfairy_module:
+  type: connector
+  vendor: cloudfairy
+  name: "service_to_db_mongo"
+  builder_runtime: "terraform"
+  entry:
+    local: connector.tf
+    gcp: connector.tf
+    az: connector.tf
+  from:
+    - "cloudfairy/application"
+    - "cloudfairy/docker"
+  to:
+    - "cloudfairy/db_mongo"
+  properties:
+    - name: "hostname"
+      type: string
+      defaultValue: "DB_HOST"
+      displayName: "Service Hostname"
+    - name: "port"
+      type: string
+      defaultValue: "DB_PORT"
+      displayName: "Service Port"
+    - name: "user"
+      type: string
+      defaultValue: "DB_USER"
+      displayName: "Database username"
+    - name: "pass"
+      type: string
+      defaultValue: "DB_PASS"
+      displayName: "Database password"

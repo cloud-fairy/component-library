@@ -33,6 +33,7 @@ locals {
   conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_pg_pods  = try(var.connector.cloudfairy_service_to_pod_in_cluster, [])
+  conn_to_db_mongo = try(var.connector.cloudfairy_service_to_db_mongo, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
   raw_env_vars     = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
@@ -42,7 +43,7 @@ locals {
       value = split("=", element)[1]
     }
   ])
-  inject_env_vars = flatten([local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
+  inject_env_vars = flatten([local.conn_to_db_mongo, local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
 }
 
 output "debug" {

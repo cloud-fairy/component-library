@@ -1,0 +1,26 @@
+cloudfairy_module:
+  name: db_mongo
+  vendor: cloudfairy
+  displayName: "MongoDB"
+  type: component
+  entry:
+    local: mongo-on-k8s.tf
+  dependencies:
+    gcp:
+      - cloud_provider
+    local:
+      - cloudfairy/cluster
+  properties:
+      - name: has_ingress
+        displayName: Expose to internet access
+        type: options
+        options:
+          - label: "Yes"
+            value: 1
+          - label: "No"
+            value: 0
+        defaultValue: 0
+      - name: env_vars
+        displayName: "Add environment variables (comma seperated)"
+        type: keyvalue
+        defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"
