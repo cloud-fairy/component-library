@@ -1,0 +1,30 @@
+cloudfairy_module:
+  name: mq_rabbitmq
+  vendor: cloudfairy
+  displayName: "RabbitMQ"
+  type: component
+  entry:
+    local: rabbit-on-k8s.tf
+  dependencies:
+    gcp:
+      - cloud_provider
+    local:
+      - cloudfairy/cluster
+  properties:
+      - name: has_ingress
+        displayName: Expose to internet access
+        type: options
+        options:
+          - label: "Yes"
+            value: 1
+          - label: "No"
+            value: 0
+        defaultValue: 0
+      - name: has_management
+        displayName: Rabbit management user interface
+        type: boolean
+        defaultValue: true
+      - name: env_vars
+        displayName: "Add environment variables (comma seperated)"
+        type: keyvalue
+        defaultValue: "POD_ENV=DEV,CLOUDFAIRY=true"

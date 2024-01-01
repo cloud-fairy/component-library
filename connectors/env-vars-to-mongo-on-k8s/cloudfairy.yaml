@@ -12,6 +12,7 @@ cloudfairy_module:
     - "cloudfairy/docker"
   to:
     - "cloudfairy/db_mongo"
+    - "cloudfairy/mq_rabbitmq"
   properties:
     - name: "hostname"
       type: string
