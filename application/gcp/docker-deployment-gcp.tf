@@ -24,15 +24,26 @@ variable "connector" {
 
 
 locals {
-  cluster          = var.dependency.cloudfairy_cluster
+  cluster = var.dependency.cloudfairy_cluster
+  # gke_nodeport     = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? 80 : var.properties.container_port
+  gke_nodeport     = var.properties.container_port
   env_name         = var.project.environment_name
   service_name     = var.properties.local_name
   docker_tag       = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
   conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
+  conn_to_pg_pods  = try(var.connector.cloudfairy_service_to_pod_in_cluster, [])
+  conn_to_db_mongo = try(var.connector.cloudfairy_service_to_db_mongo, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars  = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  raw_env_vars     = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
+  inject_env_vars_kv = flatten([
+    for element in local.raw_env_vars : {
+      name  = split("=", element)[0]
+      value = split("=", element)[1]
+    }
+  ])
+  inject_env_vars = flatten([local.conn_to_db_mongo, local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
 }
 
 data "google_client_config" "provider" {}
@@ -77,7 +88,7 @@ resource "kubernetes_deployment_v1" "app" {
           image             = "${var.dependency.cloudfairy_cluster.container_registry_url}/${local.service_name}:${local.docker_tag}"
           image_pull_policy = "Always"
           dynamic "env" {
-            for_each = flatten(local.conn_to_dockers)
+            for_each = flatten(local.inject_env_vars)
             content {
               name  = env.value.name
               value = env.value.value
@@ -106,14 +117,15 @@ resource "kubernetes_service" "app" {
     labels = {
       "app" = local.service_name
     }
-    annotations = {
-      "cloud.google.com/neg" = "{\"ingress\": true,\"exposed_ports\":{\"${var.properties.container_port}\":{}}}"
-    }
+    # annotations = {
+    #   "cloud.google.com/neg" = "{\"ingress\": true,\"exposed_ports\":{\"${local.gke_nodeport}\":{}}}"
+    # }
   }
   spec {
-    type = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? "LoadBalancer" : "NodePort"
+    # type = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? "ClusterIP" : "NodePort"
+    type = "NodePort"
     port {
-      port        = (var.properties.has_ingress == 1 || var.properties.has_ingress == "1") ? 80 : var.properties.container_port
+      port        = local.gke_nodeport
       target_port = var.properties.container_port
     }
     selector = {
@@ -131,6 +143,23 @@ resource "kubernetes_service" "app" {
   }
 }
 
+terraform {
+  required_providers {
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.14.0"
+    }
+  }
+}
+
+
+
+provider "kubectl" {
+  host                   = local.cluster.hostname
+  cluster_ca_certificate = base64decode(local.cluster.cluster_ca_certificate)
+  token                  = data.google_client_config.provider.access_token
+  load_config_file       = false
+}
 
 
 resource "kubernetes_ingress_v1" "app" {
@@ -142,9 +171,7 @@ resource "kubernetes_ingress_v1" "app" {
     }
     namespace = "default"
     annotations = {
-      # "nginx.ingress.kubernetes.io/use-regex"      = "true"
-      "kubernetes.io/ingress.class" : "nginx"
-      "nginx.ingress.kubernetes.io/rewrite-target" = "/$1"
+      "kubernetes.io/ingress.class" : "gce"
     }
   }
   spec {
@@ -152,13 +179,13 @@ resource "kubernetes_ingress_v1" "app" {
     rule {
       http {
         path {
-          path      = "/${local.service_name}/*"
+          path      = "/${local.service_name}"
           path_type = "Prefix"
           backend {
             service {
               name = local.service_name
               port {
-                number = var.properties.container_port
+                number = local.gke_nodeport
               }
             }
           }

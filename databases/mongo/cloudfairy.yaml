@@ -5,9 +5,11 @@ cloudfairy_module:
   type: component
   entry:
     local: mongo-on-k8s.tf
+    gcp: mongo-gke.tf
   dependencies:
     gcp:
       - cloud_provider
+      - cloudfairy/cluster
     local:
       - cloudfairy/cluster
   properties:

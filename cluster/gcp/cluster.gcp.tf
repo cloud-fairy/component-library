@@ -31,6 +31,8 @@ resource "google_container_cluster" "this" {
   initial_node_count       = 1
 }
 
+data "google_client_config" "provider" {}
+
 data "google_compute_zones" "available" {
   region = local.region
 }
@@ -40,6 +42,10 @@ resource "google_container_node_pool" "this" {
   location   = data.google_compute_zones.available.names[0]
   cluster    = google_container_cluster.this.name
   node_count = var.properties.node_count
+  autoscaling {
+    min_node_count = var.properties.node_count
+    max_node_count = var.properties.node_count + 4
+  }
 
   node_config {
     preemptible  = true
@@ -50,6 +56,14 @@ resource "google_container_node_pool" "this" {
     oauth_scopes = [
       "https://www.googleapis.com/auth/cloud-platform"
     ]
+
+    labels = {
+      "env" = var.project.environment_name
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [name_prefix, node_count]
   }
 }
 

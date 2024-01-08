@@ -36,8 +36,6 @@ locals {
   inject_env_vars  = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
 }
 
-data "google_client_config" "provider" {}
-
 provider "kubernetes" {
   host                   = local.cluster.kube_config.0.host
   token                  = local.cluster.kube_config.0.token
