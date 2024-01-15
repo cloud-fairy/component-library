@@ -4,8 +4,8 @@ cloudfairy_module:
   displayName: "MongoDB"
   type: component
   entry:
-    local: mongo-on-k8s.tf
-    gcp: mongo-gke.tf
+    local: k3d
+    gcp: gcp
   dependencies:
     gcp:
       - cloud_provider

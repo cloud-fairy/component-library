@@ -31,6 +31,7 @@ locals {
   hostname           = lower(local.service_name)
   conn_to_services   = try(var.connector.cloudfairy_application_to_docker, [])
   conn_to_dockers    = try(var.connector.cloudfairy_service_to_dockerhub, [])
+  conn_to_db_mongo   = try(var.connector.cloudfairy_service_to_db_mongo, [])
   inject_env_vars_kv = var.properties.env_vars != "" ? split(",", var.properties.env_vars) : []
   env_vars = flatten([
     for element in local.inject_env_vars_kv : {
@@ -38,7 +39,7 @@ locals {
       value = split("=", element)[1]
     }
   ])
-  all_env_vars = flatten([local.conn_to_services, local.conn_to_dockers, local.env_vars])
+  all_env_vars = flatten([local.conn_to_db_mongo, local.conn_to_services, local.conn_to_dockers, local.env_vars])
 }
 
 output "debug" {
