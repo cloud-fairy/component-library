@@ -157,5 +157,12 @@ output "cfout" {
     service_name = local.service_name
     port         = var.properties.container_port
     # env_vars     = local.env_vars
+    documentation = <<EOF
+# ${local.service_name} service
+An external docker container.
+
+Image: ${var.properties.dockerhub_image}
+${var.properties.isexposed ? "Access: ${local.service_name}.localhost:8000" : "Internal access only"}
+EOF
   }
 }

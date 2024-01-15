@@ -166,3 +166,14 @@ output "cfout" {
     port     = 27017
   }
 }
+
+output "cfdocs" {
+  value = <<EOF
+# ${local.service_name} mongo database
+MongoDB database.
+
+User and password auto-generated, injectable via environment variables to connected services.
+
+${var.properties.has_ingress > 0 ? "Access: ${local.service_name}.localhost:8000" : "Internal access only"}
+EOF
+}

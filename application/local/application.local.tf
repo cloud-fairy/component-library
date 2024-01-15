@@ -150,6 +150,7 @@ resource "kubernetes_service" "app" {
 
 
 resource "kubernetes_ingress_v1" "app" {
+  count = var.properties.has_ingress
   metadata {
     name = local.service_name
     labels = {
@@ -162,12 +163,12 @@ resource "kubernetes_ingress_v1" "app" {
     }
   }
   spec {
-    ingress_class_name = "traefik"
     rule {
       host = "${local.service_name}.localhost"
       http {
         path {
-          path = "/"
+          path      = "/"
+          path_type = "Prefix"
           backend {
             service {
               name = local.service_name
@@ -189,9 +190,23 @@ resource "kubernetes_ingress_v1" "app" {
 
 output "cfout" {
   value = {
-    pod_count    = var.properties.pod_count
-    service_name = local.service_name
-    hostname     = local.service_name
-    port         = var.properties.container_port
+    pod_count     = var.properties.pod_count
+    service_name  = local.service_name
+    hostname      = local.service_name
+    port          = var.properties.container_port
+    documentation = <<EOF
+# ${local.service_name} service
+This is a dockerized service. To update the service, push a new docker image to the registry.
+
+## Build and push docker image
+```bash
+docker build -t localhost:5001/${local.service_name}:${local.docker_tag} .
+docker push localhost:5001/${local.service_name}:${local.docker_tag}
+```
+
+The container is running on port ${var.properties.container_port}.
+
+${var.properties.has_ingress > 0 ? "External access: ${local.service_name}.localhost:8000" : "Internal access only"}
+EOF
   }
 }
