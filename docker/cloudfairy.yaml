@@ -1,7 +1,8 @@
 cloudfairy_module:
   type: component
   name: docker
-  displayName: "Docker from DockerHub"
+  displayName: "Docker (external registry)"
+  category: application
   vendor: "cloudfairy"
   dependencies:
     - cloudfairy/cluster

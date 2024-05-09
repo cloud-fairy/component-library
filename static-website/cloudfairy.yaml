@@ -4,6 +4,7 @@ cloudfairy_module:
   name: "public-website"
   vendor: "cloudfairy"
   displayName: "Public Website"
+  category: "application"
   dependencies:
     aws: []
     gcp: []

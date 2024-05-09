@@ -3,6 +3,7 @@ cloudfairy_module:
   vendor: cloudfairy
   displayName: "MongoDB"
   type: component
+  category: database
   entry:
     local: k3d
     gcp: gcp

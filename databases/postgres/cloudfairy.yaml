@@ -4,6 +4,7 @@ cloudfairy_module:
   name: postgres_pod
   displayName: "Postgress (In-Cluster)"
   type: component
+  category: "database"
   interface: []
   dependencies:
       - cloudfairy/cluster

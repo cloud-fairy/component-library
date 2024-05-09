@@ -3,6 +3,7 @@ cloudfairy_module:
   vendor: cloudfairy
   displayName: "RabbitMQ"
   type: component
+  category: "messaging"
   entry:
     local: rabbit-on-k8s.tf
   dependencies:

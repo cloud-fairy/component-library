@@ -3,6 +3,7 @@ cloudfairy_module:
   name: application
   vendor: cloudfairy
   displayName: Application or Service
+  category: application
   type: component
   interface: []
   entry:
