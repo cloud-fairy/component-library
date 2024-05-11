@@ -29,11 +29,12 @@ locals {
   service_name     = var.properties.local_name
   registry_url     = "https://${var.dependency.cloudfairy_cluster.container_registry_url}"
   docker_tag       = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
+  conn_to_chromadb = try(var.connector.cloudfairy_app_to_chromadb, [])
   conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_storages = try(var.connector.cloudfairy_service_to_storage, [])
   conn_to_rds      = try(var.connector.cloudfairy_k8_microservice_to_managed_sql, [])
-  inject_env_vars  = flatten([local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
+  inject_env_vars  = flatten([local.conn_to_chromadb, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds])
 }
 
 provider "kubernetes" {

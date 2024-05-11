@@ -30,6 +30,7 @@ locals {
   env_name         = var.project.environment_name
   service_name     = var.properties.local_name
   docker_tag       = data.external.env.result["CI_COMMIT_SHA"] != "" ? data.external.env.result["CI_COMMIT_SHA"] : var.project.environment_name
+  conn_to_chromadb = try(var.connector.cloudfairy_app_to_chromadb, [])
   conn_to_dockers  = try(var.connector.cloudfairy_service_to_dockerhub, [])
   conn_to_services = try(var.connector.cloudfairy_service_to_service, [])
   conn_to_pg_pods  = try(var.connector.cloudfairy_service_to_pod_in_cluster, [])
@@ -43,7 +44,7 @@ locals {
       value = split("=", element)[1]
     }
   ])
-  inject_env_vars = flatten([local.conn_to_db_mongo, local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
+  inject_env_vars = flatten([local.conn_to_chromadb, local.conn_to_db_mongo, local.conn_to_pg_pods, local.conn_to_dockers, local.conn_to_services, local.conn_to_storages, local.conn_to_rds, local.inject_env_vars_kv])
 }
 
 data "google_client_config" "provider" {}
