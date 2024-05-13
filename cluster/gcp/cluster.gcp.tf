@@ -49,7 +49,7 @@ resource "google_container_node_pool" "this" {
 
   node_config {
     preemptible  = true
-    machine_type = "e2-medium"
+    machine_type = "e2-highmem-4"
 
     # Google recommends custom service accounts that have cloud-platform scope and permissions granted via IAM Roles.
     service_account = local.service_account.email
