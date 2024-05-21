@@ -50,6 +50,11 @@ resource "k3d_cluster" "mycluster" {
     destination = "/mnt/cloudfairy/root"
   }
 
+  volume {
+    source      = "${data.external.env.result["PWD"]}../../../../../../../../.cloudfairy/tmp-data"
+    destination = "/mnt/cloudfairy/data"
+  }
+
   network = local.network_name
 
   registries {
@@ -74,7 +79,18 @@ resource "k3d_cluster" "mycluster" {
   k3d {
     disable_load_balancer = false
     disable_image_volume  = false
+
   }
+
+  # k3s {
+  #   # extra_args {
+  #   #   arg = "--kubelet-arg=eviction-hard=imagefs.available<1%,nodefs.available<1%@*"
+  #   # }
+  #   extra_args {
+  #     arg          = "eviction-minimum-reclaim=imagefs.available=1%,nodefs.available=1%"
+  #     node_filters = ["agent[*]"]
+  #   }
+  # }
 
   kubeconfig {
     update_default_kubeconfig = true
@@ -124,13 +140,33 @@ resource "kubernetes_persistent_volume_v1" "volume" {
   }
   spec {
     capacity = {
-      "storage" = "30Gi"
+      "storage" = "50Gi"
     }
     storage_class_name = "local-path"
     access_modes       = ["ReadWriteMany"]
     persistent_volume_source {
       host_path {
         path = "/mnt/cloudfairy/root"
+      }
+    }
+  }
+}
+resource "kubernetes_persistent_volume_v1" "volume_data" {
+  metadata {
+    name = "data-volume"
+    labels = {
+      "type" = "local"
+    }
+  }
+  spec {
+    capacity = {
+      "storage" = "50Gi"
+    }
+    storage_class_name = "local-path"
+    access_modes       = ["ReadWriteMany"]
+    persistent_volume_source {
+      host_path {
+        path = "/mnt/cloudfairy/data"
       }
     }
   }
@@ -146,10 +182,32 @@ resource "kubernetes_persistent_volume_claim_v1" "volume" {
     access_modes = ["ReadWriteMany"]
     resources {
       requests = {
-        "storage" = "2Gi"
+        "storage" = "30Gi"
+      }
+      limits = {
+        "storage" = "50Gi"
       }
     }
     volume_name = "root-volume"
+  }
+}
+resource "kubernetes_persistent_volume_claim_v1" "data" {
+  count            = 1
+  wait_until_bound = false
+  metadata {
+    name = "data-volume-claim"
+  }
+  spec {
+    access_modes = ["ReadWriteMany"]
+    resources {
+      requests = {
+        "storage" = "30Gi"
+      }
+      limits = {
+        "storage" = "50Gi"
+      }
+    }
+    volume_name = "data-volume"
   }
 }
 
@@ -162,6 +220,7 @@ output "cfout" {
     api_port        = local.api_port
     service_account = "local-sa"
     kubeconfig_path = "~/.kube/config"
+    node_name       = k3d_node.mynode.name
     volume_path     = "/mnt/cloudfairy/root"
   }
 }
